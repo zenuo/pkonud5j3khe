@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Spring框架：在xml中声明切面 | /home/zenuo</title>
+<meta name="generator" content="Jekyll v4.2.0" />
+<meta property="og:title" content="Spring框架：在xml中声明切面" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="基于注解的配置要优于基于Java的配置，基于Java的配置要优于基于XML的配置。但是，如果你需要声明切面，但是又不能为通知类添加注解的时候，那么就必须转向XML配置了。" />
+<meta property="og:description" content="基于注解的配置要优于基于Java的配置，基于Java的配置要优于基于XML的配置。但是，如果你需要声明切面，但是又不能为通知类添加注解的时候，那么就必须转向XML配置了。" />
+<link rel="canonical" href="https://zenuo.github.io/2019/10/20/Spring%E6%A1%86%E6%9E%B6-%E5%9C%A8XML%E4%B8%AD%E5%A3%B0%E6%98%8E%E5%88%87%E9%9D%A2.html" />
+<meta property="og:url" content="https://zenuo.github.io/2019/10/20/Spring%E6%A1%86%E6%9E%B6-%E5%9C%A8XML%E4%B8%AD%E5%A3%B0%E6%98%8E%E5%88%87%E9%9D%A2.html" />
+<meta property="og:site_name" content="/home/zenuo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-10-20T00:00:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Spring框架：在xml中声明切面" />
+<script type="application/ld+json">
+{"description":"基于注解的配置要优于基于Java的配置，基于Java的配置要优于基于XML的配置。但是，如果你需要声明切面，但是又不能为通知类添加注解的时候，那么就必须转向XML配置了。","url":"https://zenuo.github.io/2019/10/20/Spring%E6%A1%86%E6%9E%B6-%E5%9C%A8XML%E4%B8%AD%E5%A3%B0%E6%98%8E%E5%88%87%E9%9D%A2.html","@type":"BlogPosting","headline":"Spring框架：在xml中声明切面","dateModified":"2019-10-20T00:00:00+00:00","datePublished":"2019-10-20T00:00:00+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://zenuo.github.io/2019/10/20/Spring%E6%A1%86%E6%9E%B6-%E5%9C%A8XML%E4%B8%AD%E5%A3%B0%E6%98%8E%E5%88%87%E9%9D%A2.html"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://zenuo.github.io/feed.xml" title="/home/zenuo" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">/home/zenuo</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Spring框架：在xml中声明切面</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-10-20T00:00:00+00:00" itemprop="datePublished">Oct 20, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p><strong>基于注解的配置</strong>要优于<strong>基于Java的配置</strong>，<strong>基于Java的配置</strong>要优于<strong>基于XML的配置</strong>。但是，如果你需要声明切面，但是又不能为通知类添加注解的时候，那么就必须转向XML配置了。</p>
+
+<p>在Spring的aop命名空间中，提供了多个元素用来在XML中声明切面，如表4.3所示。</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>AOP配置元素</th>
+      <th>用途</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><aop:advisor></aop:advisor></td>
+      <td>定义AOP通知器</td>
+    </tr>
+    <tr>
+      <td><aop:after></aop:after></td>
+      <td>定义AOP后置通知（不管被通知的方法是否执行成功）</td>
+    </tr>
+    <tr>
+      <td><aop:after-returning></aop:after-returning></td>
+      <td>定义AOP返回通知</td>
+    </tr>
+    <tr>
+      <td><aop:after-throwing></aop:after-throwing></td>
+      <td>定义AOP异常通知</td>
+    </tr>
+    <tr>
+      <td><aop:around></aop:around></td>
+      <td>定义AOP环绕通知</td>
+    </tr>
+    <tr>
+      <td><aop:aspect></aop:aspect></td>
+      <td>定义一个切面</td>
+    </tr>
+    <tr>
+      <td><aop:aspectj-autoproxy></aop:aspectj-autoproxy></td>
+      <td>启用@AspectJ注解驱动的切面</td>
+    </tr>
+    <tr>
+      <td><aop:before></aop:before></td>
+      <td>定义一个AOP前置通知</td>
+    </tr>
+    <tr>
+      <td><aop:config></aop:config></td>
+      <td>顶层的AOP配置元素。大多数的&lt;aop:*&gt;元素必须包含在<aop:config>元素内</aop:config></td>
+    </tr>
+    <tr>
+      <td><aop:declare-parents></aop:declare-parents></td>
+      <td>以透明的方式为被通知的对象引入额外的接口</td>
+    </tr>
+    <tr>
+      <td><aop:pointcut></aop:pointcut></td>
+      <td>定义一个切点</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>我们已经看过了<aop:aspectj-autoproxy>元素，它能够自动代理AspectJ注解的通知类。aop命名空间的其他元素能够让我们直接在Spring配置中声明切面，而不需要使用注解。</aop:aspectj-autoproxy></p>
+
+<p>例如，我们重新看一下Audience类，这一次我们将它所有的AspectJ注解全部移除掉：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="nn">concert</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Audience</span> <span class="o">{</span>
+
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">silenceCellPhones</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Silencing cell phones"</span><span class="o">);</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">takeSeats</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Taking seats"</span><span class="o">);</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">applause</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"CLAP CLAP CLAP!!!"</span><span class="o">);</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">demandRefund</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Demanding a refund"</span><span class="o">);</span>
+  <span class="o">}</span>
+
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>正如你所看到的，Audience类并没有任何特别之处，它就是有几个方法的简单Java类。我们可以像其他类一样把它注册为Spring应用上下文中的bean。</p>
+
+<p>尽管看起来并没有什么差别，但Audience已经具备了成为AOP通知的所有条件。我们再稍微帮助它一把，它就能够成为预期的通知了。</p>
+
+<h2 id="声明前置和后置通知">声明前置和后置通知</h2>
+
+<p>你可以再把那些AspectJ注解加回来，但这并不是本节的目的。相反，我们会使用Spring aop命名空间中的一些元素，将没有注解的Audience类转换为切面。下面的程序清单4.9展示了所需要的XML。</p>
+
+<p>程序清单4.9　通过XML将无注解的Audience声明为切面</p>
+
+<p><img src="/assets/img/0bdf4a86f55a35fe567044df.png" alt="0bdf4a86f55a35fe567044df.png" /></p>
+
+<p>关于Spring AOP配置元素，第一个需要注意的事项是大多数的AOP配置元素必须在<strong><code class="language-plaintext highlighter-rouge">&lt;aop:config&gt;</code></strong>元素的上下文内使用。这条规则有几种例外场景，但是把bean声明为一个切面时，我们总是从<strong><code class="language-plaintext highlighter-rouge">&lt;aop:config&gt;</code></strong>元素开始配置的。</p>
+
+<p>该切面应用了四个不同的通知。两个<strong><code class="language-plaintext highlighter-rouge">&lt;aop:before&gt;</code></strong>元素定义了匹配切点的方法执行之前调用前置通知方法—也就是Audience bean的takeSeats()和turnOffCellPhones()方法（由method属性所声明）。<strong><code class="language-plaintext highlighter-rouge">&lt;aop:after-returning&gt;</code></strong>元素定义了一个返回（after-returning）通知，在切点所匹配的方法调用之后再调用applaud()方法。同样，<strong><code class="language-plaintext highlighter-rouge">&lt;aop:after-throwing&gt;</code></strong>元素定义了异常（after-throwing）通知，如果所匹配的方法执行时抛出任何的异常，都将会调用demandRefund()方法。图4.8展示了通知逻辑如何织入到业务逻辑中。</p>
+
+<p><img src="/assets/img/c07ca196e56e1e54c13f2a30.png" alt="c07ca196e56e1e54c13f2a30.png" /></p>
+
+<p>图4.8　Audience切面包含四种通知，它们把通知逻辑织入进匹配切面切点的方法中</p>
+
+<p>在所有的通知元素中，pointcut属性定义了通知所应用的切点，它的值是使用AspectJ切点表达式语法所定义的切点。</p>
+
+<p>你或许注意到所有通知元素中的pointcut属性的值都是一样的，这是因为所有的通知都要应用到相同的切点上。</p>
+
+<p>在基于AspectJ注解的通知中，当发现这种类型的重复时，我们使用@Pointcut注解消除了这些重复的内容。而在基于XML的切面声明中，我们需要使用<strong><code class="language-plaintext highlighter-rouge">&lt;aop:pointcut&gt;</code></strong>元素。如下的XML展现了如何将通用的切点表达式抽取到一个切点声明中，这样这个声明就能在所有的通知元素中使用了。</p>
+
+<p>程序清单4.10　使用<strong><code class="language-plaintext highlighter-rouge">&lt;aop:pointcut&gt;</code></strong>定义命名切点</p>
+
+<p><img src="/assets/img/1d655f90e5199b1b4ec38009.png" alt="1d655f90e5199b1b4ec38009.png" /></p>
+
+<p>现在切点是在一个地方定义的，并且被多个通知元素所引用。<strong><code class="language-plaintext highlighter-rouge">&lt;aop:pointcut&gt;</code></strong>元素定义了一个id为performance的切点。同时修改所有的通知元素，用pointcut-ref属性来引用这个命名切点。</p>
+
+<p>正如程序清单4.10所展示的，<strong><code class="language-plaintext highlighter-rouge">&lt;aop:pointcut&gt;</code></strong>元素所定义的切点可以被同一个<strong><code class="language-plaintext highlighter-rouge">&lt;aop:aspect&gt;</code></strong>元素之内的所有通知元素引用。如果想让定义的切点能够在多个切面使用，我们可以把<strong><code class="language-plaintext highlighter-rouge">&lt;aop:pointcut&gt;</code></strong>元素放在<strong><code class="language-plaintext highlighter-rouge">&lt;aop:config&gt;</code></strong>元素的范围内。</p>
+
+<h2 id="声明环绕通知">声明环绕通知</h2>
+
+<p>目前Audience的实现工作得非常棒，但是前置通知和后置通知有一些限制。具体来说，如果不使用成员变量存储信息的话，在前置通知和后置通知之间共享信息非常麻烦。</p>
+
+<p>例如，假设除了进场关闭手机和表演结束后鼓掌，我们还希望观众确保一直关注演出，并报告每个参赛者表演了多长时间。使用前置通知和后置通知实现该功能的唯一方式是在前置通知中记录开始时间并在某个后置通知中报告表演耗费的时间。但这样的话我们必须在一个成员变量中保存开始时间。因为Audience是单例的，如果像这样保存状态的话，将会存在线程安全问题。</p>
+
+<p>相对于前置通知和后置通知，环绕通知在这点上有明显的优势。使用环绕通知，我们可以完成前置通知和后置通知所实现的相同功能，而且只需要在一个方法中 实现。因为整个通知逻辑是在一个方法内实现的，所以不需要使用成员变量保存　状态。</p>
+
+<p>例如，考虑程序清单4.11中新Audience类的watchPerformance()方法，它没有使用任何的注解。</p>
+
+<p>程序清单4.11　watchPerformance()方法提供了AOP环绕通知</p>
+
+<p><img src="/assets/img/a1f07e14453a179994e4aa71.png" alt="a1f07e14453a179994e4aa71.png" /></p>
+
+<p>在观众切面中，watchPerformance()方法包含了之前四个通知方法的所有功能。不过，所有的功能都放在了这一个方法中，因此这个方法还要负责自身的异常处理。</p>
+
+<p>声明环绕通知与声明其他类型的通知并没有太大区别。我们所需要做的仅仅是使用<strong><code class="language-plaintext highlighter-rouge">&lt;aop:around&gt;</code></strong>元素。</p>
+
+<p>程序清单4.12　在XML中使用<strong><code class="language-plaintext highlighter-rouge">&lt;aop:around&gt;</code></strong>元素声明环绕通知</p>
+
+<p><img src="/assets/img/28f709d2d7fd520b34d733b8.png" alt="28f709d2d7fd520b34d733b8.png" /></p>
+
+<p>像其他通知的XML元素一样，<strong><code class="language-plaintext highlighter-rouge">&lt;aop:around&gt;</code></strong>指定了一个切点和一个通知方法的名字。在这里，我们使用跟之前一样的切点，但是为该切点所设置的method属性值为watchPerformance()方法。</p>
+
+<h2 id="为通知传递参数">为通知传递参数</h2>
+
+<p>在4.3.3小节中，我们使用@AspectJ注解创建了一个切面，这个切面能够记录CompactDisc上每个磁道播放的次数。现在，我们使用XML来配置切面，那就看一下如何完成这一相同的任务。</p>
+
+<p>首先，我们要移除掉TrackCounter上所有的@AspectJ注解。</p>
+
+<p>程序清单4.13　无注解的TrackCounter</p>
+
+<p><img src="/assets/img/fa6ab086e42a46493032e6a6.png" alt="fa6ab086e42a46493032e6a6.png" /></p>
+
+<p>去掉@AspectJ注解后，TrackCounter显得有些单薄了。现在，除非显式调用countTrack()方法，否则TrackCounter不会记录磁道播放的数量。但是，借助一点Spring XML配置，我们能够让TrackCounter重新变为切面。</p>
+
+<p>如下的程序清单展现了完整的Spring配置，在这个配置中声明了TrackCounter bean和BlankDisc bean，并将TrackCounter转化为切面。</p>
+
+<p>程序清单4.14　在XML中将TrackCounter配置为参数化的切面</p>
+
+<p><img src="/assets/img/508ac4f4cd75fb215576bda8.png" alt="508ac4f4cd75fb215576bda8.png" /></p>
+
+<p>可以看到，我们使用了和前面相同的aop命名空间XML元素，它们会将POJO声明为切面。唯一明显的差别在于切点表达式中包含了一个参数，这个参数会传递到通知方法中。如果你将这个表达式与程序清单4.6中的表达式进行对比会发现它们几乎是相同的。唯一的差别在于这里使用and关键字而不是“&amp;&amp;”（因为在XML中，“&amp;”符号会被解析为实体的开始）。</p>
+
+<p>我们通过练习已经使用Spring的aop命名空间声明了几个基本的切面，那么现在让我们看一下如何使用aop命名空间声明引入切面。</p>
+
+<h2 id="通过切面引入新的功能">通过切面引入新的功能</h2>
+
+<p>在前面的4.3.4小节中，我向你展现了如何借助AspectJ的@DeclareParents注解为被通知的方法神奇地引入新的方法。但是AOP引入并不是AspectJ特有的。使用Spring aop命名空间中的<strong><code class="language-plaintext highlighter-rouge">&lt;aop:declare-parents&gt;</code></strong>元素，我们可以实现相同的功能。</p>
+
+<p>如下的XML代码片段与之前基于AspectJ的引入功能是相同：</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;aop:aspect&gt;</span>
+  <span class="nt">&lt;aop:declare-parents</span>
+    <span class="na">types-matching=</span><span class="s">"concert.Performance+"</span>
+    <span class="na">implement-interface=</span><span class="s">"concert.Encoreable"</span>
+    <span class="na">default-impl=</span><span class="s">"concert.DefaultEncoreable"</span>
+    <span class="nt">/&gt;</span>
+<span class="nt">&lt;/aop:aspect&gt;</span>
+</code></pre></div></div>
+
+<p>顾名思义，<strong><code class="language-plaintext highlighter-rouge">&lt;aop:declare-parents&gt;</code></strong>声明了此切面所通知的bean要在它的对象层次结构中拥有新的父类型。具体到本例中，类型匹配Performance接口（由types-matching属性指定）的那些bean在父类结构中会增加Encoreable接口（由implement-interface属性指定）。最后要解决的问题是Encoreable接口中的方法实现要来自于何处。</p>
+
+<p>这里有两种方式标识所引入接口的实现。在本例中，我们使用default-impl属性用全限定类名来显式指定Encoreable的实现。或者，我们还可以使用delegate-ref属性来标识。</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;aop:aspect&gt;</span>
+  <span class="nt">&lt;aop:declare-parents</span>
+    <span class="na">types-matching=</span><span class="s">"concert.Performance+"</span>
+    <span class="na">implement-interface=</span><span class="s">"concert.Encoreable"</span>
+    <span class="na">delegate-ref=</span><span class="s">"encoreableDelegate"</span>
+    <span class="nt">/&gt;</span>
+<span class="nt">&lt;/aop:aspect&gt;</span>
+</code></pre></div></div>
+
+<p>delegate-ref属性引用了一个Spring bean作为引入的委托。这需要在Spring上下文中存在一个ID为encoreableDelegate的bean。</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"encoreableDelegate"</span>
+      <span class="na">class=</span><span class="s">"concert.DefaultEncoreable"</span> <span class="nt">/&gt;</span>
+</code></pre></div></div>
+
+<p>使用default-impl来直接标识委托和间接使用delegate-ref的区别在于后者是Spring bean，它本身可以被注入、通知或使用其他的Spring配置。</p>
+
+  </div><a class="u-url" href="/2019/10/20/Spring%E6%A1%86%E6%9E%B6-%E5%9C%A8XML%E4%B8%AD%E5%A3%B0%E6%98%8E%E5%88%87%E9%9D%A2.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">/home/zenuo</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">/home/zenuo</li><li><a class="u-email" href="mailto:zenuo@protonmail.com">zenuo@protonmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/zenuo"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">zenuo</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>The quieter you become, the more you are able to hear.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

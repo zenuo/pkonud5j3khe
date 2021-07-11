@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>协变、逆变与不变 | /home/zenuo</title>
+<meta name="generator" content="Jekyll v4.2.0" />
+<meta property="og:title" content="协变、逆变与不变" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Formal definition" />
+<meta property="og:description" content="Formal definition" />
+<link rel="canonical" href="https://zenuo.github.io/2020/10/19/%E5%8D%8F%E5%8F%98-%E9%80%86%E5%8F%98%E4%B8%8E%E4%B8%8D%E5%8F%98.html" />
+<meta property="og:url" content="https://zenuo.github.io/2020/10/19/%E5%8D%8F%E5%8F%98-%E9%80%86%E5%8F%98%E4%B8%8E%E4%B8%8D%E5%8F%98.html" />
+<meta property="og:site_name" content="/home/zenuo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-10-19T00:00:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="协变、逆变与不变" />
+<script type="application/ld+json">
+{"description":"Formal definition","url":"https://zenuo.github.io/2020/10/19/%E5%8D%8F%E5%8F%98-%E9%80%86%E5%8F%98%E4%B8%8E%E4%B8%8D%E5%8F%98.html","@type":"BlogPosting","headline":"协变、逆变与不变","dateModified":"2020-10-19T00:00:00+00:00","datePublished":"2020-10-19T00:00:00+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://zenuo.github.io/2020/10/19/%E5%8D%8F%E5%8F%98-%E9%80%86%E5%8F%98%E4%B8%8E%E4%B8%8D%E5%8F%98.html"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://zenuo.github.io/feed.xml" title="/home/zenuo" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">/home/zenuo</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">协变、逆变与不变</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2020-10-19T00:00:00+00:00" itemprop="datePublished">Oct 19, 2020
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h2 id="formal-definition">Formal definition</h2>
+
+<p>摘自<a href="https://176.122.157.231:5004/wiki/Covariance_and_contravariance_(computer_science)">Covariance_and_contravariance_(computer_science)</a>：</p>
+
+<blockquote>
+  <p>Within the type system of a programming language, a <code class="language-plaintext highlighter-rouge">typing rule</code> or a<code class="language-plaintext highlighter-rouge"> type constructor</code> is:</p>
+  <ul>
+    <li><em>covariant</em> if it preserves the <a href="https://176.122.157.231:5004/wiki/Subtype">rdering of types (≤)</a>, which orders types from more specific to more generic;</li>
+    <li><em>contravariant</em> if it reverses this ordering;</li>
+    <li>bivariant if both of these apply (i.e., both <code class="language-plaintext highlighter-rouge">I&lt;A&gt;</code> ≤ <code class="language-plaintext highlighter-rouge">I&lt;B&gt;</code> and <code class="language-plaintext highlighter-rouge">I&lt;B&gt;</code> ≤ <code class="language-plaintext highlighter-rouge">I&lt;A&gt;</code> at the same time);[1]</li>
+    <li>variant if covariant, contravariant or bivariant;</li>
+    <li>invariant or nonvariant if not variant.</li>
+  </ul>
+</blockquote>
+
+<h2 id="协变">协变</h2>
+
+<p>首先考虑数组类型构造器： 从Animal类型，可以得到<code class="language-plaintext highlighter-rouge">Animal[]</code>（“animal数组”）。 是否可以把它当作</p>
+
+<ul>
+  <li>协变：a <code class="language-plaintext highlighter-rouge">Cat[]</code> is an <code class="language-plaintext highlighter-rouge">Animal[]</code></li>
+  <li>逆变：an <code class="language-plaintext highlighter-rouge">Animal[]</code> is  a <code class="language-plaintext highlighter-rouge">Cat[]</code></li>
+  <li>不变：an <code class="language-plaintext highlighter-rouge">Animal[]</code> is not a <code class="language-plaintext highlighter-rouge">Cat[]</code> and a <code class="language-plaintext highlighter-rouge">Cat[]</code> is not an <code class="language-plaintext highlighter-rouge">Animal[]</code></li>
+</ul>
+
+<h3 id="java中的协变数组">Java中的协变数组</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// a 是单元素的 String 数组</span>
+<span class="nc">String</span><span class="o">[]</span> <span class="n">a</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">String</span><span class="o">[</span><span class="mi">1</span><span class="o">];</span>
+
+<span class="c1">// b 是 Object 的数组</span>
+<span class="nc">Object</span><span class="o">[]</span> <span class="n">b</span> <span class="o">=</span> <span class="n">a</span><span class="o">;</span>
+
+<span class="c1">// 向 b 中赋一个整数。如果 b 确实是 Object 的数组，这是可能的；然而它其实是个 String 的数组，因此会发生 java.lang.ArrayStoreException</span>
+<span class="n">b</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+</code></pre></div></div>
+
+<h2 id="oop中的继承">OOP中的继承</h2>
+
+<blockquote>
+  <p>当一个子类<a href="https://176.122.157.231:3457/wiki/重写">重写</a>一个超类的方法时，编译器必须检查重写方法是否具有正确的类型。虽然一些语言要求类型必须与超类相同，但允许重写方法有一个“更好的”类型也是类型安全的。对于大部分的方法子类化规则来说，这要求返回值的类型必须更具体，也就是<code class="language-plaintext highlighter-rouge">协变</code>，而且接受更宽泛的参数类型，也就是<code class="language-plaintext highlighter-rouge">逆变</code>。</p>
+</blockquote>
+
+<p><img src="/assets/img/be914bff8d5611a54aa47597.png" alt="be914bff8d5611a54aa47597.png" /></p>
+
+<p>以下讨论基于Java语法，<code class="language-plaintext highlighter-rouge">抽象类C</code>如下：</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">jshell</span><span class="o">&gt;</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">C</span> <span class="o">{</span>
+   <span class="o">...&gt;</span> <span class="kd">abstract</span> <span class="no">C</span> <span class="nf">foo</span><span class="o">(</span><span class="no">C</span> <span class="n">c</span><span class="o">);</span>
+   <span class="o">...&gt;</span> <span class="o">}</span>
+<span class="o">|</span>  <span class="n">replaced</span> <span class="kd">class</span> <span class="nc">C</span>
+</code></pre></div></div>
+
+<h3 id="返回值的协变">返回值的协变</h3>
+
+<p>在允许协变返回值的语言中, 子类可以重写<code class="language-plaintext highlighter-rouge">foo</code>方法返回一个更具体的类型：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>jshell&gt; class D extends C {
+   ...&gt; @Override
+   ...&gt; D foo(C c) {return this;}
+   ...&gt; }
+|  created class D
+</code></pre></div></div>
+
+<h3 id="方法参数的协变与逆变">方法参数的协变与逆变</h3>
+
+<p>允许参数协变、逆变的面向对象语言并不多——Java会把它当成一个函数重载：</p>
+
+<p>协变：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>jshell&gt; class E extends C {
+   ...&gt; @Override
+   ...&gt; C foo(E e) {return this;}
+   ...&gt; }
+|  Error:
+|  E is not abstract and does not override abstract method foo(C) in C
+|  class E extends C {
+|  ^------------------...
+|  Error:
+|  method does not override or implement a method from a supertype
+|  @Override
+|  ^-------^
+</code></pre></div></div>
+
+<p>逆变：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>jshell&gt; class F extends C {
+   ...&gt; @Override
+   ...&gt; C foo(Object o) {return this;}
+   ...&gt; }
+|  Error:
+|  F is not abstract and does not override abstract method foo(C) in C
+|  class F extends C {
+|  ^------------------...
+|  Error:
+|  method does not override or implement a method from a supertype
+|  @Override
+|  ^-------^
+</code></pre></div></div>
+
+<h4 id="summary-of-variance-and-inheritance">Summary of variance and inheritance</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">语言</th>
+      <th style="text-align: right">Parameter type</th>
+      <th style="text-align: center">Return type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">C++ （自1998年）, Java (自J2SE 5.0), D</td>
+      <td style="text-align: right">不变</td>
+      <td style="text-align: center">协变</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">C#</td>
+      <td style="text-align: right">不变</td>
+      <td style="text-align: center">不变</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="参考">参考</h2>
+
+<ul>
+  <li><a href="https://176.122.157.231:5004/wiki/Covariance_and_contravariance_(computer_science)">Covariance and contravariance</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2020/10/19/%E5%8D%8F%E5%8F%98-%E9%80%86%E5%8F%98%E4%B8%8E%E4%B8%8D%E5%8F%98.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">/home/zenuo</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">/home/zenuo</li><li><a class="u-email" href="mailto:zenuo@protonmail.com">zenuo@protonmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/zenuo"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">zenuo</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>The quieter you become, the more you are able to hear.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

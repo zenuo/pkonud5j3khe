@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>读取mysql的binlog | /home/zenuo</title>
+<meta name="generator" content="Jekyll v4.2.0" />
+<meta property="og:title" content="读取mysql的binlog" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="配置~/.my.cnf，开启binlog:" />
+<meta property="og:description" content="配置~/.my.cnf，开启binlog:" />
+<link rel="canonical" href="https://zenuo.github.io/2020/07/12/%E8%AF%BB%E5%8F%96MySQL%E7%9A%84binlog.html" />
+<meta property="og:url" content="https://zenuo.github.io/2020/07/12/%E8%AF%BB%E5%8F%96MySQL%E7%9A%84binlog.html" />
+<meta property="og:site_name" content="/home/zenuo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-07-12T00:00:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="读取mysql的binlog" />
+<script type="application/ld+json">
+{"description":"配置~/.my.cnf，开启binlog:","url":"https://zenuo.github.io/2020/07/12/%E8%AF%BB%E5%8F%96MySQL%E7%9A%84binlog.html","@type":"BlogPosting","headline":"读取mysql的binlog","dateModified":"2020-07-12T00:00:00+00:00","datePublished":"2020-07-12T00:00:00+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://zenuo.github.io/2020/07/12/%E8%AF%BB%E5%8F%96MySQL%E7%9A%84binlog.html"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://zenuo.github.io/feed.xml" title="/home/zenuo" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">/home/zenuo</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">读取mysql的binlog</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2020-07-12T00:00:00+00:00" itemprop="datePublished">Jul 12, 2020
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>配置<code class="language-plaintext highlighter-rouge">~/.my.cnf</code>，开启binlog:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[mysqld]
+server-id=master-01
+log-bin=mysql-bin
+</code></pre></div></div>
+
+<p>假设需要读取的binlog的文件是<code class="language-plaintext highlighter-rouge">mysql-bin.000001</code>，那么用下面命令即可根据开始结束时间输出可读日志：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysqlbinlog <span class="nt">--base64-output</span><span class="o">=</span>DECODE-ROWS <span class="se">\</span>
+<span class="nt">-v</span> <span class="se">\</span>
+<span class="nt">--start-datetime</span><span class="o">=</span><span class="s1">'2020-07-12 21:33:10'</span> <span class="se">\</span>
+<span class="nt">--stop-datetime</span><span class="o">=</span><span class="s1">'2020-07-12 21:40:10'</span> <span class="se">\</span>
+mysql-bin.000001
+</code></pre></div></div>
+
+<p>输出如下：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/*!50530 SET @@SESSION.PSEUDO_SLAVE_MODE=1*/;
+/*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
+DELIMITER /*!*/;
+# at 4
+#200712 21:24:18 server id 0  end_log_pos 123 CRC32 0x0d383a89 	Start: binlog v 4, server v 5.7.29-log created 200712 21:24:18 at startup
+ROLLBACK/*!*/;
+# at 672
+#200712 21:33:44 server id 0  end_log_pos 737 CRC32 0x71a595ed 	Anonymous_GTID	last_committed=2	sequence_number=3	rbr_only=yes
+/*!50718 SET TRANSACTION ISOLATION LEVEL READ COMMITTED*//*!*/;
+SET @@SESSION.GTID_NEXT= 'ANONYMOUS'/*!*/;
+# at 737
+#200712 21:33:44 server id 0  end_log_pos 809 CRC32 0xb207c15c 	Query	thread_id=2	exec_time=0	error_code=0
+SET TIMESTAMP=1594560824/*!*/;
+SET @@session.pseudo_thread_id=2/*!*/;
+SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=0, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+SET @@session.sql_mode=1436549152/*!*/;
+SET @@session.auto_increment_increment=1, @@session.auto_increment_offset=1/*!*/;
+/*!\C utf8mb4 *//*!*/;
+SET @@session.character_set_client=45,@@session.collation_connection=45,@@session.collation_server=45/*!*/;
+SET @@session.lc_time_names=0/*!*/;
+SET @@session.collation_database=DEFAULT/*!*/;
+BEGIN
+/*!*/;
+# at 809
+#200712 21:33:44 server id 0  end_log_pos 860 CRC32 0x6aa48d0d 	Table_map: `test`.`int_test` mapped to number 107
+# at 860
+#200712 21:33:44 server id 0  end_log_pos 900 CRC32 0xb6d5df66 	Write_rows: table id 107 flags: STMT_END_F
+### INSERT INTO `test`.`int_test`
+### SET
+###   @1=8
+# at 900
+#200712 21:33:44 server id 0  end_log_pos 931 CRC32 0x5b5c9d33 	Xid = 15
+COMMIT/*!*/;
+# at 931
+#200712 21:35:32 server id 0  end_log_pos 954 CRC32 0x95c3815f 	Stop
+SET @@SESSION.GTID_NEXT= 'AUTOMATIC' /* added by mysqlbinlog */ /*!*/;
+DELIMITER ;
+# End of log file
+/*!50003 SET COMPLETION_TYPE=@OLD_COMPLETION_TYPE*/;
+/*!50530 SET @@SESSION.PSEUDO_SLAVE_MODE=0*/;
+</code></pre></div></div>
+
+<h1 id="参考">参考</h1>
+
+<ol>
+  <li><a href="https://dev.mysql.com/doc/refman/5.7/en/replication-howto-masterbaseconfig.html">16.1.2.1 Setting the Replication Master Configuration</a></li>
+  <li><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqlbinlog-row-events.html">4.6.7.2 mysqlbinlog Row Event Display</a></li>
+</ol>
+
+  </div><a class="u-url" href="/2020/07/12/%E8%AF%BB%E5%8F%96MySQL%E7%9A%84binlog.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">/home/zenuo</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">/home/zenuo</li><li><a class="u-email" href="mailto:zenuo@protonmail.com">zenuo@protonmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/zenuo"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">zenuo</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>The quieter you become, the more you are able to hear.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

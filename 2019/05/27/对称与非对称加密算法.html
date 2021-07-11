@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>对称与非对称加密算法 | /home/zenuo</title>
+<meta name="generator" content="Jekyll v4.2.0" />
+<meta property="og:title" content="对称与非对称加密算法" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="對稱密鑰演算法（英语：Symmetric-key algorithm）又稱為對稱加密、私鑰加密、共享密鑰加密，是密碼學中的一類加密演算法。這類演算法在加密和解密時使用相同的密鑰，或是使用兩個可以簡單地相互推算的密鑰。事实上，這組密鑰成為在兩個或多個成員間的共同祕密，以便維持專屬的通訊聯繫。與公开密钥加密相比，要求雙方取得相同的密鑰是對稱密鑰加密的主要缺點之一[2]。" />
+<meta property="og:description" content="對稱密鑰演算法（英语：Symmetric-key algorithm）又稱為對稱加密、私鑰加密、共享密鑰加密，是密碼學中的一類加密演算法。這類演算法在加密和解密時使用相同的密鑰，或是使用兩個可以簡單地相互推算的密鑰。事实上，這組密鑰成為在兩個或多個成員間的共同祕密，以便維持專屬的通訊聯繫。與公开密钥加密相比，要求雙方取得相同的密鑰是對稱密鑰加密的主要缺點之一[2]。" />
+<link rel="canonical" href="https://zenuo.github.io/2019/05/27/%E5%AF%B9%E7%A7%B0%E4%B8%8E%E9%9D%9E%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95.html" />
+<meta property="og:url" content="https://zenuo.github.io/2019/05/27/%E5%AF%B9%E7%A7%B0%E4%B8%8E%E9%9D%9E%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95.html" />
+<meta property="og:site_name" content="/home/zenuo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-05-27T00:00:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="对称与非对称加密算法" />
+<script type="application/ld+json">
+{"description":"對稱密鑰演算法（英语：Symmetric-key algorithm）又稱為對稱加密、私鑰加密、共享密鑰加密，是密碼學中的一類加密演算法。這類演算法在加密和解密時使用相同的密鑰，或是使用兩個可以簡單地相互推算的密鑰。事实上，這組密鑰成為在兩個或多個成員間的共同祕密，以便維持專屬的通訊聯繫。與公开密钥加密相比，要求雙方取得相同的密鑰是對稱密鑰加密的主要缺點之一[2]。","url":"https://zenuo.github.io/2019/05/27/%E5%AF%B9%E7%A7%B0%E4%B8%8E%E9%9D%9E%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95.html","@type":"BlogPosting","headline":"对称与非对称加密算法","dateModified":"2019-05-27T00:00:00+00:00","datePublished":"2019-05-27T00:00:00+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://zenuo.github.io/2019/05/27/%E5%AF%B9%E7%A7%B0%E4%B8%8E%E9%9D%9E%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95.html"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://zenuo.github.io/feed.xml" title="/home/zenuo" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">/home/zenuo</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">对称与非对称加密算法</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-05-27T00:00:00+00:00" itemprop="datePublished">May 27, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p><strong>對稱密鑰演算法</strong>（英语：Symmetric-key algorithm）又稱為對稱加密、私鑰加密、共享密鑰加密，是<a href="https://176.122.157.231:3457/wiki/%E5%AF%86%E7%A2%BC%E5%AD%B8">密碼學</a>中的一類加密演算法。這類演算法在加密和解密時使用相同的密鑰，或是使用兩個可以簡單地相互推算的密鑰。事实上，這組密鑰成為在兩個或多個成員間的共同祕密，以便維持專屬的通訊聯繫。與公开密钥加密相比，要求雙方取得相同的密鑰是對稱密鑰加密的主要缺點之一[2]。</p>
+
+<p>常见的对称加密算法有DES、3DES、AES、Blowfish、IDEA、RC5、RC6。</p>
+
+<p>对称加密的速度比公钥加密快很多，在很多场合都需要对称加密。</p>
+
+<p><strong>公开密钥密码学</strong>（英语：Public-key cryptography，也称非對稱式密碼學）是密碼學的一種演算法，它需要兩個密钥，一個是公開密鑰，另一個是私有密鑰；一個用作加密，另一個則用作解密。使用其中一個密钥把明文加密后所得的密文，只能用相對應的另一個密钥才能解密得到原本的明文；甚至連最初用來加密的密鑰也不能用作解密。由於加密和解密需要兩個不同的密鑰，故被稱為非對稱加密；不同於加密和解密都使用同一個密鑰的對稱加密。雖然兩個密鑰在数学上相关，但如果知道了其中一个，并不能憑此计算出另外一个；因此其中一个可以公开，称为公钥，任意向外發佈；不公开的密钥为私钥，必須由用戶自行嚴格秘密保管，絕不透過任何途徑向任何人提供，也不會透露給被信任的要通訊的另一方。</p>
+
+<p>基於公開密鑰加密的特性，它還提供數位簽章的功能，使電子文件可以得到如同在紙本文件上親筆簽署的效果。</p>
+
+<p><a href="https://176.122.157.231:3457/wiki/%E5%85%AC%E9%96%8B%E9%87%91%E9%91%B0%E5%9F%BA%E7%A4%8E%E5%BB%BA%E8%A8%AD">公開金鑰基礎建設</a>透過信任数字证书认证机构的根证书、及其使用公开密钥加密作數位簽章核發的公開金鑰認證，形成信任鏈架構，已在TLS實現並在万维网的HTTP以HTTPS、在电子邮件的SMTP以STARTTLS引入。</p>
+
+<p>另一方面，信任網絡則採用去中心化的概念，取代了依賴數字證書認證機構的公鑰基礎設施，因為每一張電子證書在信任鏈中最終只由一個根證書授權信任，信任網絡的公鑰則可以累積多個用戶的信任。PGP就是其中一個例子。</p>
+
+<p>常见的公钥加密算法有：RSA、ElGamal、背包算法、Rabin（RSA的特例）、迪菲－赫尔曼密钥交换协议中的公钥加密算法、椭圆曲线加密算法（英语：Elliptic Curve Cryptography, ECC）。使用最广泛的是RSA算法（由发明者Rivest、Shmir和Adleman姓氏首字母缩写而来）是著名的公开秘钥加密算法，ElGamal是另一种常用的非对称加密算法。</p>
+
+  </div><a class="u-url" href="/2019/05/27/%E5%AF%B9%E7%A7%B0%E4%B8%8E%E9%9D%9E%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">/home/zenuo</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">/home/zenuo</li><li><a class="u-email" href="mailto:zenuo@protonmail.com">zenuo@protonmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/zenuo"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">zenuo</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>The quieter you become, the more you are able to hear.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

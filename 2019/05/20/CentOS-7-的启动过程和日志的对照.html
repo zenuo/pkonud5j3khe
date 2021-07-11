@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Centos 7 的启动过程和日志的对照 | /home/zenuo</title>
+<meta name="generator" content="Jekyll v4.2.0" />
+<meta property="og:title" content="Centos 7 的启动过程和日志的对照" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="BIOS阶段：接通电源，BIOS执行开机自检，初始化系统硬件组件，从加载的磁盘中查找MBR。如果找到，读取MBR并加载其中的引导程序到内存。 MBR阶段：引导程序根据MBR记录，发现可启动的设备，加载GRUB2引导配置，并将控制权转交给GRUB2。 GRUB2阶段：GRUB2将压缩的内核镜像文件vmlinuz加载到内存，将驱动initramfs解压到一个临时的基于内存的文件系统tmpfs。同时将控制权转交给内核。（备注：控制台输出日志中不会包含前面这三个过程，因为在内核模块加载前，终端等设备尚不能被内核调用，无法记录其信息。） 内核阶段：内核挂载文件系统tmpfs，通过其中的一些必须的块设备驱动模块，初始化硬件，访问真实的根文件系统。并以进程号1启动systemd进程。 上图中的probing EDD的过程可以理解为内核识别设备的过程。紧接着接收来自 BIOS 的内存映射报告等，内核开始工作，启动系统。该日志会同步记录到系统的/var/log/dmesg中。 Systemd 将 temfs 文件系统挂载在/sysroot，按照initd设置启动系统服务 dmesg并不会记录所有输出到控制台的信息，比如上图中的挂载/sysroot的过程和下面切换根文件系统/的过程。在这种时候，如果启动有问题，控制台日志能比较清楚地记录系统已经启动到哪个阶段。 内核根文件系统从 initramfs/sysroot 切换到 / 如果根文件系统有问题，或者其他的文件系统文件，经常在这个过程中会被卡住。需要用户接入手动修复文件系统等。 Systemd 根据系统默认启动级别，自动解决服务间的依赖关系并启动服务。完成后，登录界面弹出。" />
+<meta property="og:description" content="BIOS阶段：接通电源，BIOS执行开机自检，初始化系统硬件组件，从加载的磁盘中查找MBR。如果找到，读取MBR并加载其中的引导程序到内存。 MBR阶段：引导程序根据MBR记录，发现可启动的设备，加载GRUB2引导配置，并将控制权转交给GRUB2。 GRUB2阶段：GRUB2将压缩的内核镜像文件vmlinuz加载到内存，将驱动initramfs解压到一个临时的基于内存的文件系统tmpfs。同时将控制权转交给内核。（备注：控制台输出日志中不会包含前面这三个过程，因为在内核模块加载前，终端等设备尚不能被内核调用，无法记录其信息。） 内核阶段：内核挂载文件系统tmpfs，通过其中的一些必须的块设备驱动模块，初始化硬件，访问真实的根文件系统。并以进程号1启动systemd进程。 上图中的probing EDD的过程可以理解为内核识别设备的过程。紧接着接收来自 BIOS 的内存映射报告等，内核开始工作，启动系统。该日志会同步记录到系统的/var/log/dmesg中。 Systemd 将 temfs 文件系统挂载在/sysroot，按照initd设置启动系统服务 dmesg并不会记录所有输出到控制台的信息，比如上图中的挂载/sysroot的过程和下面切换根文件系统/的过程。在这种时候，如果启动有问题，控制台日志能比较清楚地记录系统已经启动到哪个阶段。 内核根文件系统从 initramfs/sysroot 切换到 / 如果根文件系统有问题，或者其他的文件系统文件，经常在这个过程中会被卡住。需要用户接入手动修复文件系统等。 Systemd 根据系统默认启动级别，自动解决服务间的依赖关系并启动服务。完成后，登录界面弹出。" />
+<link rel="canonical" href="https://zenuo.github.io/2019/05/20/CentOS-7-%E7%9A%84%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%92%8C%E6%97%A5%E5%BF%97%E7%9A%84%E5%AF%B9%E7%85%A7.html" />
+<meta property="og:url" content="https://zenuo.github.io/2019/05/20/CentOS-7-%E7%9A%84%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%92%8C%E6%97%A5%E5%BF%97%E7%9A%84%E5%AF%B9%E7%85%A7.html" />
+<meta property="og:site_name" content="/home/zenuo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-05-20T00:00:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Centos 7 的启动过程和日志的对照" />
+<script type="application/ld+json">
+{"description":"BIOS阶段：接通电源，BIOS执行开机自检，初始化系统硬件组件，从加载的磁盘中查找MBR。如果找到，读取MBR并加载其中的引导程序到内存。 MBR阶段：引导程序根据MBR记录，发现可启动的设备，加载GRUB2引导配置，并将控制权转交给GRUB2。 GRUB2阶段：GRUB2将压缩的内核镜像文件vmlinuz加载到内存，将驱动initramfs解压到一个临时的基于内存的文件系统tmpfs。同时将控制权转交给内核。（备注：控制台输出日志中不会包含前面这三个过程，因为在内核模块加载前，终端等设备尚不能被内核调用，无法记录其信息。） 内核阶段：内核挂载文件系统tmpfs，通过其中的一些必须的块设备驱动模块，初始化硬件，访问真实的根文件系统。并以进程号1启动systemd进程。 上图中的probing EDD的过程可以理解为内核识别设备的过程。紧接着接收来自 BIOS 的内存映射报告等，内核开始工作，启动系统。该日志会同步记录到系统的/var/log/dmesg中。 Systemd 将 temfs 文件系统挂载在/sysroot，按照initd设置启动系统服务 dmesg并不会记录所有输出到控制台的信息，比如上图中的挂载/sysroot的过程和下面切换根文件系统/的过程。在这种时候，如果启动有问题，控制台日志能比较清楚地记录系统已经启动到哪个阶段。 内核根文件系统从 initramfs/sysroot 切换到 / 如果根文件系统有问题，或者其他的文件系统文件，经常在这个过程中会被卡住。需要用户接入手动修复文件系统等。 Systemd 根据系统默认启动级别，自动解决服务间的依赖关系并启动服务。完成后，登录界面弹出。","url":"https://zenuo.github.io/2019/05/20/CentOS-7-%E7%9A%84%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%92%8C%E6%97%A5%E5%BF%97%E7%9A%84%E5%AF%B9%E7%85%A7.html","@type":"BlogPosting","headline":"Centos 7 的启动过程和日志的对照","dateModified":"2019-05-20T00:00:00+00:00","datePublished":"2019-05-20T00:00:00+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://zenuo.github.io/2019/05/20/CentOS-7-%E7%9A%84%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%92%8C%E6%97%A5%E5%BF%97%E7%9A%84%E5%AF%B9%E7%85%A7.html"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://zenuo.github.io/feed.xml" title="/home/zenuo" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">/home/zenuo</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Centos 7 的启动过程和日志的对照</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-05-20T00:00:00+00:00" itemprop="datePublished">May 20, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ol>
+  <li><strong><code class="language-plaintext highlighter-rouge">BIOS</code>阶段</strong>：接通电源，BIOS执行<code class="language-plaintext highlighter-rouge">开机自检</code>，初始化系统硬件组件，从加载的磁盘中查找<code class="language-plaintext highlighter-rouge">MBR</code>。如果找到，读取MBR并<strong>加载其中的引导程序到内存</strong>。</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">MBR</code>阶段</strong>：引导程序根据MBR记录，发现<code class="language-plaintext highlighter-rouge">可启动的设备</code>，加载<code class="language-plaintext highlighter-rouge">GRUB2</code>引导配置，并<strong>将控制权转交给<code class="language-plaintext highlighter-rouge">GRUB2</code></strong>。</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">GRUB2</code>阶段</strong>：GRUB2将<code class="language-plaintext highlighter-rouge">压缩的内核镜像文件vmlinuz</code>加载到内存，将<code class="language-plaintext highlighter-rouge">驱动initramfs</code>解压到一个<code class="language-plaintext highlighter-rouge">临时的基于内存的文件系统tmpfs</code>。同时将<strong>控制权转交给内核</strong>。（备注：控制台输出日志中<strong>不会</strong>包含前面这三个过程，因为在<strong>内核模块加载前，终端等设备尚不能被内核调用</strong>，无法记录其信息。）</li>
+  <li><strong>内核阶段</strong>：内核<strong>挂载</strong>文件系统tmpfs，通过其中的一些必须的块设备驱动模块，初始化硬件，访问真实的根文件系统。并<strong>以进程号<code class="language-plaintext highlighter-rouge">1</code>启动<code class="language-plaintext highlighter-rouge">systemd</code>进程</strong>。
+<img src="/assets/img/1875ceb6431d3b361e770361.png" alt="1875ceb6431d3b361e770361.png" />
+上图中的<strong><code class="language-plaintext highlighter-rouge">probing EDD</code></strong>的过程可以理解为<strong>内核识别设备</strong>的过程。紧接着接收来自 BIOS 的<strong>内存映射报告</strong>等，内核开始工作，启动系统。该<strong>日志</strong>会同步记录到系统的<code class="language-plaintext highlighter-rouge">/var/log/dmesg</code>中。</li>
+  <li>Systemd 将 temfs 文件系统挂载在<strong>/sysroot</strong>，按照<strong>initd</strong>设置启动系统服务
+<img src="/assets/img/bbc02bd9412e9c934b76f2ea.png" alt="bbc02bd9412e9c934b76f2ea.png" />
+<strong>dmesg</strong>并不会记录所有输出到控制台的信息，比如上图中的挂载<strong>/sysroot</strong>的过程和下面切换<strong>根文件系统/</strong>的过程。在这种时候，如果启动有问题，控制台日志能比较清楚地记录系统已经启动到哪个阶段。</li>
+  <li>内核根文件系统从 <strong>initramfs/sysroot</strong> 切换到 /
+<img src="/assets/img/8148f85f010ecccc84f37c02.png" alt="8148f85f010ecccc84f37c02.png" />
+如果根文件系统有问题，或者其他的文件系统文件，经常在这个过程中会被卡住。需要用户接入手动修复文件系统等。</li>
+  <li><strong>Systemd</strong> 根据系统默认启动级别，自动<strong>解决</strong>服务间的依赖关系并<strong>启动服务</strong>。完成后，登录界面弹出。</li>
+</ol>
+
+  </div><a class="u-url" href="/2019/05/20/CentOS-7-%E7%9A%84%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%92%8C%E6%97%A5%E5%BF%97%E7%9A%84%E5%AF%B9%E7%85%A7.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">/home/zenuo</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">/home/zenuo</li><li><a class="u-email" href="mailto:zenuo@protonmail.com">zenuo@protonmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/zenuo"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">zenuo</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>The quieter you become, the more you are able to hear.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

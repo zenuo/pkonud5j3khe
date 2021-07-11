@@ -1,0 +1,1180 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="https://zenuo.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://zenuo.github.io/" rel="alternate" type="text/html" /><updated>2021-07-11T14:46:24+00:00</updated><id>https://zenuo.github.io/feed.xml</id><title type="html">/home/zenuo</title><subtitle>The quieter you become, the more you are able to hear.</subtitle><entry><title type="html">📷在树莓派上访问iphone拍摄的照片与视频</title><link href="https://zenuo.github.io/2021/07/11/%E5%9C%A8%E6%A0%91%E8%8E%93%E6%B4%BE%E4%B8%8A%E8%AE%BF%E9%97%AEiPhone%E6%8B%8D%E6%91%84%E7%9A%84%E7%85%A7%E7%89%87%E4%B8%8E%E8%A7%86%E9%A2%91.html" rel="alternate" type="text/html" title="📷在树莓派上访问iphone拍摄的照片与视频" /><published>2021-07-11T00:00:00+00:00</published><updated>2021-07-11T00:00:00+00:00</updated><id>https://zenuo.github.io/2021/07/11/%F0%9F%93%B7%E5%9C%A8%E6%A0%91%E8%8E%93%E6%B4%BE%E4%B8%8A%E8%AE%BF%E9%97%AEiPhone%E6%8B%8D%E6%91%84%E7%9A%84%E7%85%A7%E7%89%87%E4%B8%8E%E8%A7%86%E9%A2%91</id><content type="html" xml:base="https://zenuo.github.io/2021/07/11/%E5%9C%A8%E6%A0%91%E8%8E%93%E6%B4%BE%E4%B8%8A%E8%AE%BF%E9%97%AEiPhone%E6%8B%8D%E6%91%84%E7%9A%84%E7%85%A7%E7%89%87%E4%B8%8E%E8%A7%86%E9%A2%91.html">&lt;p&gt;本人的iPhone照片与视频的体积超过了免费iCloud提供的&lt;strong&gt;5GB&lt;/strong&gt;，但又&lt;del&gt;不喜欢&lt;/del&gt;（qiong）订阅iCloud的付费扩容计划，所以看看是否能将这些照片与视频备份到&lt;strong&gt;树莓派挂载的硬盘&lt;/strong&gt;上。&lt;/p&gt;
+
+&lt;p&gt;硬件情况：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;树莓派硬件：树莓派2B&lt;/li&gt;
+  &lt;li&gt;树莓派软件：Arch Linux ARM&lt;/li&gt;
+  &lt;li&gt;iPhone硬件：iPhone 11&lt;/li&gt;
+  &lt;li&gt;iPhone软件：14.6&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;下面是我的操作步骤：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;为了安装&lt;a href=&quot;https://libimobiledevice.org/&quot;&gt;ifuse&lt;/a&gt;，需要安装&lt;a href=&quot;https://github.com/Jguer/yay&quot;&gt;yay&lt;/a&gt;，但我的树莓派的pacman源并未收纳yay，所以参考官方文档构建后安装：&lt;/p&gt;
+
+    &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; sudo pacman -S --needed git base-devel
+ # 科学上网，避免网络不畅通导致的时间浪费
+ export http_proxy=socks5://127.0.0.1:1080;export https_proxy=socks5://127.0.0.1:1080;export ALL_PROXY=socks5://127.0.0.1:1080
+ git clone https://aur.archlinux.org/yay.git
+ cd yay
+ makepkg -si
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;安装ifuse：&lt;/p&gt;
+
+    &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; yay -S ifuse
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+    &lt;p&gt;选择&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ifuse&lt;/code&gt;，而不是&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ifuse-git&lt;/code&gt;，然后会请求安装一些依赖，允许即可。编译🧬安装需要一些时间，耐心等待～&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;安装完成后，运行&lt;strong&gt;usbmuxd&lt;/strong&gt;服务：&lt;/p&gt;
+
+    &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; sudo systemctl start usbmuxd.service
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+
+    &lt;p&gt;若运行成功，此时使用usb连接树莓派与iPhone，iPhone上会弹窗询问是否信任该计算机，选择信任即可（这还用说？😂）&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;确认iPhone连接成功：&lt;/p&gt;
+
+    &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; idevicepair validate
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;创建一个挂载点：&lt;/p&gt;
+
+    &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; mkdir ~/phone
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;挂载iPhone文件系统：&lt;/p&gt;
+
+    &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; ifuse ~/phone
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;使用rsync同步到硬盘（挂载点为&lt;strong&gt;/opt/d01/&lt;/strong&gt;）：&lt;/p&gt;
+
+    &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; rsync -aP ~/phone/DCIM /opt/d01
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+
+    &lt;p&gt;我的树莓派挂载的硬盘是无自带电源的外置的usb硬盘，若此时再同时连接上iPhone，树莓派的电源功率会不足，导致无妨访问硬盘；所以我用了一个自带电源的usb hub，硬盘和iPhone通过hub连接到树莓派，如图：&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;/assets/img/0d95113b4d63df4097654fea.jpg&quot; alt=&quot;0d95113b4d63df4097654fea.jpg&quot; /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;同步完成后，卸载iPhone文件系统：&lt;/p&gt;
+
+    &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; fusermount -u ~/phone
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;https://evanwill.github.io/_drafts/notes/iphone-transfer.html&lt;/li&gt;
+  &lt;li&gt;https://wiki.archlinux.org/title/IOS#Manual_mounting&lt;/li&gt;
+  &lt;li&gt;http://www.ruanyifeng.com/blog/2020/08/rsync.html&lt;/li&gt;
+&lt;/ul&gt;</content><author><name></name></author><summary type="html">本人的iPhone照片与视频的体积超过了免费iCloud提供的5GB，但又不喜欢（qiong）订阅iCloud的付费扩容计划，所以看看是否能将这些照片与视频备份到树莓派挂载的硬盘上。</summary></entry><entry><title type="html">Virtualbox的端口转发功能</title><link href="https://zenuo.github.io/2021/07/01/VirtualBox%E7%9A%84%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91%E5%8A%9F%E8%83%BD.html" rel="alternate" type="text/html" title="Virtualbox的端口转发功能" /><published>2021-07-01T00:00:00+00:00</published><updated>2021-07-01T00:00:00+00:00</updated><id>https://zenuo.github.io/2021/07/01/VirtualBox%E7%9A%84%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91%E5%8A%9F%E8%83%BD</id><content type="html" xml:base="https://zenuo.github.io/2021/07/01/VirtualBox%E7%9A%84%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91%E5%8A%9F%E8%83%BD.html">&lt;p&gt;在使用VirtualBox时，若需要从&lt;strong&gt;主机&lt;/strong&gt;访问&lt;strong&gt;虚拟机&lt;/strong&gt;，我通常的做法是添加一个&lt;strong&gt;host only&lt;/strong&gt;的网络适配器，然后通过这个适配器的IP访问。&lt;/p&gt;
+
+&lt;p&gt;但同样的需求也可通过配置&lt;strong&gt;NAT&lt;/strong&gt;适配器上的端口转发规则来实现，更加轻量化。&lt;/p&gt;
+
+&lt;p&gt;例如，我需要访问虚拟机的22和53124端口，配置如下，即可通过访问&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;127.0.0.1的53124端口&lt;/code&gt;来访问&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;虚拟机的53124&lt;/code&gt;端口，通过访问&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;127.0.0.1的53125端口&lt;/code&gt;来访问&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;虚拟机的22端口&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/9968ed5620001956b15127d9.png&quot; alt=&quot;9968ed5620001956b15127d9.png&quot; /&gt;&lt;/p&gt;</content><author><name></name></author><summary type="html">在使用VirtualBox时，若需要从主机访问虚拟机，我通常的做法是添加一个host only的网络适配器，然后通过这个适配器的IP访问。</summary></entry><entry><title type="html">Easyconnect in dokcer</title><link href="https://zenuo.github.io/2021/05/01/EasyConnect-in-Dokcer.html" rel="alternate" type="text/html" title="Easyconnect in dokcer" /><published>2021-05-01T00:00:00+00:00</published><updated>2021-05-01T00:00:00+00:00</updated><id>https://zenuo.github.io/2021/05/01/EasyConnect%20in%20Dokcer</id><content type="html" xml:base="https://zenuo.github.io/2021/05/01/EasyConnect-in-Dokcer.html">&lt;p&gt;&lt;a href=&quot;https://www.sangfor.com/en/products/infrastructure/easyconnect&quot;&gt;Sangfor EasyConnect&lt;/a&gt;是一款专有的VPN解决方案，官方支持多种平台的客户端；但该软件目前存在以下的几种行为：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;配置一个开机自动启动的守护进程&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;EasyMonitor&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;安装CA根证书&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;为了避免上述两种情况对本地系统造成不良影响，尝试寻找方法将EasyConnect运行在受控的容器内。所幸在&lt;a href=&quot;https://github.com/Hagb/docker-easyconnect&quot;&gt;Hagb/docker-easyconnect&lt;/a&gt;找到了，该仓库介绍了一种在Docker内运行EasyConnect的方案。通过该方案，在此记录下我的实践过程。&lt;/p&gt;
+
+&lt;h2 id=&quot;1-运行容器&quot;&gt;1 运行容器&lt;/h2&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;在&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Docker宿主机&lt;/code&gt;为&lt;a href=&quot;https://alpinelinux.org/&quot;&gt;Alpine Linux&lt;/a&gt;时，映射到&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Docker宿主机&lt;/code&gt;的端口，无法在宿主机的外部网络（例如宿主机所在的局域网）访问，但可以在宿主机本地访问；&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;创建文件用于保存登录凭证，以实现auto login：&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ touch ~/.easyconn
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;从Docker镜像&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hagb/docker-easyconnect:cli&lt;/code&gt;创建一个名称为&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;easyconnect&lt;/code&gt;的容器，并且将&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;容器的1080端口&lt;/code&gt;映射到&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Docker宿主机的1080端口&lt;/code&gt;（1080只是一个示例值，可以是其他的；敲黑板，后续会用到）：&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ docker run --name easyconnect --device /dev/net/tun --cap-add NET_ADMIN -ti -v $HOME/.easyconn:/root/.easyconn -e EC_VER=7.6.8 -e EXIT=1 -p 1080:1080 hagb/docker-easyconnect:cli
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;根据提示输入&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;服务器URL&lt;/code&gt;、&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;用户名&lt;/code&gt;、&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;密码&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;注意服务器URL末尾不需要反斜线（&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/&lt;/code&gt;），例如正确的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;https://vpn_host&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;如果成功登入，则会提示：&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;user &quot;xx&quot; login successfully!
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;2-浏览器over-proxy&quot;&gt;2 浏览器over proxy&lt;/h2&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;浏览器运行时动态配置代理，可以通过&lt;a href=&quot;https://github.com/FelisCatus/SwitchyOmega&quot;&gt;SwitchyOmega&lt;/a&gt;来实现，须将Proxy设置为&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Docker宿主机的1080端口&lt;/code&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;浏览器启动时指定代理，若您是使用&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Chromium&lt;/code&gt;相关（比如Chrome），则可通过命令行启动：&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ chromium —proxy-server=socks5://${Docker宿主机IP}:1080
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;3-ssh-over-proxy&quot;&gt;3 ssh over proxy&lt;/h2&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;若您是使用Arch Linux，需要安装openbsd-netcat，而不是gnu-netcat&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;编辑ssh配置文件&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;~/.ssh/config&lt;/code&gt;，添加内容：&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Host 10.1.*
+    ProxyCommand /usr/bin/nc -x ${Docker宿主机IP}:1080 %h %p
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;使得在通过ssh访问匹配&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;10.1.*&lt;/code&gt;（仅仅是示例，需要根据您的实际使用情况调整）的主机时，通过代理&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;${Docker宿主机IP}:1080&lt;/code&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;4-git-over-proxy&quot;&gt;4 git over proxy&lt;/h2&gt;
+
+&lt;p&gt;分为两种情况：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;若git仓库的remote是&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ssh&lt;/code&gt;协议，编辑ssh配置文件&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;~/.ssh/config&lt;/code&gt;，添加内容：&lt;/p&gt;
+
+    &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; Host ${git仓库域名}
+     ProxyCommand /usr/bin/nc -x ${Docker宿主机IP}:1080 %h %p
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;若git仓库的remote是&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;http&lt;/code&gt;或者&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;https&lt;/code&gt;协议，那么在与remote交互时，为git命令指定变量&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;http_proxy&lt;/code&gt;，例如：&lt;/p&gt;
+
+    &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; $ https_proxy=socks5://localhost:1080 git clone http://${git仓库域名}/x/x.git
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;5-mysql-client-over-proxy&quot;&gt;5 MySQL client over proxy&lt;/h2&gt;
+
+&lt;p&gt;因为&lt;a href=&quot;https://dev.mysql.com/doc/refman/8.0/en/mysql.html&quot;&gt;原生MySQL client&lt;/a&gt;不支持socks5代理，可通过其他客户端来达到目的；例如&lt;a href=&quot;https://www.mycli.net/&quot;&gt;mycli&lt;/a&gt;，但mycli目前没有支持socks5代理，所以也需要采取一些额外的措施。&lt;/p&gt;
+
+&lt;p&gt;因为mycli基于Python实现，故可通过&lt;a href=&quot;https://pypi.org/project/PySocks/&quot;&gt;PySocks&lt;/a&gt;来对整个标准库进行猴补丁(Monkey patch)，使所有的socket都通过一个代理建立。&lt;/p&gt;
+
+&lt;p&gt;假设您是通过brew安装的mycli，那么需要修改&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/usr/local/bin/mycli&lt;/code&gt;，添加内容：&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;socket&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;socks&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;ip&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'${Docker宿主机IP}'&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;port&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1080&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;socks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;setdefaultproxy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;socks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;PROXY_TYPE_SOCKS5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ip&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;port&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;socket&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;socket&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;socks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;socksocket&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;保存即可使用。&lt;/p&gt;
+
+&lt;h2 id=&quot;6-参考&quot;&gt;6 参考&lt;/h2&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;https://zhuanlan.zhihu.com/p/259634641&lt;/li&gt;
+  &lt;li&gt;https://www.sangfor.com/en/products/infrastructure/easyconnect&lt;/li&gt;
+  &lt;li&gt;https://github.com/Hagb/docker-easyconnect&lt;/li&gt;
+  &lt;li&gt;https://docs.docker.com/config/containers/container-networking/&lt;/li&gt;
+  &lt;li&gt;https://superuser.com/questions/454210/how-can-i-use-ssh-with-a-socks-5-proxy&lt;/li&gt;
+  &lt;li&gt;https://pypi.org/project/PySocks/&lt;/li&gt;
+  &lt;li&gt;https://www.mycli.net/&lt;/li&gt;
+  &lt;li&gt;https://dev.mysql.com/doc/refman/8.0/en/mysql.html&lt;/li&gt;
+&lt;/ol&gt;</content><author><name></name></author><summary type="html">Sangfor EasyConnect是一款专有的VPN解决方案，官方支持多种平台的客户端；但该软件目前存在以下的几种行为：</summary></entry><entry><title type="html">如何使用gdb调试nginx</title><link href="https://zenuo.github.io/2021/02/28/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8GDB%E8%B0%83%E8%AF%95Nginx.html" rel="alternate" type="text/html" title="如何使用gdb调试nginx" /><published>2021-02-28T00:00:00+00:00</published><updated>2021-02-28T00:00:00+00:00</updated><id>https://zenuo.github.io/2021/02/28/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8GDB%E8%B0%83%E8%AF%95Nginx</id><content type="html" xml:base="https://zenuo.github.io/2021/02/28/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8GDB%E8%B0%83%E8%AF%95Nginx.html">&lt;p&gt;本文主要描述在&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CentOS 7&lt;/code&gt;下，使用&lt;a href=&quot;https://www.gnu.org/s/gdb/&quot;&gt;gdb&lt;/a&gt;调试Nginx&lt;/p&gt;
+
+&lt;h1 id=&quot;1-准备&quot;&gt;1 准备&lt;/h1&gt;
+
+&lt;p&gt;下载nginx及其依赖项目源码，并解压：&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;curl &lt;span class=&quot;nt&quot;&gt;-OL&lt;/span&gt; https://mirrors.sohu.com/nginx/nginx-1.19.7.tar.gz
+&lt;span class=&quot;nb&quot;&gt;tar &lt;/span&gt;zxf nginx-1.19.7.tar.gz
+curl &lt;span class=&quot;nt&quot;&gt;-OL&lt;/span&gt; https://ftp.pcre.org/pub/pcre/pcre-8.44.tar.gz
+&lt;span class=&quot;nb&quot;&gt;tar &lt;/span&gt;zxf pcre-8.44.tar.gz
+curl &lt;span class=&quot;nt&quot;&gt;-OL&lt;/span&gt; http://zlib.net/zlib-1.2.11.tar.gz
+&lt;span class=&quot;nb&quot;&gt;tar &lt;/span&gt;zxf zlib-1.2.11.tar.gz
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;安装构建工具：&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;yum &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;gcc make
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;构建nginx:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; /opt/app/nginx-1.19.7
+./configure &lt;span class=&quot;nt&quot;&gt;--with-debug&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--with-cc-opt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'-O0 -g'&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--with-pcre&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/opt/app/pcre-8.44 &lt;span class=&quot;nt&quot;&gt;--with-zlib&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/opt/app/zlib-1.2.11 &lt;span class=&quot;nt&quot;&gt;--prefix&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/opt/app/nginx
+make &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; make &lt;span class=&quot;nb&quot;&gt;install&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;修改nginx配置文件&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/opt/app/nginx/conf/nginx.conf&lt;/code&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# 最好是1，便于断点调试
+worker_processes  1;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    sendfile        on;
+    keepalive_timeout  65;
+    server {
+        listen       8000;
+        server_name  localhost;
+
+        location / {
+            root   html;
+            index  index.html index.htm;
+        }
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;启动：&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/opt/app/nginx/sbin/nginx
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;使用curl访问:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;curl &lt;span class=&quot;nt&quot;&gt;-v&lt;/span&gt; localhost:8080
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;若能返回&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;200 OK&lt;/code&gt;，则已准备好调试环境&lt;/p&gt;
+
+&lt;h1 id=&quot;2-调试&quot;&gt;2 调试&lt;/h1&gt;
+
+&lt;p&gt;安装调试工具&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;yum &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;gdb
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;找到nginx worker的进程号：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;为什么是&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;worker&lt;/code&gt;进程号呢？因为在nginx架构中，进程类型主要是&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;master&lt;/code&gt;和&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;worker&lt;/code&gt;两类，前者主要负责配置解析、重载配置、维护work进程组等职责，而后者才是接收、处理来自客户端的连接。更多&lt;a href=&quot;2019/01/31/nginx架构.html&quot;&gt;移步&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ps &lt;span class=&quot;nt&quot;&gt;-ef&lt;/span&gt; | &lt;span class=&quot;nb&quot;&gt;grep&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'nginx: worker process'&lt;/span&gt; | &lt;span class=&quot;nb&quot;&gt;grep&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-v&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;grep&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;例如:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[newad@localhost nginx]$ ps -ef | grep 'nginx: worker process' | grep -v grep
+newad    12362 12361  0 17:55 ?        00:00:00 nginx: worker process
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;可知进程号是&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;12362&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;用gdb连接上nginx worker进程：&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;gdb &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; 12362
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;若输出的末尾是&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;(gdb)&lt;/code&gt;字样，则连接成功&lt;/p&gt;
+
+&lt;p&gt;在文件&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ngx_http_core_module.c&lt;/code&gt;的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;1816&lt;/code&gt;行设置断点：&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;(gdb) break src/http/ngx_http_core_module.c:1816
+Breakpoint 1 at 0x4d4944: file src/http/ngx_http_core_module.c, line 1816.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;继续运行进程：&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;(gdb) continue
+Continuing.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;新开一个ssh会话，使用curl发起访问：&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;curl &lt;span class=&quot;nt&quot;&gt;-v&lt;/span&gt; localhost:8080
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;回到gdb的会话，可以发现程序在刚刚设置的断点停住了：&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Breakpoint 1, ngx_http_send_header (r=0x1f7db20) at src/http/ngx_http_core_module.c:1816
+1816	    if (r-&amp;gt;post_action) {
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;可以通过组合键&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ctrl x&lt;/code&gt;和&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ctrl a&lt;/code&gt;进入&lt;a href=&quot;http://www.cs.fsu.edu/~baker/ada/gnat/html/gdb_23.html&quot;&gt;TUI模式&lt;/a&gt;，实现同时查看源代码和控制台，如图：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/a8287077f7adc3f2f39b8f2b.png&quot; alt=&quot;a8287077f7adc3f2f39b8f2b.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;使用&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;p&lt;/code&gt;命令，求值（打印）表达式：&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;(gdb) p r-&amp;gt;request_line
+$2 = {len = 14, data = 0x1f844d8 &quot;GET / HTTP/1.1\r\nHost&quot;}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;使用&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ptype&lt;/code&gt;命令，打印struct或者class的定义：&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;(gdb) ptype ngx_http_request_body_t
+type = struct {
+    ngx_temp_file_t *temp_file;
+    ngx_chain_t *bufs;
+    ngx_buf_t *buf;
+    off_t rest;
+    off_t received;
+    ngx_chain_t *free;
+    ngx_chain_t *busy;
+    ngx_http_chunked_t *chunked;
+    ngx_http_client_body_handler_pt post_handler;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;使用&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;continue&lt;/code&gt;命令，继续运行进程。&lt;/p&gt;
+
+&lt;h1 id=&quot;3-参考&quot;&gt;3 参考&lt;/h1&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;http://www.cs.fsu.edu/~baker/ada/gnat/html/gdb_23.html&lt;/li&gt;
+  &lt;li&gt;https://stackoverflow.com/questions/10115540/gdb-split-view-with-code&lt;/li&gt;
+  &lt;li&gt;https://docs.nginx.com/nginx/admin-guide/monitoring/debugging/#nginx-and-debugging-symbols&lt;/li&gt;
+  &lt;li&gt;https://stackoverflow.com/questions/1768620/how-do-i-show-what-fields-a-struct-has-in-gdb&lt;/li&gt;
+&lt;/ul&gt;</content><author><name></name></author><summary type="html">本文主要描述在CentOS 7下，使用gdb调试Nginx</summary></entry><entry><title type="html">Xcode中创建swift package并在target中使用</title><link href="https://zenuo.github.io/2020/10/31/Xcode%E4%B8%AD%E5%88%9B%E5%BB%BASwift-Package%E5%B9%B6%E5%9C%A8Target%E4%B8%AD%E4%BD%BF%E7%94%A8.html" rel="alternate" type="text/html" title="Xcode中创建swift package并在target中使用" /><published>2020-10-31T00:00:00+00:00</published><updated>2020-10-31T00:00:00+00:00</updated><id>https://zenuo.github.io/2020/10/31/Xcode%E4%B8%AD%E5%88%9B%E5%BB%BASwift%20Package%E5%B9%B6%E5%9C%A8Target%E4%B8%AD%E4%BD%BF%E7%94%A8</id><content type="html" xml:base="https://zenuo.github.io/2020/10/31/Xcode%E4%B8%AD%E5%88%9B%E5%BB%BASwift-Package%E5%B9%B6%E5%9C%A8Target%E4%B8%AD%E4%BD%BF%E7%94%A8.html">&lt;p&gt;首先在Xcode上创建一个&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Swift Package&lt;/code&gt;，菜单是&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;File&lt;/code&gt; / &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;New&lt;/code&gt; / &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Swift Package&lt;/code&gt;：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/9e9f613125350f50b735061e.jpg&quot; alt=&quot;保存&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;选择保存路径：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/7d3e86e2675b37316f5ba398.png&quot; alt=&quot;7d3e86e2675b37316f5ba398.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;注意选择&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Add to&lt;/code&gt;：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/ab0e51ad624bc743d84f5cb4.jpg&quot; alt=&quot;ab0e51ad624bc743d84f5cb4.jpg&quot; /&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;选择&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Project&lt;/code&gt; / &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TARGETS&lt;/code&gt;，然后选择需要使用我们刚才创建的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Swift Package&lt;/code&gt;的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Target&lt;/code&gt;，然后选择&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;General&lt;/code&gt;栏，在&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Framworks, Libraries, and Embedded Content&lt;/code&gt;中添加Package，如图：&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/481c498dde6159ffedb050a9.png&quot; alt=&quot;481c498dde6159ffedb050a9.png&quot; /&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;选择&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Build Phases&lt;/code&gt;，在&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Dependencies&lt;/code&gt;添加Package，如图：&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/724df656b457426f5f214ecd.png&quot; alt=&quot;724df656b457426f5f214ecd.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;没有其他问题的话，您的Target能成功构建了。&lt;/p&gt;
+
+&lt;h2 id=&quot;reference&quot;&gt;Reference&lt;/h2&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;a href=&quot;https://developer.apple.com/documentation/swift_packages/organizing_your_code_with_local_packages&quot;&gt;Organizing Your Code with Local Packages&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://developer.apple.com/documentation/xcode/adding_package_dependencies_to_your_app&quot;&gt;Adding Package Dependencies to Your App&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;</content><author><name></name></author><summary type="html">首先在Xcode上创建一个Swift Package，菜单是File / New / Swift Package：</summary></entry><entry><title type="html">协变、逆变与不变</title><link href="https://zenuo.github.io/2020/10/19/%E5%8D%8F%E5%8F%98-%E9%80%86%E5%8F%98%E4%B8%8E%E4%B8%8D%E5%8F%98.html" rel="alternate" type="text/html" title="协变、逆变与不变" /><published>2020-10-19T00:00:00+00:00</published><updated>2020-10-19T00:00:00+00:00</updated><id>https://zenuo.github.io/2020/10/19/%E5%8D%8F%E5%8F%98%E3%80%81%E9%80%86%E5%8F%98%E4%B8%8E%E4%B8%8D%E5%8F%98</id><content type="html" xml:base="https://zenuo.github.io/2020/10/19/%E5%8D%8F%E5%8F%98-%E9%80%86%E5%8F%98%E4%B8%8E%E4%B8%8D%E5%8F%98.html">&lt;h2 id=&quot;formal-definition&quot;&gt;Formal definition&lt;/h2&gt;
+
+&lt;p&gt;摘自&lt;a href=&quot;https://176.122.157.231:5004/wiki/Covariance_and_contravariance_(computer_science)&quot;&gt;Covariance_and_contravariance_(computer_science)&lt;/a&gt;：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Within the type system of a programming language, a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;typing rule&lt;/code&gt; or a&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt; type constructor&lt;/code&gt; is:&lt;/p&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;em&gt;covariant&lt;/em&gt; if it preserves the &lt;a href=&quot;https://176.122.157.231:5004/wiki/Subtype&quot;&gt;rdering of types (≤)&lt;/a&gt;, which orders types from more specific to more generic;&lt;/li&gt;
+    &lt;li&gt;&lt;em&gt;contravariant&lt;/em&gt; if it reverses this ordering;&lt;/li&gt;
+    &lt;li&gt;bivariant if both of these apply (i.e., both &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;I&amp;lt;A&amp;gt;&lt;/code&gt; ≤ &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;I&amp;lt;B&amp;gt;&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;I&amp;lt;B&amp;gt;&lt;/code&gt; ≤ &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;I&amp;lt;A&amp;gt;&lt;/code&gt; at the same time);[1]&lt;/li&gt;
+    &lt;li&gt;variant if covariant, contravariant or bivariant;&lt;/li&gt;
+    &lt;li&gt;invariant or nonvariant if not variant.&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;协变&quot;&gt;协变&lt;/h2&gt;
+
+&lt;p&gt;首先考虑数组类型构造器： 从Animal类型，可以得到&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Animal[]&lt;/code&gt;（“animal数组”）。 是否可以把它当作&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;协变：a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Cat[]&lt;/code&gt; is an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Animal[]&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;逆变：an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Animal[]&lt;/code&gt; is  a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Cat[]&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;不变：an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Animal[]&lt;/code&gt; is not a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Cat[]&lt;/code&gt; and a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Cat[]&lt;/code&gt; is not an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Animal[]&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;java中的协变数组&quot;&gt;Java中的协变数组&lt;/h3&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// a 是单元素的 String 数组&lt;/span&gt;
+&lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;];&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// b 是 Object 的数组&lt;/span&gt;
+&lt;span class=&quot;nc&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// 向 b 中赋一个整数。如果 b 确实是 Object 的数组，这是可能的；然而它其实是个 String 的数组，因此会发生 java.lang.ArrayStoreException&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;oop中的继承&quot;&gt;OOP中的继承&lt;/h2&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;当一个子类&lt;a href=&quot;https://176.122.157.231:3457/wiki/重写&quot;&gt;重写&lt;/a&gt;一个超类的方法时，编译器必须检查重写方法是否具有正确的类型。虽然一些语言要求类型必须与超类相同，但允许重写方法有一个“更好的”类型也是类型安全的。对于大部分的方法子类化规则来说，这要求返回值的类型必须更具体，也就是&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;协变&lt;/code&gt;，而且接受更宽泛的参数类型，也就是&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;逆变&lt;/code&gt;。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/be914bff8d5611a54aa47597.png&quot; alt=&quot;be914bff8d5611a54aa47597.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;以下讨论基于Java语法，&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;抽象类C&lt;/code&gt;如下：&lt;/p&gt;
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;jshell&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;abstract&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;C&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+   &lt;span class=&quot;o&quot;&gt;...&amp;gt;&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;abstract&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;C&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;foo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;C&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+   &lt;span class=&quot;o&quot;&gt;...&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;replaced&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;C&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;返回值的协变&quot;&gt;返回值的协变&lt;/h3&gt;
+
+&lt;p&gt;在允许协变返回值的语言中, 子类可以重写&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;foo&lt;/code&gt;方法返回一个更具体的类型：&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;jshell&amp;gt; class D extends C {
+   ...&amp;gt; @Override
+   ...&amp;gt; D foo(C c) {return this;}
+   ...&amp;gt; }
+|  created class D
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;方法参数的协变与逆变&quot;&gt;方法参数的协变与逆变&lt;/h3&gt;
+
+&lt;p&gt;允许参数协变、逆变的面向对象语言并不多——Java会把它当成一个函数重载：&lt;/p&gt;
+
+&lt;p&gt;协变：&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;jshell&amp;gt; class E extends C {
+   ...&amp;gt; @Override
+   ...&amp;gt; C foo(E e) {return this;}
+   ...&amp;gt; }
+|  Error:
+|  E is not abstract and does not override abstract method foo(C) in C
+|  class E extends C {
+|  ^------------------...
+|  Error:
+|  method does not override or implement a method from a supertype
+|  @Override
+|  ^-------^
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;逆变：&lt;/p&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;jshell&amp;gt; class F extends C {
+   ...&amp;gt; @Override
+   ...&amp;gt; C foo(Object o) {return this;}
+   ...&amp;gt; }
+|  Error:
+|  F is not abstract and does not override abstract method foo(C) in C
+|  class F extends C {
+|  ^------------------...
+|  Error:
+|  method does not override or implement a method from a supertype
+|  @Override
+|  ^-------^
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;summary-of-variance-and-inheritance&quot;&gt;Summary of variance and inheritance&lt;/h4&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;语言&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;Parameter type&lt;/th&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;Return type&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;C++ （自1998年）, Java (自J2SE 5.0), D&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;不变&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;协变&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;C#&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;不变&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;不变&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id=&quot;参考&quot;&gt;参考&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://176.122.157.231:5004/wiki/Covariance_and_contravariance_(computer_science)&quot;&gt;Covariance and contravariance&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content><author><name></name></author><summary type="html">Formal definition</summary></entry><entry><title type="html">基于xecjk的latex中文书写</title><link href="https://zenuo.github.io/2020/07/19/%E5%9F%BA%E4%BA%8ExeCJK%E7%9A%84LaTex%E4%B8%AD%E6%96%87%E4%B9%A6%E5%86%99.html" rel="alternate" type="text/html" title="基于xecjk的latex中文书写" /><published>2020-07-19T00:00:00+00:00</published><updated>2020-07-19T00:00:00+00:00</updated><id>https://zenuo.github.io/2020/07/19/%E5%9F%BA%E4%BA%8ExeCJK%E7%9A%84LaTex%E4%B8%AD%E6%96%87%E4%B9%A6%E5%86%99</id><content type="html" xml:base="https://zenuo.github.io/2020/07/19/%E5%9F%BA%E4%BA%8ExeCJK%E7%9A%84LaTex%E4%B8%AD%E6%96%87%E4%B9%A6%E5%86%99.html">&lt;h3 id=&quot;1-安装环境&quot;&gt;1 安装环境&lt;/h3&gt;
+
+&lt;p&gt;首先，您需要在本地安装一个TeX发行版，您可以选择大而全的&lt;a href=&quot;https://tug.org/mactex/mactex-download.html&quot;&gt;MacTeX&lt;/a&gt;，为了节省本地空间，此处选择更小的发行版&lt;a href=&quot;http://tug.org/cgi-bin/mactex-download/BasicTeX.pkg&quot;&gt;BasicTeX&lt;/a&gt;；若网速过慢，你可以选择国内院校提供的镜像，比如&lt;a href=&quot;https://mirrors.tuna.tsinghua.edu.cn/ctan/systems/mac/mactex/&quot;&gt;tuna（清华大学开源软件镜像站）&lt;/a&gt;；下载完成之后，运行程序，一路&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;continue&lt;/code&gt;即可：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/63e8f062441750449249892f.png&quot; alt=&quot;63e8f062441750449249892f.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;其次，使用&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;tlmgr(the native TeX Live Manager)&lt;/code&gt;安装&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ctex&lt;/code&gt;和&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;xecjk&lt;/code&gt;：&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;tlmgr &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;ctex xecjk
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;2-hello-world&quot;&gt;2 Hello World&lt;/h3&gt;
+
+&lt;p&gt;创建一个纯文本文件&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hello_world.tex&lt;/code&gt;，内容为：&lt;/p&gt;
+
+&lt;div class=&quot;language-tex highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;\documentclass&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;article&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;\usepackage&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;xeCJK&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;\setCJKmainfont&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;STSong&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;\begin{document}&lt;/span&gt;
+Hello World!&lt;span class=&quot;k&quot;&gt;\\&lt;/span&gt;
+天地玄黃宇宙洪荒日月盈仄
+&lt;span class=&quot;nt&quot;&gt;\end{document}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;保存文件，使用&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;xelatex&lt;/code&gt;命令，输出pdf文件：&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;xelatex hello_world.tex
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;如果不出问题的话，输出的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hello_world.pdf&lt;/code&gt;文件将会是：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/9a2750e5d182f628673ee7f6.png&quot; alt=&quot;9a2750e5d182f628673ee7f6.png&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;3-参考&quot;&gt;3 参考&lt;/h3&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;a href=&quot;https://tug.org/mactex/morepackages.html&quot;&gt;** Smaller Download **&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://jdhao.github.io/2018/03/29/latex-chinese.zh/&quot;&gt;全面总结如何在 LaTeX 中使用中文 (2020 最新版) - jdhao’s blog&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://tex.stackexchange.com/questions/376420/include-chinese-characters-into-article-in-xelatex&quot;&gt;Include Chinese characters into article in Xelatex&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;</content><author><name></name></author><category term="LaTex" /><summary type="html">1 安装环境</summary></entry><entry><title type="html">读取mysql的binlog</title><link href="https://zenuo.github.io/2020/07/12/%E8%AF%BB%E5%8F%96MySQL%E7%9A%84binlog.html" rel="alternate" type="text/html" title="读取mysql的binlog" /><published>2020-07-12T00:00:00+00:00</published><updated>2020-07-12T00:00:00+00:00</updated><id>https://zenuo.github.io/2020/07/12/%E8%AF%BB%E5%8F%96MySQL%E7%9A%84binlog</id><content type="html" xml:base="https://zenuo.github.io/2020/07/12/%E8%AF%BB%E5%8F%96MySQL%E7%9A%84binlog.html">&lt;p&gt;配置&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;~/.my.cnf&lt;/code&gt;，开启binlog:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[mysqld]
+server-id=master-01
+log-bin=mysql-bin
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;假设需要读取的binlog的文件是&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mysql-bin.000001&lt;/code&gt;，那么用下面命令即可根据开始结束时间输出可读日志：&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;mysqlbinlog &lt;span class=&quot;nt&quot;&gt;--base64-output&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;DECODE-ROWS &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;-v&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;--start-datetime&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'2020-07-12 21:33:10'&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;--stop-datetime&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'2020-07-12 21:40:10'&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+mysql-bin.000001
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;输出如下：&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/*!50530 SET @@SESSION.PSEUDO_SLAVE_MODE=1*/;
+/*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
+DELIMITER /*!*/;
+# at 4
+#200712 21:24:18 server id 0  end_log_pos 123 CRC32 0x0d383a89 	Start: binlog v 4, server v 5.7.29-log created 200712 21:24:18 at startup
+ROLLBACK/*!*/;
+# at 672
+#200712 21:33:44 server id 0  end_log_pos 737 CRC32 0x71a595ed 	Anonymous_GTID	last_committed=2	sequence_number=3	rbr_only=yes
+/*!50718 SET TRANSACTION ISOLATION LEVEL READ COMMITTED*//*!*/;
+SET @@SESSION.GTID_NEXT= 'ANONYMOUS'/*!*/;
+# at 737
+#200712 21:33:44 server id 0  end_log_pos 809 CRC32 0xb207c15c 	Query	thread_id=2	exec_time=0	error_code=0
+SET TIMESTAMP=1594560824/*!*/;
+SET @@session.pseudo_thread_id=2/*!*/;
+SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=0, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+SET @@session.sql_mode=1436549152/*!*/;
+SET @@session.auto_increment_increment=1, @@session.auto_increment_offset=1/*!*/;
+/*!\C utf8mb4 *//*!*/;
+SET @@session.character_set_client=45,@@session.collation_connection=45,@@session.collation_server=45/*!*/;
+SET @@session.lc_time_names=0/*!*/;
+SET @@session.collation_database=DEFAULT/*!*/;
+BEGIN
+/*!*/;
+# at 809
+#200712 21:33:44 server id 0  end_log_pos 860 CRC32 0x6aa48d0d 	Table_map: `test`.`int_test` mapped to number 107
+# at 860
+#200712 21:33:44 server id 0  end_log_pos 900 CRC32 0xb6d5df66 	Write_rows: table id 107 flags: STMT_END_F
+### INSERT INTO `test`.`int_test`
+### SET
+###   @1=8
+# at 900
+#200712 21:33:44 server id 0  end_log_pos 931 CRC32 0x5b5c9d33 	Xid = 15
+COMMIT/*!*/;
+# at 931
+#200712 21:35:32 server id 0  end_log_pos 954 CRC32 0x95c3815f 	Stop
+SET @@SESSION.GTID_NEXT= 'AUTOMATIC' /* added by mysqlbinlog */ /*!*/;
+DELIMITER ;
+# End of log file
+/*!50003 SET COMPLETION_TYPE=@OLD_COMPLETION_TYPE*/;
+/*!50530 SET @@SESSION.PSEUDO_SLAVE_MODE=0*/;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h1 id=&quot;参考&quot;&gt;参考&lt;/h1&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;a href=&quot;https://dev.mysql.com/doc/refman/5.7/en/replication-howto-masterbaseconfig.html&quot;&gt;16.1.2.1 Setting the Replication Master Configuration&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://dev.mysql.com/doc/refman/5.7/en/mysqlbinlog-row-events.html&quot;&gt;4.6.7.2 mysqlbinlog Row Event Display&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;</content><author><name></name></author><summary type="html">配置~/.my.cnf，开启binlog:</summary></entry><entry><title type="html">基于v2ray的科学上网</title><link href="https://zenuo.github.io/2020/07/11/%E5%9F%BA%E4%BA%8Ev2ray%E7%9A%84%E7%A7%91%E5%AD%A6%E4%B8%8A%E7%BD%91.html" rel="alternate" type="text/html" title="基于v2ray的科学上网" /><published>2020-07-11T00:00:00+00:00</published><updated>2020-07-11T00:00:00+00:00</updated><id>https://zenuo.github.io/2020/07/11/%E5%9F%BA%E4%BA%8Ev2ray%E7%9A%84%E7%A7%91%E5%AD%A6%E4%B8%8A%E7%BD%91</id><content type="html" xml:base="https://zenuo.github.io/2020/07/11/%E5%9F%BA%E4%BA%8Ev2ray%E7%9A%84%E7%A7%91%E5%AD%A6%E4%B8%8A%E7%BD%91.html">&lt;p&gt;本篇笔记尝试从&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;v2ray是什么&lt;/code&gt;、&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;浅谈工作原理&lt;/code&gt;、&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;运行服务端&lt;/code&gt;、&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;运行客户端&lt;/code&gt;四个方面，通过少许命令和配置内容，让我们能迅速上手使用v2ray。&lt;/p&gt;
+
+&lt;h1 id=&quot;v2ray是什么&quot;&gt;v2ray是什么？&lt;/h1&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;a href=&quot;https://www.v2ray.com/&quot;&gt;Project V&lt;/a&gt; 是一个工具集合，它可以帮助你打造专属的基础通信网络。Project V 的核心工具称为V2Ray，其主要负责网络协议和功能的实现，与其它 Project V 通信。V2Ray 可以单独运行，也可以和其它工具配合，以提供简便的操作流程。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;当然，&lt;a href=&quot;https://github.com/v2ray/v2ray-core&quot;&gt;v2ray&lt;/a&gt;是开源的，主要特性如下：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;多入口多出口: 一个 V2Ray 进程可并发支持多个入站和出站协议，每个协议可独立工作。&lt;/li&gt;
+  &lt;li&gt;可定制化路由: 入站流量可按配置由不同的出口发出。轻松实现按区域或按域名分流，以达到最优的网络性能。&lt;/li&gt;
+  &lt;li&gt;多协议支持: V2Ray 可同时开启多个协议支持，包括 Socks、HTTP、Shadowsocks、VMess 等。每个协议可单独设置传输载体，比如 TCP、mKCP、WebSocket 等。&lt;/li&gt;
+  &lt;li&gt;隐蔽性: V2Ray 的节点可以伪装成正常的网站（HTTPS），将其流量与正常的网页流量混淆，以避开第三方干扰。&lt;/li&gt;
+  &lt;li&gt;反向代理: 通用的反向代理支持，可实现内网穿透功能。&lt;/li&gt;
+  &lt;li&gt;多平台支持: 原生支持所有常见平台，如 Windows、Mac OS、Linux，并已有第三方支持移动平台。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&quot;浅谈工作原理&quot;&gt;浅谈工作原理&lt;/h1&gt;
+
+&lt;p&gt;使用方式上，&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;v2ray&lt;/code&gt;与其他代理&lt;a href=&quot;https://github.com/shadowsocks/shadowsocks&quot;&gt;shadowsocks&lt;/a&gt;工具类似，需要运行&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;服务端&lt;/code&gt;和&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;客户端&lt;/code&gt;两个实例(instance)。&lt;/p&gt;
+
+&lt;p&gt;常见的场景里，客户端运行在PC、手机等终端设备，服务端运行在云主机等服务器上。例如，我们若要在手机访问&lt;a href=&quot;https://www.google.com&quot;&gt;Google搜索引擎&lt;/a&gt;时，如果手机所在的网络禁用了Google的IP和域名，那么手机是无法直接访问的，需要由一个「手机可以访问的中间网络节点，且该节点能访问Google搜索引擎」的代理来起到一个桥梁的作用：手机的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;浏览器&lt;/code&gt;把&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;HTTP请求&lt;/code&gt;发送到&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;代理&lt;/code&gt;，&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;代理&lt;/code&gt;把&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;HTTP请求&lt;/code&gt;发送到&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Google搜索引擎&lt;/code&gt;，&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Google搜索引擎&lt;/code&gt;的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;HTTP响应&lt;/code&gt;会顺着这条路线最终返回给终端设备的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;浏览器&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;在这里，v2ray和shadowsocks等网络工具就扮演了代理这个角色，但仅仅做网络流量代理是不够的，因为网络流量由网络协议承载，若协议的特征能被防火墙识别，被识别就意味着防火墙有理由把我们的代理IP添加到黑名单中，导致无法终端设备无法访问这个代理；所以网络工具还需要支持不易被识别的网络协议，这些协议往往不被浏览器等应用支持，需要由网络工具自己来支持，所以用作代理的网络工具需要运行&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;客户端&lt;/code&gt;和&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;服务端&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;浏览器等终端应用通过HTTP、Socks5等常见的网络协议把流量发送给代理&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;客户端&lt;/code&gt;，&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;客户端&lt;/code&gt;再通过&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;特定的协议&lt;/code&gt;将流量发送给代理&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;服务端&lt;/code&gt;；&lt;/p&gt;
+
+&lt;p&gt;在v2ray的设计中，终端应用到代理&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;客户端&lt;/code&gt;的接口被称为&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Inbound&lt;/code&gt;（入口），代理&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;服务端&lt;/code&gt;到实际目的地（例如Google搜索引擎）的接口被称为&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Outbound&lt;/code&gt;（出口）。&lt;/p&gt;
+
+&lt;h1 id=&quot;运行服务端&quot;&gt;运行服务端&lt;/h1&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;摘自&lt;a href=&quot;https://www.v2ray.com/&quot;&gt;Project V官网&lt;/a&gt;，并假设你的服务端运行在Linux操作系统上。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;1-下载-v2ray&quot;&gt;1 下载 V2Ray&lt;/h2&gt;
+
+&lt;p&gt;预编译的压缩包可以在如下几个站点找到：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Github Release: github.com/v2ray/v2ray-core&lt;/li&gt;
+  &lt;li&gt;Github 分流: github.com/v2ray/dist&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;压缩包均为 zip 格式，找到对应平台的压缩包，下载解压即可使用。&lt;/p&gt;
+
+&lt;h2 id=&quot;2-验证安装包&quot;&gt;2 验证安装包&lt;/h2&gt;
+
+&lt;p&gt;V2Ray 提供两种验证方式：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;安装包 zip 文件的 SHA1 / SHA256 摘要，在每个安装包对应的.dgst文件中可以找到。&lt;/li&gt;
+  &lt;li&gt;可运行程序（v2ray 或 v2ray.exe）的 gpg 签名，文件位于安装包中的 v2ray.sig 或 v2ray.exe.sig。签名公钥可以在&lt;a href=&quot;https://raw.githubusercontent.com/v2ray/v2ray-core/master/release/verify/official_release.asc&quot;&gt;代码库&lt;/a&gt;中找到。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;3-linux-安装脚本&quot;&gt;3 Linux 安装脚本&lt;/h2&gt;
+
+&lt;p&gt;V2Ray 提供了一个在 Linux 中的自动化安装脚本。这个脚本会自动检测有没有安装过 V2Ray，如果没有，则进行完整的安装和配置；如果之前安装过 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;V2Ray&lt;/code&gt;，则只更新 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;V2Ray 二进制程序&lt;/code&gt;而不更新配置。&lt;/p&gt;
+
+&lt;p&gt;以下指令假设已在 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;su&lt;/code&gt; 环境下，如果不是，请先运行 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sudo su&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;运行下面的指令下载并安装 V2Ray。当 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;yum&lt;/code&gt; 或 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;apt-get&lt;/code&gt; 可用的情况下，此脚本会自动安装 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;unzip&lt;/code&gt; 和 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;daemon&lt;/code&gt;。这两个组件是安装 V2Ray 的必要组件。如果你使用的系统不支持 yum 或 apt-get，请自行安装 unzip 和 daemon&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;bash &amp;lt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;curl &lt;span class=&quot;nt&quot;&gt;-L&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-s&lt;/span&gt; https://install.direct/go.sh&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;此脚本会自动安装以下文件：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;/usr/bin/v2ray/v2ray：V2Ray 程序；&lt;/li&gt;
+  &lt;li&gt;/usr/bin/v2ray/v2ctl：V2Ray 工具；&lt;/li&gt;
+  &lt;li&gt;/etc/v2ray/config.json：配置文件；&lt;/li&gt;
+  &lt;li&gt;/usr/bin/v2ray/geoip.dat：IP 数据文件&lt;/li&gt;
+  &lt;li&gt;/usr/bin/v2ray/geosite.dat：域名数据文件&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;此脚本会配置自动运行脚本。自动运行脚本会在系统重启之后，自动运行 V2Ray。目前自动运行脚本只支持带有 Systemd 的系统，以及 Debian / Ubuntu 全系列。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;/etc/systemd/system/v2ray.service: Systemd&lt;/li&gt;
+  &lt;li&gt;/etc/init.d/v2ray: SysV&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;脚本运行完成后，你需要：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;编辑 /etc/v2ray/config.json 文件来配置你需要的代理方式；&lt;/li&gt;
+  &lt;li&gt;运行 service v2ray start 来启动 V2Ray 进程；&lt;/li&gt;
+  &lt;li&gt;
+    &lt;table&gt;
+      &lt;tbody&gt;
+        &lt;tr&gt;
+          &lt;td&gt;之后可以使用 service v2ray start&lt;/td&gt;
+          &lt;td&gt;stop&lt;/td&gt;
+          &lt;td&gt;status&lt;/td&gt;
+          &lt;td&gt;reload&lt;/td&gt;
+          &lt;td&gt;restart&lt;/td&gt;
+          &lt;td&gt;force-reload 控制 V2Ray 的运行。&lt;/td&gt;
+        &lt;/tr&gt;
+      &lt;/tbody&gt;
+    &lt;/table&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;4-gosh-参数&quot;&gt;4 go.sh 参数&lt;/h2&gt;
+
+&lt;p&gt;go.sh 支持如下参数，可在手动安装时根据实际情况调整：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;-p 或 –proxy: 使用代理服务器来下载 V2Ray 的文件，格式与 curl 接受的参数一致，比如 “socks5://127.0.0.1:1080” 或 “http://127.0.0.1:3128”。&lt;/li&gt;
+  &lt;li&gt;-f 或 –force: 强制安装。在默认情况下，如果当前系统中已有最新版本的 V2Ray，go.sh 会在检测之后就退出。如果需要强制重装一遍，则需要指定该参数。&lt;/li&gt;
+  &lt;li&gt;–version: 指定需要安装的版本，比如 “v1.13”。默认值为最新版本。&lt;/li&gt;
+  &lt;li&gt;–local: 使用一个本地文件进行安装。如果你已经下载了某个版本的 V2Ray，则可通过这个参数指定一个文件路径来进行安装。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;示例：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;使用地址为 127.0.0.1:1080 的 SOCKS 代理下载并安装最新版本：./go.sh -p socks5://127.0.0.1:1080&lt;/li&gt;
+  &lt;li&gt;安装本地的 v1.13 版本：./go.sh –version v1.13 –local /path/to/v2ray.zip&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;5-配置服务端&quot;&gt;5 配置服务端&lt;/h2&gt;
+
+&lt;p&gt;一个参考，Inbound协议为vmess，outbound协议为freedom：&lt;/p&gt;
+
+&lt;div class=&quot;language-json highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;log&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;loglevel&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;warning&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;inbounds&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;port&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;err&quot;&gt;（您配置的服务端监听的端口，整数，需要被服务器的防火墙开放TCP协议访问）&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;protocol&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;vmess&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;settings&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;clients&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+          &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+            &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;id&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;您生成的UUID，可以通过Linux命令uuidgen生成&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+            &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;level&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+            &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;alterId&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+            &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;security&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;auto&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+          &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;streamSettings&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;network&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;h2&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;httpSettings&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+          &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;path&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;/hello&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;security&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;tls&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;tlsSettings&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+          &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;certificates&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+            &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+              &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;certificateFile&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;您的PEM certificate文件&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+              &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;keyFile&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;您的PEM RSA private key文件&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+            &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+          &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;outbounds&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;protocol&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;freedom&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;settings&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;routing&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;rules&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;type&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;field&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;ip&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+          &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;geoip:private&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;outboundTag&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;blocked&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;您可以通过下面的脚本来生成一份自签证书：&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;#!/bin/sh&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# create self-signed server certificate:&lt;/span&gt;
+
+&lt;span class=&quot;nb&quot;&gt;read&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Enter your domain [www.example.com]: &quot;&lt;/span&gt; DOMAIN
+
+&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Create server key...&quot;&lt;/span&gt;
+
+openssl genrsa &lt;span class=&quot;nt&quot;&gt;-des3&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-out&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$DOMAIN&lt;/span&gt;.key 4096
+
+&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Create server certificate signing request...&quot;&lt;/span&gt;
+
+&lt;span class=&quot;nv&quot;&gt;SUBJECT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;/C=US/ST=Mars/L=Mars/O=Mars/OU=Mars/CN=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$DOMAIN&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+
+openssl req &lt;span class=&quot;nt&quot;&gt;-new&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-subj&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$SUBJECT&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-key&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$DOMAIN&lt;/span&gt;.key &lt;span class=&quot;nt&quot;&gt;-out&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$DOMAIN&lt;/span&gt;.csr
+
+&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Remove password...&quot;&lt;/span&gt;
+
+&lt;span class=&quot;nb&quot;&gt;mv&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$DOMAIN&lt;/span&gt;.key &lt;span class=&quot;nv&quot;&gt;$DOMAIN&lt;/span&gt;.origin.key
+openssl rsa &lt;span class=&quot;nt&quot;&gt;-in&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$DOMAIN&lt;/span&gt;.origin.key &lt;span class=&quot;nt&quot;&gt;-out&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$DOMAIN&lt;/span&gt;.key
+
+&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Sign SSL certificate...&quot;&lt;/span&gt;
+
+openssl x509 &lt;span class=&quot;nt&quot;&gt;-req&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-days&lt;/span&gt; 365 &lt;span class=&quot;nt&quot;&gt;-in&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$DOMAIN&lt;/span&gt;.csr &lt;span class=&quot;nt&quot;&gt;-signkey&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$DOMAIN&lt;/span&gt;.key &lt;span class=&quot;nt&quot;&gt;-out&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$DOMAIN&lt;/span&gt;.crt
+
+&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;TODO:&quot;&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Copy &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$DOMAIN&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;.crt to /etc/nginx/ssl/&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$DOMAIN&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;.crt&quot;&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Copy &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$DOMAIN&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;.key to /etc/nginx/ssl/&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$DOMAIN&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;.key&quot;&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Add configuration in nginx:&quot;&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;server {&quot;&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot; ...&quot;&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot; listen 443 ssl;&quot;&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot; ssl_certificate /etc/nginx/ssl/&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$DOMAIN&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;.crt;&quot;&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot; ssl_certificate_key /etc/nginx/ssl/&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$DOMAIN&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;.key;&quot;&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;}&quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h1 id=&quot;运行客户端&quot;&gt;运行客户端&lt;/h1&gt;
+
+&lt;h2 id=&quot;windows&quot;&gt;Windows&lt;/h2&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;演示在&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Windows&lt;/code&gt;操作系统运行&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;v2ray-core&lt;/code&gt;客户端&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;在&lt;a href=&quot;https://github.com/v2ray/v2ray-core/releases&quot;&gt;Github Release&lt;/a&gt;页面下载&lt;a href=&quot;https://github.com/v2ray/v2ray-core/releases/download/v4.26.0/v2ray-windows-64.zip&quot;&gt;v2ray-windows-64.zip&lt;/a&gt;，解压到文件夹&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;D:\bin\v2ray&lt;/code&gt;；用记事本等软件新建一个名为&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;v2ray.bat&lt;/code&gt;的批处理文件，达到双击这个文件启动v2ray的作用，内容为：&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;start D:\bin\v2ray\wv2ray.exe -config D:\bin\v2ray\vpoint_socks_vmess.json
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/27da7be3a641f73e22f6380e.png&quot; alt=&quot;27da7be3a641f73e22f6380e.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;配置文件&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;D:\bin\v2ray\vpoint_socks_vmess.json&lt;/code&gt;与您的服务端配置有关，对应上面的服务端的参考配置，客户端的参考配置：&lt;/p&gt;
+
+&lt;div class=&quot;language-json highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;log&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;loglevel&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;warning&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;inbounds&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;port&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1080&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;listen&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;127.0.0.1&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;protocol&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;socks&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;sniffing&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;enabled&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;destOverride&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+          &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;http&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+          &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;tls&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;settings&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;auth&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;noauth&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;udp&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;outbounds&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;protocol&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;vmess&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;settings&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;vnext&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+          &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+            &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;address&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;您的服务器的IP&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+            &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;port&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;err&quot;&gt;（您配置的服务端监听的端口）&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+            &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;users&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+              &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+                &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;id&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;您生成的UUID，需要与服务端配置相同&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+                &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;level&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+                &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;alterId&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+                &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;security&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;auto&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+              &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+            &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+          &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;streamSettings&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;network&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;h2&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;httpSettings&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+          &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;path&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;/hello&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;security&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;tls&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;tlsSettings&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+          &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;serverName&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;您的PEM certificate文件的域名&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+          &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;allowInsecure&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;保存配置文件后，即可双击&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;v2ray.bat&lt;/code&gt;运行，若客户端配置争取，则能在&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;任务管理器&lt;/code&gt;看到&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;w2ray.exe&lt;/code&gt;运行：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/8034d8f58c0885234da7741d.png&quot; alt=&quot;8034d8f58c0885234da7741d.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;接下来在&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Chrome&lt;/code&gt;中安装&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Proxy SwitchyOmega&lt;/code&gt;插件，关闭所有打开的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Chrome&lt;/code&gt;窗口，然后在powershell运行下面命令，运行一个Chrome实例，所有流量由&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;socks5://localhost:1080&lt;/code&gt;代理，没错，这个代理就是我们刚刚在本地运行的v2ray实例：&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;C:\Users\（您的用户名）\AppData\Local\Google\Chrome\Application\chrome.exe --proxy-server=&quot;socks5://localhost:1080&quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;访问&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;https://chrome.google.com/webstore/detail/proxy-switchyomega/padekgcemlokbadohgkifijomclgjgif&lt;/code&gt;，或者搜索&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Proxy SwitchyOmega&lt;/code&gt;：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/e6df7231e15a13db9d8709a7.png&quot; alt=&quot;e6df7231e15a13db9d8709a7.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;安装插件，设置代理服务器为本地的实例：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/2e67f16ba9663bba6ad93099.png&quot; alt=&quot;2e67f16ba9663bba6ad93099.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;点击图标并设置为&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;auto switch&lt;/code&gt;：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/bb4db2169fc3b9132cef21d6.png&quot; alt=&quot;bb4db2169fc3b9132cef21d6.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;关闭当前所有Chrome窗口，不指定代理运行一个新窗口，访问&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;https://www.google.com&lt;/code&gt;，等待&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;图标显示橙色数字&lt;/code&gt;时，点击域名，点击&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;proxy&lt;/code&gt;，将域名&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;goole.com&lt;/code&gt;添加到代理规则中：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/23eed0612626b1d059651de7.png&quot; alt=&quot;23eed0612626b1d059651de7.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;再刷新页面，不出意外的话，成功访问：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/d8e8dc81f24969c17334a14e.png&quot; alt=&quot;d8e8dc81f24969c17334a14e.png&quot; /&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;后续再补充安卓、iOS等其他客户端&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;android&quot;&gt;Android&lt;/h2&gt;
+
+&lt;p&gt;我们这里用到&lt;a href=&quot;https://github.com/2dust/v2rayNG&quot;&gt;V2rayNG&lt;/a&gt;，一款开源的安卓软件，所有版本在https://github.com/2dust/v2rayNG/releases可以看到（请使用浏览器打开）；&lt;/p&gt;
+
+&lt;p&gt;安装成功之后，因为V2rayNG只作为客户端，不提供代理服务，所以需要输入服务器配置。&lt;/p&gt;
+
+&lt;p&gt;您可以自己搭建服务器，或者使用朋友的服务器（也有服务商提供付费服务），V2rayNG提供了【扫描二维码】的功能，便于分享服务器配置，如下：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/68318ade7f2c3e28619e638f.png&quot; alt=&quot;68318ade7f2c3e28619e638f.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;导入成功之后，【配置文件】列表中会添加一个配置，如下：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/00f2f986bc6135c0f6ee4a5a.png&quot; alt=&quot;00f2f986bc6135c0f6ee4a5a.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;就快完成了，点击左上角的三道杠（上图蓝色圈出）呼出设置菜单栏，点击【设置】&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/ecab8a2864e5b8d018f344c7.png&quot; alt=&quot;ecab8a2864e5b8d018f344c7.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;将【预定义规则】设置为「绕过局域网及大陆地址」，使得访问大陆网址和局域网地址不使用代理：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/4c471ee00f340cd3fee55a53.png&quot; alt=&quot;4c471ee00f340cd3fee55a53.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;再次点击左上角，回到【配置文件】，选中我们刚刚导入的配置，然后点击右下角的V字按钮，启动服务（首次启动时，系统会弹出提示框，允许即可）：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/9c898636fba3070ecce9de74.png&quot; alt=&quot;9c898636fba3070ecce9de74.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;好了，试试在浏览器中访问https://www.google.com/吧，如果访问成功，说明已经可以科学上网了。&lt;/p&gt;
+
+&lt;h1 id=&quot;参考&quot;&gt;参考&lt;/h1&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.systutorials.com/how-to-set-google-chromes-proxy-settings-in-command-line-on-linux&quot;&gt;How to set Google Chrome’s proxy settings in command line on Linux?&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;v2ray.com&quot;&gt;Project V&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;</content><author><name></name></author><summary type="html">本篇笔记尝试从v2ray是什么、浅谈工作原理、运行服务端、运行客户端四个方面，通过少许命令和配置内容，让我们能迅速上手使用v2ray。</summary></entry><entry><title type="html">记一次环境变量导致的中文乱码</title><link href="https://zenuo.github.io/2020/06/14/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E5%AF%BC%E8%87%B4%E7%9A%84%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81.html" rel="alternate" type="text/html" title="记一次环境变量导致的中文乱码" /><published>2020-06-14T00:00:00+00:00</published><updated>2020-06-14T00:00:00+00:00</updated><id>https://zenuo.github.io/2020/06/14/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E5%AF%BC%E8%87%B4%E7%9A%84%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81</id><content type="html" xml:base="https://zenuo.github.io/2020/06/14/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E5%AF%BC%E8%87%B4%E7%9A%84%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81.html">&lt;h2 id=&quot;一现象&quot;&gt;一、现象&lt;/h2&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;使用本地&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ssh&lt;/code&gt;访问服务器&lt;/li&gt;
+  &lt;li&gt;重启应用&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;查询主数据商品信息&lt;/code&gt;的内容中文乱码&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;jinfo&lt;/code&gt;命令输出&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;file.encoding = ANSI_X3.4-1968&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;使用&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Xshell&lt;/code&gt;访问服务器&lt;/li&gt;
+  &lt;li&gt;重启应用&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;jinfo&lt;/code&gt;命令输出&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;file.encoding = UTF-8&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;查询主数据商品信息&lt;/code&gt;的内容中文恢复正常&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;二为什么乱码&quot;&gt;二、为什么乱码&lt;/h2&gt;
+
+&lt;h3 id=&quot;猜想&quot;&gt;猜想&lt;/h3&gt;
+
+&lt;p&gt;初步猜想是&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;本地ssh&lt;/code&gt;和&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Xshell&lt;/code&gt;的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ssh会话&lt;/code&gt;的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;locale&lt;/code&gt;会话不同，导致重启后的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;JVM默认字符集&lt;/code&gt;的不同导致了乱码，使用下面的代码片段来验证：&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.nio.charset.Charset&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Main&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nc&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getProperty&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;file.encoding&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+        &lt;span class=&quot;nc&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Charset&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;defaultCharset&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;思路：分别使用&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;本地ssh&lt;/code&gt;和&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Xshell&lt;/code&gt;访问服务器，查看locale并执行代码片段&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;使用&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;本地ssh&lt;/code&gt;访问：&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;服务器 ~]&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;locale
+locale: Cannot &lt;span class=&quot;nb&quot;&gt;set &lt;/span&gt;LC_CTYPE to default locale: No such file or directory &lt;span class=&quot;c&quot;&gt;# 异常信息&lt;/span&gt;
+locale: Cannot &lt;span class=&quot;nb&quot;&gt;set &lt;/span&gt;LC_ALL to default locale: No such file or directory   &lt;span class=&quot;c&quot;&gt;# 异常信息&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;LANG&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;en_US.UTF-8
+&lt;span class=&quot;nv&quot;&gt;LC_CTYPE&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;UTF-8
+&lt;span class=&quot;nv&quot;&gt;LC_NUMERIC&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;en_US.UTF-8&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;LC_TIME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;en_US.UTF-8&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;LC_COLLATE&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;en_US.UTF-8&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;LC_MONETARY&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;en_US.UTF-8&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;LC_MESSAGES&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;en_US.UTF-8&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;LC_PAPER&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;en_US.UTF-8&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;LC_NAME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;en_US.UTF-8&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;LC_ADDRESS&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;en_US.UTF-8&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;LC_TELEPHONE&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;en_US.UTF-8&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;LC_MEASUREMENT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;en_US.UTF-8&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;LC_IDENTIFICATION&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;en_US.UTF-8&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;LC_ALL&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;服务器 ~]&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;java Main
+ANSI_X3.4-1968
+US-ASCII
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;可以看到，此时JVM属性&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;file.encoding&lt;/code&gt;的值为&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ANSI_X3.4-1968&lt;/code&gt;，默认字符集为&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;US-ASCII&lt;/code&gt;；&lt;/p&gt;
+
+&lt;p&gt;使用&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Xshell&lt;/code&gt;访问：&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;服务器 ~]&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;locale
+&lt;span class=&quot;c&quot;&gt;# 没有异常信息&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;LANG&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;en_US.UTF-8
+&lt;span class=&quot;nv&quot;&gt;LC_CTYPE&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;en_US.UTF-8&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;LC_NUMERIC&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;en_US.UTF-8&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;LC_TIME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;en_US.UTF-8&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;LC_COLLATE&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;en_US.UTF-8&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;LC_MONETARY&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;en_US.UTF-8&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;LC_MESSAGES&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;en_US.UTF-8&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;LC_PAPER&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;en_US.UTF-8&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;LC_NAME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;en_US.UTF-8&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;LC_ADDRESS&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;en_US.UTF-8&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;LC_TELEPHONE&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;en_US.UTF-8&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;LC_MEASUREMENT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;en_US.UTF-8&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;LC_IDENTIFICATION&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;en_US.UTF-8&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;LC_ALL&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;服务器 ~]&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;java Main
+UTF-8
+UTF-8
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;可以看到，此时JVM属性&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;file.encoding&lt;/code&gt;的值为&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;UTF-8&lt;/code&gt;，默认字符集为&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;UTF-8&lt;/code&gt;；&lt;/p&gt;
+
+&lt;h3 id=&quot;到代码中验证猜想&quot;&gt;到代码中验证猜想&lt;/h3&gt;
+
+&lt;p&gt;乱码的接口核心代码如下：&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;httpClient&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;execute&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;catch&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Exception&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;throw&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;RuntimeException&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;查询异常&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;httpclient&lt;/code&gt;执行HTTP请求，execute方法代码：&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;POST&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;equals&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reqType&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)){&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;responseStr&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;doHttpPost&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reqParams&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;serverUrl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 注意点1：查询主数据商品信息，代码会执行此行&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;GET&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;equals&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reqType&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)){&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;responseStr&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;doHttpGet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reqParams&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;serverUrl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;注意点1&lt;/code&gt;这行代码，通过调用&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;doHttpPost&lt;/code&gt;方法：&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nc&quot;&gt;URIBuilder&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;uriBuilder&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;URIBuilder&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;serverUrl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nc&quot;&gt;HttpPost&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;httpPost&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;HttpPost&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;uriBuilder&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;build&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;httpPost&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setHeader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Accept&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;application/json;charset=utf-8&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 注意点2：头部Accept指定了接受的响应字符集为utf-8，但HTTP协议并未强制服务端要根据Accept的字符集来响应，所以需要其他方法来判断响应的字符集&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;httpPost&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setHeader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Content-Type&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;application/json;charset=utf-8&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;addHeader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;httpPost&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nc&quot;&gt;StringEntity&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;postingString&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;StringEntity&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;JSONObject&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;toJSONString&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;params&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;utf-8&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;httpPost&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setEntity&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;postingString&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getEntityAndRelease&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;httpPost&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;接下来在开发环境，通过改变头部&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Accept&lt;/code&gt;的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;charset&lt;/code&gt;，添加JVM参数&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-Dorg.apache.commons.logging.Log=org.apache.commons.logging.impl.SimpleLog -Dorg.apache.commons.logging.simplelog.log.org.apache.http=DEBUG&lt;/code&gt;，观察HTTP响应的头部&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Content-Type&lt;/code&gt;的方式来判断响应的编码&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;charset设置为utf-8时，日志为：&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[DEBUG] wire - http-outgoing-0 &amp;gt;&amp;gt; &quot;POST /winshare-center-gateway/api/item/v1/item/ec/4435922 HTTP/1.1[\r][\n]&quot;
+[DEBUG] wire - http-outgoing-0 &amp;gt;&amp;gt; &quot;Accept: application/json;charset=utf-8[\r][\n]&quot;
+[DEBUG] wire - http-outgoing-0 &amp;gt;&amp;gt; &quot;Content-Type: application/json;charset=utf-8[\r][\n]&quot;
+[DEBUG] wire - http-outgoing-0 &amp;gt;&amp;gt; &quot;Content-Length: 14[\r][\n]&quot;
+[DEBUG] wire - http-outgoing-0 &amp;gt;&amp;gt; &quot;Host: 10.100.9.202:8607[\r][\n]&quot;
+[DEBUG] wire - http-outgoing-0 &amp;gt;&amp;gt; &quot;Connection: Keep-Alive[\r][\n]&quot;
+[DEBUG] wire - http-outgoing-0 &amp;gt;&amp;gt; &quot;Accept-Encoding: gzip,deflate[\r][\n]&quot;
+[DEBUG] wire - http-outgoing-0 &amp;gt;&amp;gt; &quot;[\r][\n]&quot;
+[DEBUG] wire - http-outgoing-0 &amp;gt;&amp;gt; &quot;{&quot;id&quot;:4435922}&quot;
+[DEBUG] wire - http-outgoing-0 &amp;lt;&amp;lt; &quot;HTTP/1.1 503 Service Unavailable[\r][\n]&quot;
+[DEBUG] wire - http-outgoing-0 &amp;lt;&amp;lt; &quot;Content-Type: application/json;charset=UTF-8[\r][\n]&quot;
+[DEBUG] wire - http-outgoing-0 &amp;lt;&amp;lt; &quot;Content-Length: 186[\r][\n]&quot;
+[DEBUG] wire - http-outgoing-0 &amp;lt;&amp;lt; &quot;[\r][\n]&quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;charset设置为gb18030时，日志为：&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[DEBUG] wire - http-outgoing-0 &amp;gt;&amp;gt; &quot;POST /winshare-center-gateway/api/item/v1/item/ec/4435922 HTTP/1.1[\r][\n]&quot;
+[DEBUG] wire - http-outgoing-0 &amp;gt;&amp;gt; &quot;Accept: application/json;charset=gb18030[\r][\n]&quot;
+[DEBUG] wire - http-outgoing-0 &amp;gt;&amp;gt; &quot;Content-Type: application/json;charset=utf-8[\r][\n]&quot;
+[DEBUG] wire - http-outgoing-0 &amp;gt;&amp;gt; &quot;Content-Length: 14[\r][\n]&quot;
+[DEBUG] wire - http-outgoing-0 &amp;gt;&amp;gt; &quot;Connection: Keep-Alive[\r][\n]&quot;
+[DEBUG] wire - http-outgoing-0 &amp;gt;&amp;gt; &quot;Accept-Encoding: gzip,deflate[\r][\n]&quot;
+[DEBUG] wire - http-outgoing-0 &amp;gt;&amp;gt; &quot;[\r][\n]&quot;
+[DEBUG] wire - http-outgoing-0 &amp;gt;&amp;gt; &quot;{&quot;id&quot;:4435922}&quot;
+[DEBUG] wire - http-outgoing-0 &amp;lt;&amp;lt; &quot;HTTP/1.1 503 Service Unavailable[\r][\n]&quot;
+[DEBUG] wire - http-outgoing-0 &amp;lt;&amp;lt; &quot;Content-Type: application/json;charset=UTF-8[\r][\n]&quot;
+[DEBUG] wire - http-outgoing-0 &amp;lt;&amp;lt; &quot;Content-Length: 186[\r][\n]&quot;
+[DEBUG] wire - http-outgoing-0 &amp;lt;&amp;lt; &quot;[\r][\n]&quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;通过查看日志，我们发现响应的字符集都是UTF-8，也就是说该方法返回的字节数组应该被UTF-8解码；&lt;/p&gt;
+
+&lt;p&gt;回到&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;注意点1&lt;/code&gt;，此处使用了构造方法&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;java.lang.String#String(byte[])&lt;/code&gt;创建String实例，此构造方法使用默认字符集解码字节数组，使用&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;本地ssh&lt;/code&gt;重启后，默认字符集为&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;US-ASCII&lt;/code&gt;，而不是&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;UTF-8&lt;/code&gt;，这是此次发生乱码的编码原因。&lt;/p&gt;
+
+&lt;h2 id=&quot;三为什么本地ssh与xshell表现不同&quot;&gt;三、为什么本地ssh与Xshell表现不同&lt;/h2&gt;
+
+&lt;p&gt;查资料得知，本地&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/ssh/ssh_config&lt;/code&gt;含有&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SendEnv LANG LC_*&lt;/code&gt;，此选项指明了创建ssh会话时，将本地的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;LANG&lt;/code&gt;和&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;LC_*&lt;/code&gt;环境变量发送到服务端，使得创建的ssh会话使用本地的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;LANG&lt;/code&gt;和&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;LC_*&lt;/code&gt;环境变量；&lt;/p&gt;
+
+&lt;p&gt;但是本地的这些变量的值是：&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;本地 ~]&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;locale
+&lt;span class=&quot;nv&quot;&gt;LANG&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;LC_COLLATE&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;C&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;LC_CTYPE&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;UTF-8&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;LC_MESSAGES&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;C&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;LC_MONETARY&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;C&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;LC_NUMERIC&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;C&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;LC_TIME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;C&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;LC_ALL&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;还记得本地ssh访问服务器执行&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;locale&lt;/code&gt;时的这两行报错吗？&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;locale: Cannot set LC_CTYPE to default locale: No such file or directory
+locale: Cannot set LC_ALL to default locale: No such file or directory
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;说明当前的服务器配置是不支持&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;LC_CTYPE=&quot;UTF-8&quot;&lt;/code&gt;和&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;LC_ALL=&lt;/code&gt;的，但未引起重视，一直选择的忽略；解决办法是：注释本地的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/ssh/ssh_config&lt;/code&gt;中的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SendEnv LANG LC_*&lt;/code&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;四得到的教训&quot;&gt;四、得到的教训&lt;/h2&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;ssh访问服务器时，不要使用本地的locale设置，避免本地环境影响服务器&lt;/li&gt;
+  &lt;li&gt;启动应用时通过JVM指定文件编码（&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-Dfile.encoding=UTF-8&lt;/code&gt;），排除启动的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ssh会话&lt;/code&gt;对应用的文件编码的影响&lt;/li&gt;
+  &lt;li&gt;编码时不要假定任何的环境变量：解码字节数组时，指定字符集，不使用默认字符集&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;五参考&quot;&gt;五、参考&lt;/h2&gt;
+
+&lt;p&gt;1 &lt;a href=&quot;https://tools.ietf.org/html/rfc7231#section-5.3.3&quot;&gt;Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content&lt;/a&gt;
+2 &lt;a href=&quot;https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html#%3Cinit%3E(byte%5B%5D)&quot;&gt;String ( Java SE 11 &amp;amp; JDK 11 )&lt;/a&gt;
+3 &lt;a href=&quot;https://linux.die.net/man/5/ssh_config&quot;&gt;man 5 ssh_config&lt;/a&gt;&lt;/p&gt;</content><author><name></name></author><summary type="html">一、现象</summary></entry></feed>

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>基于shadowsocks的科学上网 | /home/zenuo</title>
+<meta name="generator" content="Jekyll v4.2.0" />
+<meta property="og:title" content="基于shadowsocks的科学上网" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="以下是维基百科对Shadowsocks的描述：" />
+<meta property="og:description" content="以下是维基百科对Shadowsocks的描述：" />
+<link rel="canonical" href="https://zenuo.github.io/2018/10/10/%E5%9F%BA%E4%BA%8EShadowsocks%E7%9A%84%E7%A7%91%E5%AD%A6%E4%B8%8A%E7%BD%91.html" />
+<meta property="og:url" content="https://zenuo.github.io/2018/10/10/%E5%9F%BA%E4%BA%8EShadowsocks%E7%9A%84%E7%A7%91%E5%AD%A6%E4%B8%8A%E7%BD%91.html" />
+<meta property="og:site_name" content="/home/zenuo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-10-10T00:00:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="基于shadowsocks的科学上网" />
+<script type="application/ld+json">
+{"description":"以下是维基百科对Shadowsocks的描述：","url":"https://zenuo.github.io/2018/10/10/%E5%9F%BA%E4%BA%8EShadowsocks%E7%9A%84%E7%A7%91%E5%AD%A6%E4%B8%8A%E7%BD%91.html","@type":"BlogPosting","headline":"基于shadowsocks的科学上网","dateModified":"2018-10-10T00:00:00+00:00","datePublished":"2018-10-10T00:00:00+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://zenuo.github.io/2018/10/10/%E5%9F%BA%E4%BA%8EShadowsocks%E7%9A%84%E7%A7%91%E5%AD%A6%E4%B8%8A%E7%BD%91.html"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://zenuo.github.io/feed.xml" title="/home/zenuo" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">/home/zenuo</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">基于shadowsocks的科学上网</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2018-10-10T00:00:00+00:00" itemprop="datePublished">Oct 10, 2018
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>以下是维基百科对<code class="language-plaintext highlighter-rouge">Shadowsocks</code>的描述：</p>
+
+<blockquote>
+  <p>Shadowsocks is a free and open-source encrypted proxy project, widely used inmainland China to circumvent Internet censorship. It was created in 2012 by a Chinese programmer named “clowwindy”, and multiple implementations of the protocol have been made available since. Typically, the client software will open a socks5 proxy on the machine it is run, which internet traffic can then be directed towards, similarly to an SSH tunnel. Unlike an SSH tunnel, shadowsocks can also proxy UDP traffic.</p>
+</blockquote>
+
+<p>本文内容为软件的部署与操作，分为<code class="language-plaintext highlighter-rouge">服务端</code>与<code class="language-plaintext highlighter-rouge">客户端</code>两部分。</p>
+
+<h1 id="1-服务端">1 服务端</h1>
+
+<blockquote>
+  <p>本部分介绍在Ubuntu上的步骤，其他操作系统可以此为参考。</p>
+</blockquote>
+
+<p>本步骤中，您需要：</p>
+
+<ul>
+  <li>
+    <p>一台不受GFW影响的主机（可以到各大VPS厂商购买）</p>
+  </li>
+  <li>
+    <p>命令行基础</p>
+  </li>
+</ul>
+
+<h2 id="11-安装python3和pip">1.1 安装python3和pip</h2>
+
+<p>执行Bash命令：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>apt update
+<span class="nb">sudo </span>apt <span class="nb">install </span>python3 python3-pip
+</code></pre></div></div>
+
+<h2 id="12-安装shadowsocks">1.2 安装shadowsocks</h2>
+
+<blockquote>
+  <p>shadowsocks服务端的Python实现托管于<a href="https://github.com/shadowsocks/shadowsocks/tree/master">shadowsocks/shadowsocks</a></p>
+</blockquote>
+
+<p>使用pip安装shadowsocks服务端，执行Bash命令：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>pip3 <span class="nb">install </span>git+https://github.com/shadowsocks/shadowsocks.git@master
+</code></pre></div></div>
+
+<h2 id="13-配置文件">1.3 配置文件</h2>
+
+<p>在您的home目录里，新建<code class="language-plaintext highlighter-rouge">ss</code>目录，将shadowsocks的<code class="language-plaintext highlighter-rouge">配置文件</code>和<code class="language-plaintext highlighter-rouge">日志文件</code>放置在其中；执行Bash命令：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">mkdir</span> ~/ss
+<span class="nb">cd </span>ss
+</code></pre></div></div>
+
+<p>使用你喜欢的文本编辑器，创建配置文件<code class="language-plaintext highlighter-rouge">config.json</code>，此处实例使用nano；执行Bash命令：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nano config.json
+</code></pre></div></div>
+
+<p>粘贴如下内容，并根据您的喜好设置：</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"server_port"</span><span class="p">:</span><span class="mi">8388</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"password"</span><span class="p">:</span><span class="s2">"your_password"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"method"</span><span class="p">:</span><span class="s2">"aes-256-cfb"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>字段说明：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">名称</th>
+      <th style="text-align: center">说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">server_port</td>
+      <td style="text-align: center">服务端监听的端口</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">password</td>
+      <td style="text-align: center">密码</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">method</td>
+      <td style="text-align: center">加密方法，请查看<a href="https://github.com/shadowsocks/shadowsocks/wiki/Encryption">Encryption</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<blockquote>
+  <p>更多说明请查看<a href="https://github.com/shadowsocks/shadowsocks/wiki">wiki</a></p>
+</blockquote>
+
+<h2 id="15-运行">1.5 运行</h2>
+
+<p>在后台运行shadowsocks，并将日志写入文件<code class="language-plaintext highlighter-rouge">~/ss/log</code>，执行Bash命令：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ssserver <span class="nt">-c</span> ~/ss/config.json <span class="nt">--log-file</span> ~/ss/log <span class="nt">--pid-file</span> ~/ss/pid <span class="nt">-d</span> start
+</code></pre></div></div>
+
+<p>Bash会话记录如下：</p>
+
+<p><a href="https://asciinema.org/a/Pl6tGzRIfOCuTlRU5xCjnoVc3"><img src="https://asciinema.org/a/Pl6tGzRIfOCuTlRU5xCjnoVc3.png" alt="asciicast" /></a></p>
+
+<h2 id="14-防火墙开放shadowsocks端口">1.4 防火墙开放shadowsocks端口</h2>
+
+<p>在<code class="language-plaintext highlighter-rouge">1.3 配置文件</code>中的示例配置文件中，我们设置了shadowsocks监听<code class="language-plaintext highlighter-rouge">8388</code>端口，如果您的主机开启了防火墙，则我们需要开放这个端口；此处假设防火墙软件为<code class="language-plaintext highlighter-rouge">ufw</code>，执行Bash：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>ufw allow 8388
+</code></pre></div></div>
+
+<h1 id="2-客户端">2 客户端</h1>
+
+<p>本部分依次介绍在Android / macOS / <a href="https://manjaro.org/">Manjaro Linux</a> 操作系统上的shadowsocks客户端使用。</p>
+
+<h2 id="21-android">2.1 Android</h2>
+
+<blockquote>
+  <p>shadowsocks的Android客户端托管于<a href="https://github.com/shadowsocks/shadowsocks-android">shadowsocks/shadowsocks-android</a></p>
+</blockquote>
+
+<p>首先，在<code class="language-plaintext highlighter-rouge">Releases</code>页面下载您的CPU架构对应的安装包，截图如下：</p>
+
+<p><img src="/assets/img/4bbec1cf000d8a274cb3a762.png" alt="shadowsocks-android Releases" /></p>
+
+<blockquote>
+  <p>关于Android的CPU架构，摘自<a href="https://stackoverflow.com/questions/23042175/what-is-armeabi-and-why-they-use-it">What is armeabi and why they use it?</a>的一个<a href="https://stackoverflow.com/a/23042278">回答</a>：
+Android设备有CPU。 其中许多CPU基于ARM架构，有些基于x86，还有一些基于MIPS等其他东西。
+一些Android应用程序使用Native Development Kit（NDK）创建C / C++代码以链接到他们的应用程序。 需要针对特定的CPU架构编译C / C++代码。 NDK将为每个体系结构编译的C / C++代码版本放入特定于体系结构的目录中。 其中一个目录是armeabi /，它用于通用ARM CPU。 还有armeabi-v7 /（对于ARM v7兼容的CPU），x86 /（对于x86 CPU）等。（来自谷歌翻译）</p>
+</blockquote>
+
+<p>下载并安装后，打开程序，默认页面为<code class="language-plaintext highlighter-rouge">配置文件</code>，截图如下：</p>
+
+<p><img src="/assets/img/f951332f54ea98bc328401cd.png" alt="Android初始化截图" /></p>
+
+<blockquote>
+  <p>我们假定您的主机IP地址为<code class="language-plaintext highlighter-rouge">6.6.6.6</code></p>
+</blockquote>
+
+<p>点击下方截图中红框所示的<code class="language-plaintext highlighter-rouge">铅笔</code>按钮：</p>
+
+<p><img src="/assets/img/ebb0f61599cfb9aab3395841.png" alt="铅笔" /></p>
+
+<p>根据<code class="language-plaintext highlighter-rouge">1.3 配置文件</code>中的示例配置文件，修改<code class="language-plaintext highlighter-rouge">服务器配置</code>中的项，截图如下，红框所示：</p>
+
+<p><img src="/assets/img/bfae9e0beb4d525ff3e65ee1.png" alt="服务器配置" /></p>
+
+<p>继续修改<code class="language-plaintext highlighter-rouge">功能设置</code>，<code class="language-plaintext highlighter-rouge">路由</code>设置为<code class="language-plaintext highlighter-rouge">GFW列表</code>（在您理解其他选项时，可以选择其他选项），其余选项保持默认，截图如下：</p>
+
+<p><img src="/assets/img/a218fca96b9fa5d259faf181.jpeg" alt="功能设置" /></p>
+
+<p>其余选项保持默认，点击右上角的<code class="language-plaintext highlighter-rouge">勾</code>按钮，保存修改，截图如下：</p>
+
+<p><img src="/assets/img/24aa66cb9c96ccdd6bdc1397.jpeg" alt="保存修改" /></p>
+
+<p>点击右下角的<code class="language-plaintext highlighter-rouge">小飞机</code>，以连接服务器，首次会弹出截图所示对话框；</p>
+
+<p><img src="/assets/img/4a08fe79af81a243a3f3b19b.jpeg" alt="网路连接请求" /></p>
+
+<p>请打开您的浏览器，访问<code class="language-plaintext highlighter-rouge">https://google.com</code>以测试是否能科学上网，若您的操作正确，则可以访问。</p>
+
+<h2 id="22-macos">2.2 macOS</h2>
+
+<blockquote>
+  <p>shadowsocks的macOS端托管于<a href="https://github.com/shadowsocks/ShadowsocksX-NG">shadowsocks/ShadowsocksX-NG</a></p>
+</blockquote>
+
+<p>首先，到<a href="https://github.com/shadowsocks/ShadowsocksX-NG/releases">Releases</a>页面下载程序，页面截图如下：</p>
+
+<p><img src="/assets/img/5682cd985ae8f0b65c1c5026.png" alt="Releases" /></p>
+
+<p>下载完成后，由页面上的<a href="https://176.122.157.73:3457/zh/SHA-2">sha256和</a>，校验下载的文件是否相同；若不是，请尝试重新下载；若是，拖拽至<code class="language-plaintext highlighter-rouge">应用程序</code>中，双击运行，会在<code class="language-plaintext highlighter-rouge">菜单栏</code>中显示灰色的<code class="language-plaintext highlighter-rouge">小飞机</code>，截图如下：</p>
+
+<p><img src="/assets/img/df44e55c6fa45cce51c34611.png" alt="灰色小飞机" /></p>
+
+<p>单击小飞机，现实菜单，截图如下：</p>
+
+<p><img src="/assets/img/158f28d056ff2ba58109cfff.png" alt="菜单" /></p>
+
+<p>点击<code class="language-plaintext highlighter-rouge">服务器</code>&gt;<code class="language-plaintext highlighter-rouge">服务器设置</code>&gt;<code class="language-plaintext highlighter-rouge">+</code>，按照<code class="language-plaintext highlighter-rouge">您的服务器配置情况</code>填写数据项，点击<code class="language-plaintext highlighter-rouge">确定</code>，再次进入<code class="language-plaintext highlighter-rouge">服务器设置</code>，截图如下：</p>
+
+<p><img src="/assets/img/ea338fdadb00ac196ee80271.png" alt="服务器设置" /></p>
+
+<p>您可能已经观察到，Shadowsocks默认选择了<code class="language-plaintext highlighter-rouge">PAC自动模式</code>，若您刚接触此软件，请保留此设置，截图如下：</p>
+
+<p><img src="/assets/img/eddf799938980012c5f15b9b.png" alt="PAC自动模式" /></p>
+
+<p>点击菜单栏的小飞机&gt;<code class="language-plaintext highlighter-rouge">打开 Shadowsocks</code>，小飞机由<code class="language-plaintext highlighter-rouge">灰色</code>变为<code class="language-plaintext highlighter-rouge">黑色</code>，截图如下：</p>
+
+<p><img src="/assets/img/76be647b40baf2f0ea30c453.png" alt="黑色小飞机" /></p>
+
+<p>请打开您的浏览器，访问<code class="language-plaintext highlighter-rouge">https://google.com</code>以测试是否能科学上网，若您的操作正确，则可以访问。</p>
+
+<h2 id="23-manjaro-linux">2.3 Manjaro Linux</h2>
+
+<blockquote>
+  <p>分为<code class="language-plaintext highlighter-rouge">Shadowsocks客户端</code>和<code class="language-plaintext highlighter-rouge">浏览器插件</code>两部分</p>
+</blockquote>
+
+<h3 id="231-shadowsocks客户端">2.3.1 Shadowsocks客户端</h3>
+
+<blockquote>
+  <p><a href="https://github.com/shadowsocks/shadowsocks-qt5/">shadowsocks/shadowsocks-qt5</a>是一个跨平台的客户端。</p>
+</blockquote>
+
+<p>在Linux操作系统上，我们通过包管理器安装shadowsocks-qt5，打开终端，执行Bash命令：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>pacman <span class="nt">-Syy</span>
+<span class="nb">sudo </span>pacman <span class="nt">-S</span> shadowsocks-qt5
+</code></pre></div></div>
+
+<p>安装完成后，打开shadowsocks-qt5，截图如下：</p>
+
+<p><img src="/assets/img/6dfba8e2dbaf17a04ab234a0.png" alt="shadowsocks-qt5截图" /></p>
+
+<p>点击菜单<code class="language-plaintext highlighter-rouge">Connection</code>&gt;<code class="language-plaintext highlighter-rouge">Add</code>&gt;<code class="language-plaintext highlighter-rouge">Manually</code>，截图如下：</p>
+
+<p><img src="/assets/img/42312a33d953f5cb2f25a985.png" alt="Manually" /></p>
+
+<p>按照<code class="language-plaintext highlighter-rouge">您的服务器配置情况</code>填写数据项，截图如下：</p>
+
+<p><img src="/assets/img/f8cb05318c5e44c0d012d919.png" alt="服务器配置" /></p>
+
+<p>点击<code class="language-plaintext highlighter-rouge">OK</code>，选中刚刚创建的服务器项，点击菜单<code class="language-plaintext highlighter-rouge">Connection</code>&gt;<code class="language-plaintext highlighter-rouge">Connect</code>，若您的操作正确，则服务器项的<code class="language-plaintext highlighter-rouge">Status</code>为<code class="language-plaintext highlighter-rouge">Connected</code>。</p>
+
+<h3 id="232-浏览器插件">2.3.2 浏览器插件</h3>
+
+<blockquote>
+  <p><a href="https://github.com/FelisCatus/SwitchyOmega">FelisCatus/SwitchyOmega</a>项目提供了<code class="language-plaintext highlighter-rouge">Chrome(或者Chromium)</code>和<code class="language-plaintext highlighter-rouge">Firefox</code>的代理插件，本部分演示在Chrome浏览器的操作。</p>
+</blockquote>
+
+<p>首先，到<a href="https://github.com/FelisCatus/SwitchyOmega/releases">Releases</a>下载<a href="https://github.com/FelisCatus/SwitchyOmega/releases/download/v2.5.20/SwitchyOmega_Chromium.crx">SwitchyOmega_Chromium.crx</a>安装包；在Chrome地址栏输入<code class="language-plaintext highlighter-rouge">chrome://extensions/</code>并回车，进入拓展程序界面，点击右上角的<code class="language-plaintext highlighter-rouge">开发者模式</code>，将下载好的SwitchyOmega_Chromium.crx文件拖拽到此界面，安装；</p>
+
+<p>安装完成后，自动打开设置界面，您可以跟随教程学习；完成后，点击<code class="language-plaintext highlighter-rouge">PROFILES</code>&gt;<code class="language-plaintext highlighter-rouge">proxy</code>，根据<code class="language-plaintext highlighter-rouge">2.3.1 Shadowsocks客户端</code>的配置来设置<code class="language-plaintext highlighter-rouge">Proxy servers</code>，<code class="language-plaintext highlighter-rouge">Protocol</code>选择<code class="language-plaintext highlighter-rouge">SOCKS5</code>，<code class="language-plaintext highlighter-rouge">Server</code>设置<code class="language-plaintext highlighter-rouge">127.0.0.1</code>，<code class="language-plaintext highlighter-rouge">Port</code>设置<code class="language-plaintext highlighter-rouge">1080</code>，点击<code class="language-plaintext highlighter-rouge">ACTIONS</code>&gt;<code class="language-plaintext highlighter-rouge">Apply changes</code>，以保存设置，截图如下：</p>
+
+<p><img src="/assets/img/3c718b8e86081da611540e26.png" alt="设置Proxy servers" /></p>
+
+<p>点击<code class="language-plaintext highlighter-rouge">地址栏</code>右边的<code class="language-plaintext highlighter-rouge">小黑圈</code>，选择<code class="language-plaintext highlighter-rouge">proxy</code>，访问<code class="language-plaintext highlighter-rouge">https://google.com</code>，若您的操作正确，则可以访问；</p>
+
+<blockquote>
+  <p><code class="language-plaintext highlighter-rouge">proxy</code>模式下，所有流量都通过代理服务器，您可以使用<code class="language-plaintext highlighter-rouge">auto switch</code>模式，自动添加代理规则；更多信息请查看<a href="https://github.com/FelisCatus/SwitchyOmega/wiki">wiki</a></p>
+</blockquote>
+
+  </div><a class="u-url" href="/2018/10/10/%E5%9F%BA%E4%BA%8EShadowsocks%E7%9A%84%E7%A7%91%E5%AD%A6%E4%B8%8A%E7%BD%91.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">/home/zenuo</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">/home/zenuo</li><li><a class="u-email" href="mailto:zenuo@protonmail.com">zenuo@protonmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/zenuo"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">zenuo</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>The quieter you become, the more you are able to hear.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

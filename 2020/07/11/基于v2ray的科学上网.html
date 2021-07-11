@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>基于v2ray的科学上网 | /home/zenuo</title>
+<meta name="generator" content="Jekyll v4.2.0" />
+<meta property="og:title" content="基于v2ray的科学上网" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="本篇笔记尝试从v2ray是什么、浅谈工作原理、运行服务端、运行客户端四个方面，通过少许命令和配置内容，让我们能迅速上手使用v2ray。" />
+<meta property="og:description" content="本篇笔记尝试从v2ray是什么、浅谈工作原理、运行服务端、运行客户端四个方面，通过少许命令和配置内容，让我们能迅速上手使用v2ray。" />
+<link rel="canonical" href="https://zenuo.github.io/2020/07/11/%E5%9F%BA%E4%BA%8Ev2ray%E7%9A%84%E7%A7%91%E5%AD%A6%E4%B8%8A%E7%BD%91.html" />
+<meta property="og:url" content="https://zenuo.github.io/2020/07/11/%E5%9F%BA%E4%BA%8Ev2ray%E7%9A%84%E7%A7%91%E5%AD%A6%E4%B8%8A%E7%BD%91.html" />
+<meta property="og:site_name" content="/home/zenuo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-07-11T00:00:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="基于v2ray的科学上网" />
+<script type="application/ld+json">
+{"description":"本篇笔记尝试从v2ray是什么、浅谈工作原理、运行服务端、运行客户端四个方面，通过少许命令和配置内容，让我们能迅速上手使用v2ray。","url":"https://zenuo.github.io/2020/07/11/%E5%9F%BA%E4%BA%8Ev2ray%E7%9A%84%E7%A7%91%E5%AD%A6%E4%B8%8A%E7%BD%91.html","@type":"BlogPosting","headline":"基于v2ray的科学上网","dateModified":"2020-07-11T00:00:00+00:00","datePublished":"2020-07-11T00:00:00+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://zenuo.github.io/2020/07/11/%E5%9F%BA%E4%BA%8Ev2ray%E7%9A%84%E7%A7%91%E5%AD%A6%E4%B8%8A%E7%BD%91.html"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://zenuo.github.io/feed.xml" title="/home/zenuo" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">/home/zenuo</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">基于v2ray的科学上网</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2020-07-11T00:00:00+00:00" itemprop="datePublished">Jul 11, 2020
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>本篇笔记尝试从<code class="language-plaintext highlighter-rouge">v2ray是什么</code>、<code class="language-plaintext highlighter-rouge">浅谈工作原理</code>、<code class="language-plaintext highlighter-rouge">运行服务端</code>、<code class="language-plaintext highlighter-rouge">运行客户端</code>四个方面，通过少许命令和配置内容，让我们能迅速上手使用v2ray。</p>
+
+<h1 id="v2ray是什么">v2ray是什么？</h1>
+
+<blockquote>
+  <p><a href="https://www.v2ray.com/">Project V</a> 是一个工具集合，它可以帮助你打造专属的基础通信网络。Project V 的核心工具称为V2Ray，其主要负责网络协议和功能的实现，与其它 Project V 通信。V2Ray 可以单独运行，也可以和其它工具配合，以提供简便的操作流程。</p>
+</blockquote>
+
+<p>当然，<a href="https://github.com/v2ray/v2ray-core">v2ray</a>是开源的，主要特性如下：</p>
+
+<ul>
+  <li>多入口多出口: 一个 V2Ray 进程可并发支持多个入站和出站协议，每个协议可独立工作。</li>
+  <li>可定制化路由: 入站流量可按配置由不同的出口发出。轻松实现按区域或按域名分流，以达到最优的网络性能。</li>
+  <li>多协议支持: V2Ray 可同时开启多个协议支持，包括 Socks、HTTP、Shadowsocks、VMess 等。每个协议可单独设置传输载体，比如 TCP、mKCP、WebSocket 等。</li>
+  <li>隐蔽性: V2Ray 的节点可以伪装成正常的网站（HTTPS），将其流量与正常的网页流量混淆，以避开第三方干扰。</li>
+  <li>反向代理: 通用的反向代理支持，可实现内网穿透功能。</li>
+  <li>多平台支持: 原生支持所有常见平台，如 Windows、Mac OS、Linux，并已有第三方支持移动平台。</li>
+</ul>
+
+<h1 id="浅谈工作原理">浅谈工作原理</h1>
+
+<p>使用方式上，<code class="language-plaintext highlighter-rouge">v2ray</code>与其他代理<a href="https://github.com/shadowsocks/shadowsocks">shadowsocks</a>工具类似，需要运行<code class="language-plaintext highlighter-rouge">服务端</code>和<code class="language-plaintext highlighter-rouge">客户端</code>两个实例(instance)。</p>
+
+<p>常见的场景里，客户端运行在PC、手机等终端设备，服务端运行在云主机等服务器上。例如，我们若要在手机访问<a href="https://www.google.com">Google搜索引擎</a>时，如果手机所在的网络禁用了Google的IP和域名，那么手机是无法直接访问的，需要由一个「手机可以访问的中间网络节点，且该节点能访问Google搜索引擎」的代理来起到一个桥梁的作用：手机的<code class="language-plaintext highlighter-rouge">浏览器</code>把<code class="language-plaintext highlighter-rouge">HTTP请求</code>发送到<code class="language-plaintext highlighter-rouge">代理</code>，<code class="language-plaintext highlighter-rouge">代理</code>把<code class="language-plaintext highlighter-rouge">HTTP请求</code>发送到<code class="language-plaintext highlighter-rouge">Google搜索引擎</code>，<code class="language-plaintext highlighter-rouge">Google搜索引擎</code>的<code class="language-plaintext highlighter-rouge">HTTP响应</code>会顺着这条路线最终返回给终端设备的<code class="language-plaintext highlighter-rouge">浏览器</code>。</p>
+
+<p>在这里，v2ray和shadowsocks等网络工具就扮演了代理这个角色，但仅仅做网络流量代理是不够的，因为网络流量由网络协议承载，若协议的特征能被防火墙识别，被识别就意味着防火墙有理由把我们的代理IP添加到黑名单中，导致无法终端设备无法访问这个代理；所以网络工具还需要支持不易被识别的网络协议，这些协议往往不被浏览器等应用支持，需要由网络工具自己来支持，所以用作代理的网络工具需要运行<code class="language-plaintext highlighter-rouge">客户端</code>和<code class="language-plaintext highlighter-rouge">服务端</code>。</p>
+
+<p>浏览器等终端应用通过HTTP、Socks5等常见的网络协议把流量发送给代理<code class="language-plaintext highlighter-rouge">客户端</code>，<code class="language-plaintext highlighter-rouge">客户端</code>再通过<code class="language-plaintext highlighter-rouge">特定的协议</code>将流量发送给代理<code class="language-plaintext highlighter-rouge">服务端</code>；</p>
+
+<p>在v2ray的设计中，终端应用到代理<code class="language-plaintext highlighter-rouge">客户端</code>的接口被称为<code class="language-plaintext highlighter-rouge">Inbound</code>（入口），代理<code class="language-plaintext highlighter-rouge">服务端</code>到实际目的地（例如Google搜索引擎）的接口被称为<code class="language-plaintext highlighter-rouge">Outbound</code>（出口）。</p>
+
+<h1 id="运行服务端">运行服务端</h1>
+
+<blockquote>
+  <p>摘自<a href="https://www.v2ray.com/">Project V官网</a>，并假设你的服务端运行在Linux操作系统上。</p>
+</blockquote>
+
+<h2 id="1-下载-v2ray">1 下载 V2Ray</h2>
+
+<p>预编译的压缩包可以在如下几个站点找到：</p>
+
+<ul>
+  <li>Github Release: github.com/v2ray/v2ray-core</li>
+  <li>Github 分流: github.com/v2ray/dist</li>
+</ul>
+
+<p>压缩包均为 zip 格式，找到对应平台的压缩包，下载解压即可使用。</p>
+
+<h2 id="2-验证安装包">2 验证安装包</h2>
+
+<p>V2Ray 提供两种验证方式：</p>
+
+<ol>
+  <li>安装包 zip 文件的 SHA1 / SHA256 摘要，在每个安装包对应的.dgst文件中可以找到。</li>
+  <li>可运行程序（v2ray 或 v2ray.exe）的 gpg 签名，文件位于安装包中的 v2ray.sig 或 v2ray.exe.sig。签名公钥可以在<a href="https://raw.githubusercontent.com/v2ray/v2ray-core/master/release/verify/official_release.asc">代码库</a>中找到。</li>
+</ol>
+
+<h2 id="3-linux-安装脚本">3 Linux 安装脚本</h2>
+
+<p>V2Ray 提供了一个在 Linux 中的自动化安装脚本。这个脚本会自动检测有没有安装过 V2Ray，如果没有，则进行完整的安装和配置；如果之前安装过 <code class="language-plaintext highlighter-rouge">V2Ray</code>，则只更新 <code class="language-plaintext highlighter-rouge">V2Ray 二进制程序</code>而不更新配置。</p>
+
+<p>以下指令假设已在 <code class="language-plaintext highlighter-rouge">su</code> 环境下，如果不是，请先运行 <code class="language-plaintext highlighter-rouge">sudo su</code>。</p>
+
+<p>运行下面的指令下载并安装 V2Ray。当 <code class="language-plaintext highlighter-rouge">yum</code> 或 <code class="language-plaintext highlighter-rouge">apt-get</code> 可用的情况下，此脚本会自动安装 <code class="language-plaintext highlighter-rouge">unzip</code> 和 <code class="language-plaintext highlighter-rouge">daemon</code>。这两个组件是安装 V2Ray 的必要组件。如果你使用的系统不支持 yum 或 apt-get，请自行安装 unzip 和 daemon</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bash &lt;<span class="o">(</span>curl <span class="nt">-L</span> <span class="nt">-s</span> https://install.direct/go.sh<span class="o">)</span>
+</code></pre></div></div>
+
+<p>此脚本会自动安装以下文件：</p>
+
+<ul>
+  <li>/usr/bin/v2ray/v2ray：V2Ray 程序；</li>
+  <li>/usr/bin/v2ray/v2ctl：V2Ray 工具；</li>
+  <li>/etc/v2ray/config.json：配置文件；</li>
+  <li>/usr/bin/v2ray/geoip.dat：IP 数据文件</li>
+  <li>/usr/bin/v2ray/geosite.dat：域名数据文件</li>
+</ul>
+
+<p>此脚本会配置自动运行脚本。自动运行脚本会在系统重启之后，自动运行 V2Ray。目前自动运行脚本只支持带有 Systemd 的系统，以及 Debian / Ubuntu 全系列。</p>
+
+<ul>
+  <li>/etc/systemd/system/v2ray.service: Systemd</li>
+  <li>/etc/init.d/v2ray: SysV</li>
+</ul>
+
+<p>脚本运行完成后，你需要：</p>
+
+<ul>
+  <li>编辑 /etc/v2ray/config.json 文件来配置你需要的代理方式；</li>
+  <li>运行 service v2ray start 来启动 V2Ray 进程；</li>
+  <li>
+    <table>
+      <tbody>
+        <tr>
+          <td>之后可以使用 service v2ray start</td>
+          <td>stop</td>
+          <td>status</td>
+          <td>reload</td>
+          <td>restart</td>
+          <td>force-reload 控制 V2Ray 的运行。</td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<h2 id="4-gosh-参数">4 go.sh 参数</h2>
+
+<p>go.sh 支持如下参数，可在手动安装时根据实际情况调整：</p>
+
+<ul>
+  <li>-p 或 –proxy: 使用代理服务器来下载 V2Ray 的文件，格式与 curl 接受的参数一致，比如 “socks5://127.0.0.1:1080” 或 “http://127.0.0.1:3128”。</li>
+  <li>-f 或 –force: 强制安装。在默认情况下，如果当前系统中已有最新版本的 V2Ray，go.sh 会在检测之后就退出。如果需要强制重装一遍，则需要指定该参数。</li>
+  <li>–version: 指定需要安装的版本，比如 “v1.13”。默认值为最新版本。</li>
+  <li>–local: 使用一个本地文件进行安装。如果你已经下载了某个版本的 V2Ray，则可通过这个参数指定一个文件路径来进行安装。</li>
+</ul>
+
+<p>示例：</p>
+
+<ul>
+  <li>使用地址为 127.0.0.1:1080 的 SOCKS 代理下载并安装最新版本：./go.sh -p socks5://127.0.0.1:1080</li>
+  <li>安装本地的 v1.13 版本：./go.sh –version v1.13 –local /path/to/v2ray.zip</li>
+</ul>
+
+<h2 id="5-配置服务端">5 配置服务端</h2>
+
+<p>一个参考，Inbound协议为vmess，outbound协议为freedom：</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"log"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"loglevel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"warning"</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="nl">"inbounds"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"port"</span><span class="p">:</span><span class="w"> </span><span class="err">（您配置的服务端监听的端口，整数，需要被服务器的防火墙开放TCP协议访问）</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"protocol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vmess"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"settings"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"clients"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+          </span><span class="p">{</span><span class="w">
+            </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"您生成的UUID，可以通过Linux命令uuidgen生成"</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"level"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"alterId"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"security"</span><span class="p">:</span><span class="w"> </span><span class="s2">"auto"</span><span class="w">
+          </span><span class="p">}</span><span class="w">
+        </span><span class="p">]</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="nl">"streamSettings"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"network"</span><span class="p">:</span><span class="w"> </span><span class="s2">"h2"</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"httpSettings"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="nl">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/hello"</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="nl">"security"</span><span class="p">:</span><span class="w"> </span><span class="s2">"tls"</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"tlsSettings"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="nl">"certificates"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+            </span><span class="p">{</span><span class="w">
+              </span><span class="nl">"certificateFile"</span><span class="p">:</span><span class="w"> </span><span class="s2">"您的PEM certificate文件"</span><span class="p">,</span><span class="w">
+              </span><span class="nl">"keyFile"</span><span class="p">:</span><span class="w"> </span><span class="s2">"您的PEM RSA private key文件"</span><span class="w">
+            </span><span class="p">}</span><span class="w">
+          </span><span class="p">]</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">],</span><span class="w">
+  </span><span class="nl">"outbounds"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"protocol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"freedom"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"settings"</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">],</span><span class="w">
+  </span><span class="nl">"routing"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"rules"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+      </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"field"</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"ip"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+          </span><span class="s2">"geoip:private"</span><span class="w">
+        </span><span class="p">],</span><span class="w">
+        </span><span class="nl">"outboundTag"</span><span class="p">:</span><span class="w"> </span><span class="s2">"blocked"</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">]</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>您可以通过下面的脚本来生成一份自签证书：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/sh</span>
+
+<span class="c"># create self-signed server certificate:</span>
+
+<span class="nb">read</span> <span class="nt">-p</span> <span class="s2">"Enter your domain [www.example.com]: "</span> DOMAIN
+
+<span class="nb">echo</span> <span class="s2">"Create server key..."</span>
+
+openssl genrsa <span class="nt">-des3</span> <span class="nt">-out</span> <span class="nv">$DOMAIN</span>.key 4096
+
+<span class="nb">echo</span> <span class="s2">"Create server certificate signing request..."</span>
+
+<span class="nv">SUBJECT</span><span class="o">=</span><span class="s2">"/C=US/ST=Mars/L=Mars/O=Mars/OU=Mars/CN=</span><span class="nv">$DOMAIN</span><span class="s2">"</span>
+
+openssl req <span class="nt">-new</span> <span class="nt">-subj</span> <span class="nv">$SUBJECT</span> <span class="nt">-key</span> <span class="nv">$DOMAIN</span>.key <span class="nt">-out</span> <span class="nv">$DOMAIN</span>.csr
+
+<span class="nb">echo</span> <span class="s2">"Remove password..."</span>
+
+<span class="nb">mv</span> <span class="nv">$DOMAIN</span>.key <span class="nv">$DOMAIN</span>.origin.key
+openssl rsa <span class="nt">-in</span> <span class="nv">$DOMAIN</span>.origin.key <span class="nt">-out</span> <span class="nv">$DOMAIN</span>.key
+
+<span class="nb">echo</span> <span class="s2">"Sign SSL certificate..."</span>
+
+openssl x509 <span class="nt">-req</span> <span class="nt">-days</span> 365 <span class="nt">-in</span> <span class="nv">$DOMAIN</span>.csr <span class="nt">-signkey</span> <span class="nv">$DOMAIN</span>.key <span class="nt">-out</span> <span class="nv">$DOMAIN</span>.crt
+
+<span class="nb">echo</span> <span class="s2">"TODO:"</span>
+<span class="nb">echo</span> <span class="s2">"Copy </span><span class="nv">$DOMAIN</span><span class="s2">.crt to /etc/nginx/ssl/</span><span class="nv">$DOMAIN</span><span class="s2">.crt"</span>
+<span class="nb">echo</span> <span class="s2">"Copy </span><span class="nv">$DOMAIN</span><span class="s2">.key to /etc/nginx/ssl/</span><span class="nv">$DOMAIN</span><span class="s2">.key"</span>
+<span class="nb">echo</span> <span class="s2">"Add configuration in nginx:"</span>
+<span class="nb">echo</span> <span class="s2">"server {"</span>
+<span class="nb">echo</span> <span class="s2">" ..."</span>
+<span class="nb">echo</span> <span class="s2">" listen 443 ssl;"</span>
+<span class="nb">echo</span> <span class="s2">" ssl_certificate /etc/nginx/ssl/</span><span class="nv">$DOMAIN</span><span class="s2">.crt;"</span>
+<span class="nb">echo</span> <span class="s2">" ssl_certificate_key /etc/nginx/ssl/</span><span class="nv">$DOMAIN</span><span class="s2">.key;"</span>
+<span class="nb">echo</span> <span class="s2">"}"</span>
+</code></pre></div></div>
+
+<h1 id="运行客户端">运行客户端</h1>
+
+<h2 id="windows">Windows</h2>
+
+<blockquote>
+  <p>演示在<code class="language-plaintext highlighter-rouge">Windows</code>操作系统运行<code class="language-plaintext highlighter-rouge">v2ray-core</code>客户端</p>
+</blockquote>
+
+<p>在<a href="https://github.com/v2ray/v2ray-core/releases">Github Release</a>页面下载<a href="https://github.com/v2ray/v2ray-core/releases/download/v4.26.0/v2ray-windows-64.zip">v2ray-windows-64.zip</a>，解压到文件夹<code class="language-plaintext highlighter-rouge">D:\bin\v2ray</code>；用记事本等软件新建一个名为<code class="language-plaintext highlighter-rouge">v2ray.bat</code>的批处理文件，达到双击这个文件启动v2ray的作用，内容为：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>start D:\bin\v2ray\wv2ray.exe -config D:\bin\v2ray\vpoint_socks_vmess.json
+</code></pre></div></div>
+
+<p><img src="/assets/img/27da7be3a641f73e22f6380e.png" alt="27da7be3a641f73e22f6380e.png" /></p>
+
+<p>配置文件<code class="language-plaintext highlighter-rouge">D:\bin\v2ray\vpoint_socks_vmess.json</code>与您的服务端配置有关，对应上面的服务端的参考配置，客户端的参考配置：</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"log"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"loglevel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"warning"</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="nl">"inbounds"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"port"</span><span class="p">:</span><span class="w"> </span><span class="mi">1080</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"listen"</span><span class="p">:</span><span class="w"> </span><span class="s2">"127.0.0.1"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"protocol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"socks"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"sniffing"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"enabled"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"destOverride"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+          </span><span class="s2">"http"</span><span class="p">,</span><span class="w">
+          </span><span class="s2">"tls"</span><span class="w">
+        </span><span class="p">]</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="nl">"settings"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"auth"</span><span class="p">:</span><span class="w"> </span><span class="s2">"noauth"</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"udp"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">],</span><span class="w">
+  </span><span class="nl">"outbounds"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"protocol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vmess"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"settings"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"vnext"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+          </span><span class="p">{</span><span class="w">
+            </span><span class="nl">"address"</span><span class="p">:</span><span class="w"> </span><span class="s2">"您的服务器的IP"</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"port"</span><span class="p">:</span><span class="w"> </span><span class="err">（您配置的服务端监听的端口）</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"users"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+              </span><span class="p">{</span><span class="w">
+                </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"您生成的UUID，需要与服务端配置相同"</span><span class="p">,</span><span class="w">
+                </span><span class="nl">"level"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+                </span><span class="nl">"alterId"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+                </span><span class="nl">"security"</span><span class="p">:</span><span class="w"> </span><span class="s2">"auto"</span><span class="w">
+              </span><span class="p">}</span><span class="w">
+            </span><span class="p">]</span><span class="w">
+          </span><span class="p">}</span><span class="w">
+        </span><span class="p">]</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="nl">"streamSettings"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"network"</span><span class="p">:</span><span class="w"> </span><span class="s2">"h2"</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"httpSettings"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="nl">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/hello"</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="nl">"security"</span><span class="p">:</span><span class="w"> </span><span class="s2">"tls"</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"tlsSettings"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="nl">"serverName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"您的PEM certificate文件的域名"</span><span class="p">,</span><span class="w">
+          </span><span class="nl">"allowInsecure"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>保存配置文件后，即可双击<code class="language-plaintext highlighter-rouge">v2ray.bat</code>运行，若客户端配置争取，则能在<code class="language-plaintext highlighter-rouge">任务管理器</code>看到<code class="language-plaintext highlighter-rouge">w2ray.exe</code>运行：</p>
+
+<p><img src="/assets/img/8034d8f58c0885234da7741d.png" alt="8034d8f58c0885234da7741d.png" /></p>
+
+<p>接下来在<code class="language-plaintext highlighter-rouge">Chrome</code>中安装<code class="language-plaintext highlighter-rouge">Proxy SwitchyOmega</code>插件，关闭所有打开的<code class="language-plaintext highlighter-rouge">Chrome</code>窗口，然后在powershell运行下面命令，运行一个Chrome实例，所有流量由<code class="language-plaintext highlighter-rouge">socks5://localhost:1080</code>代理，没错，这个代理就是我们刚刚在本地运行的v2ray实例：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>C:\Users\（您的用户名）\AppData\Local\Google\Chrome\Application\chrome.exe --proxy-server="socks5://localhost:1080"
+</code></pre></div></div>
+
+<p>访问<code class="language-plaintext highlighter-rouge">https://chrome.google.com/webstore/detail/proxy-switchyomega/padekgcemlokbadohgkifijomclgjgif</code>，或者搜索<code class="language-plaintext highlighter-rouge">Proxy SwitchyOmega</code>：</p>
+
+<p><img src="/assets/img/e6df7231e15a13db9d8709a7.png" alt="e6df7231e15a13db9d8709a7.png" /></p>
+
+<p>安装插件，设置代理服务器为本地的实例：</p>
+
+<p><img src="/assets/img/2e67f16ba9663bba6ad93099.png" alt="2e67f16ba9663bba6ad93099.png" /></p>
+
+<p>点击图标并设置为<code class="language-plaintext highlighter-rouge">auto switch</code>：</p>
+
+<p><img src="/assets/img/bb4db2169fc3b9132cef21d6.png" alt="bb4db2169fc3b9132cef21d6.png" /></p>
+
+<p>关闭当前所有Chrome窗口，不指定代理运行一个新窗口，访问<code class="language-plaintext highlighter-rouge">https://www.google.com</code>，等待<code class="language-plaintext highlighter-rouge">图标显示橙色数字</code>时，点击域名，点击<code class="language-plaintext highlighter-rouge">proxy</code>，将域名<code class="language-plaintext highlighter-rouge">goole.com</code>添加到代理规则中：</p>
+
+<p><img src="/assets/img/23eed0612626b1d059651de7.png" alt="23eed0612626b1d059651de7.png" /></p>
+
+<p>再刷新页面，不出意外的话，成功访问：</p>
+
+<p><img src="/assets/img/d8e8dc81f24969c17334a14e.png" alt="d8e8dc81f24969c17334a14e.png" /></p>
+
+<blockquote>
+  <p>后续再补充安卓、iOS等其他客户端</p>
+</blockquote>
+
+<h2 id="android">Android</h2>
+
+<p>我们这里用到<a href="https://github.com/2dust/v2rayNG">V2rayNG</a>，一款开源的安卓软件，所有版本在https://github.com/2dust/v2rayNG/releases可以看到（请使用浏览器打开）；</p>
+
+<p>安装成功之后，因为V2rayNG只作为客户端，不提供代理服务，所以需要输入服务器配置。</p>
+
+<p>您可以自己搭建服务器，或者使用朋友的服务器（也有服务商提供付费服务），V2rayNG提供了【扫描二维码】的功能，便于分享服务器配置，如下：</p>
+
+<p><img src="/assets/img/68318ade7f2c3e28619e638f.png" alt="68318ade7f2c3e28619e638f.png" /></p>
+
+<p>导入成功之后，【配置文件】列表中会添加一个配置，如下：</p>
+
+<p><img src="/assets/img/00f2f986bc6135c0f6ee4a5a.png" alt="00f2f986bc6135c0f6ee4a5a.png" /></p>
+
+<p>就快完成了，点击左上角的三道杠（上图蓝色圈出）呼出设置菜单栏，点击【设置】</p>
+
+<p><img src="/assets/img/ecab8a2864e5b8d018f344c7.png" alt="ecab8a2864e5b8d018f344c7.png" /></p>
+
+<p>将【预定义规则】设置为「绕过局域网及大陆地址」，使得访问大陆网址和局域网地址不使用代理：</p>
+
+<p><img src="/assets/img/4c471ee00f340cd3fee55a53.png" alt="4c471ee00f340cd3fee55a53.png" /></p>
+
+<p>再次点击左上角，回到【配置文件】，选中我们刚刚导入的配置，然后点击右下角的V字按钮，启动服务（首次启动时，系统会弹出提示框，允许即可）：</p>
+
+<p><img src="/assets/img/9c898636fba3070ecce9de74.png" alt="9c898636fba3070ecce9de74.png" /></p>
+
+<p>好了，试试在浏览器中访问https://www.google.com/吧，如果访问成功，说明已经可以科学上网了。</p>
+
+<h1 id="参考">参考</h1>
+
+<ol>
+  <li><a href="https://www.systutorials.com/how-to-set-google-chromes-proxy-settings-in-command-line-on-linux">How to set Google Chrome’s proxy settings in command line on Linux?</a></li>
+  <li><a href="v2ray.com">Project V</a></li>
+</ol>
+
+  </div><a class="u-url" href="/2020/07/11/%E5%9F%BA%E4%BA%8Ev2ray%E7%9A%84%E7%A7%91%E5%AD%A6%E4%B8%8A%E7%BD%91.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">/home/zenuo</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">/home/zenuo</li><li><a class="u-email" href="mailto:zenuo@protonmail.com">zenuo@protonmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/zenuo"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">zenuo</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>The quieter you become, the more you are able to hear.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

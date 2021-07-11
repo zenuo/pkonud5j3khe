@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Spring框架bean作用域 | /home/zenuo</title>
+<meta name="generator" content="Jekyll v4.2.0" />
+<meta property="og:title" content="Spring框架bean作用域" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="在默认情况下，Spring应用上下文中所有bean都是作为以单例（singleton）的形式创建的。也就是说，不管给定的一个bean被注入到其他bean多少次，每次所注入的都是同一个实例。" />
+<meta property="og:description" content="在默认情况下，Spring应用上下文中所有bean都是作为以单例（singleton）的形式创建的。也就是说，不管给定的一个bean被注入到其他bean多少次，每次所注入的都是同一个实例。" />
+<link rel="canonical" href="https://zenuo.github.io/2017/09/02/Spring%E6%A1%86%E6%9E%B6Bean%E4%BD%9C%E7%94%A8%E5%9F%9F.html" />
+<meta property="og:url" content="https://zenuo.github.io/2017/09/02/Spring%E6%A1%86%E6%9E%B6Bean%E4%BD%9C%E7%94%A8%E5%9F%9F.html" />
+<meta property="og:site_name" content="/home/zenuo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-09-02T00:00:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Spring框架bean作用域" />
+<script type="application/ld+json">
+{"description":"在默认情况下，Spring应用上下文中所有bean都是作为以单例（singleton）的形式创建的。也就是说，不管给定的一个bean被注入到其他bean多少次，每次所注入的都是同一个实例。","url":"https://zenuo.github.io/2017/09/02/Spring%E6%A1%86%E6%9E%B6Bean%E4%BD%9C%E7%94%A8%E5%9F%9F.html","@type":"BlogPosting","headline":"Spring框架bean作用域","dateModified":"2017-09-02T00:00:00+00:00","datePublished":"2017-09-02T00:00:00+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://zenuo.github.io/2017/09/02/Spring%E6%A1%86%E6%9E%B6Bean%E4%BD%9C%E7%94%A8%E5%9F%9F.html"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://zenuo.github.io/feed.xml" title="/home/zenuo" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">/home/zenuo</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Spring框架bean作用域</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-09-02T00:00:00+00:00" itemprop="datePublished">Sep 2, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>在默认情况下，Spring应用上下文中所有bean都是作为以<strong>单例（singleton）</strong>的形式创建的。也就是说，不管给定的一个bean被注入到其他bean多少次，每次所注入的都是<strong>同一个实例</strong>。</p>
+
+<p>在大多数情况下，单例bean是很理想的方案。初始化和垃圾回收对象实例所带来的成本只留给一些小规模任务，在这些任务中，让对象保持无状态并且在应用中反复重用这些对象可能并不合理。</p>
+
+<p>有时候，可能会发现，你所使用的类是<strong>易变的（mutable）</strong>，它们会保持一些状态，因此重用是不安全的。在这种情况下，将class声明为单例的bean就不是什么好主意了，因为对象会被污染，稍后重用的时候会出现意想不到的问题。</p>
+
+<p>Spring定义了多种作用域，可以基于这些作用域创建bean，包括：</p>
+
+<ul>
+  <li><strong>单例（Singleton）</strong>：在整个应用中，只创建bean的一个实例。</li>
+  <li><strong>原型（Prototype）</strong>：每次注入或者通过Spring应用上下文获取的时候，都会创建一个新的bean实例。</li>
+  <li><strong>会话（Session）</strong>：在Web应用中，为每个会话创建一个bean实例。</li>
+  <li><strong>请求（Rquest）</strong>：在Web应用中，为每个请求创建一个bean实例。</li>
+</ul>
+
+<p>单例是默认的作用域，但是正如之前所述，对于易变的类型，这并不合适。如果选择其他的作用域，要使用<strong>@Scope</strong>注解，它可以与<strong><code class="language-plaintext highlighter-rouge">@Component</code></strong>或<strong><code class="language-plaintext highlighter-rouge">@Bean</code></strong>一起使用。</p>
+
+<p>例如，如果你使用组件扫描来发现和声明bean，那么你可以在bean的类上使用*<code class="language-plaintext highlighter-rouge">*@Scope</code>**注解，将其声明为原型bean：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Component</span>
+<span class="nd">@Scope</span><span class="o">(</span><span class="nc">ConfigurableBeanFactory</span><span class="o">.</span><span class="na">SCOPE_PROTOTYPE</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Notepad</span> <span class="o">{</span> <span class="o">...</span> <span class="o">}</span>
+</code></pre></div></div>
+
+<p>这里，使用<strong><code class="language-plaintext highlighter-rouge">ConfigurableBeanFactory</code></strong>类的<strong><code class="language-plaintext highlighter-rouge">SCOPE_PROTOTYPE</code></strong>常量设置了原型作用域。你当然也可以使用<strong><code class="language-plaintext highlighter-rouge">@Scope("prototype")</code></strong>，但是使用<strong><code class="language-plaintext highlighter-rouge">SCOPE_PROTOTYPE</code></strong>常量更加安全并且不易出错。</p>
+
+<p>如果你想在Java配置中将Notepad声明为原型bean，那么可以组合使用<code class="language-plaintext highlighter-rouge">@Scope</code>和<code class="language-plaintext highlighter-rouge">@Bean</code>来指定所需的作用域：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Bean</span>
+<span class="nd">@Scope</span><span class="o">(</span><span class="nc">ConfigurableBeanFactory</span><span class="o">.</span><span class="na">SCOPE_PROTOTYPE</span><span class="o">)</span>
+<span class="kd">public</span> <span class="nc">Notepad</span> <span class="nf">notepad</span><span class="o">()</span> <span class="o">{</span>
+  <span class="k">return</span> <span class="k">new</span> <span class="nf">Notepad</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>同样，如果你使用XML来配置bean的话，可以使用<strong><code class="language-plaintext highlighter-rouge">&lt;bean&gt;</code></strong>元素的<strong><code class="language-plaintext highlighter-rouge">scope</code></strong>属性来设置作用域：</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"notepad"</span>
+      <span class="na">class=</span><span class="s">"com.myapp.Notepad"</span>
+      <span class="na">scope=</span><span class="s">"prototype"</span> <span class="nt">/&gt;</span>
+</code></pre></div></div>
+
+<p>不管你使用哪种方式来声明原型作用域，每次注入或从Spring应用上下文中检索该bean的时候，都会创建新的实例。这样所导致的结果就是每次操作都能得到自己的Notepad实例。</p>
+
+<h2 id="1-使用会话和请求作用域">1 使用会话和请求作用域</h2>
+
+<p>在Web应用中，如果能够实例化在<strong>会话和请求范围</strong>内共享的bean，那将是非常有价值的事情。例如，在典型的电子商务应用中，可能会有一个bean代表<code class="language-plaintext highlighter-rouge">用户的购物车</code>。如果购物车是单例的话，那么将会导致所有的用户都会向同一个购物车中添加商品。另一方面，如果购物车是原型作用域的，那么在应用中某一个地方往购物车中添加商品，在应用的另外一个地方可能就不可用了，因为在这里注入的是另外一个原型作用域的购物车。</p>
+
+<p>就购物车bean来说，<code class="language-plaintext highlighter-rouge">会话作用域</code>是最为合适的，因为它<code class="language-plaintext highlighter-rouge">与给定的用户</code>关联性最大。要指定会话作用域，我们可以使用<strong><code class="language-plaintext highlighter-rouge">@Scope</code></strong>注解，它的使用方式与指定原型作用域是相同的：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Component</span>
+<span class="nd">@Scope</span><span class="o">(</span>
+    <span class="n">value</span><span class="o">=</span><span class="nc">WebApplicationContext</span><span class="o">.</span><span class="na">SCOPE_SESSION</span><span class="o">,</span>
+    <span class="n">proxyMode</span><span class="o">=</span><span class="nc">ScopedProxyMode</span><span class="o">.</span><span class="na">INTERFACES</span><span class="o">)</span>
+<span class="kd">public</span> <span class="nc">ShoppingCart</span> <span class="nf">cart</span><span class="o">()</span> <span class="o">{</span> <span class="o">...</span> <span class="o">}</span>
+</code></pre></div></div>
+
+<p>这里，我们将value设置成了WebApplicationContext中的SCOPE_SESSION常量（它的值是session）。这会告诉Spring为Web应用中的每个会话创建一个ShoppingCart。这会创建多个ShoppingCart bean的实例，但是对于给定的会话只会创建一个实例，在当前会话相关的操作中，这个bean实际上相当于单例的。</p>
+
+<p>要注意的是，<strong><code class="language-plaintext highlighter-rouge">@Scope</code></strong>同时还有一个<strong><code class="language-plaintext highlighter-rouge">proxyMode</code></strong>属性，它被设置成了<strong><code class="language-plaintext highlighter-rouge">ScopedProxyMode.INTERFACES</code></strong>。这个属性解决了将会话或请求作用域的bean注入到单例bean中所遇到的问题。在描述proxyMode属性之前，我们先来看一下proxyMode所解决问题的场景。</p>
+
+<p>假设我们要将ShoppingCart bean注入到单例StoreService bean的Setter方法中，如下所示：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">StoreService</span> <span class="o">{</span>
+
+  <span class="nd">@Autowired</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setShoppingCart</span><span class="o">(</span><span class="nc">ShoppingCart</span> <span class="n">shoppingCart</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">shoppingCart</span> <span class="o">=</span> <span class="n">shoppingCart</span><span class="o">;</span>
+  <span class="o">}</span>
+  <span class="o">...</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>因为StoreService是一个单例的bean，会在Spring应用上下文加载的时候创建。当它创建的时候，Spring会试图将ShoppingCart bean注入到setShoppingCart()方法中。但是ShoppingCart bean是<strong><code class="language-plaintext highlighter-rouge">会话作用域</code></strong>的，此时并不存在。直到某个用户进入系统，创建了会话之后，才会出现ShoppingCart实例。</p>
+
+<p>另外，系统中将会有多个ShoppingCart实例：<strong><code class="language-plaintext highlighter-rouge">每个用户一个</code></strong>。我们并不想让Spring注入某个固定的ShoppingCart实例到StoreService中。我们希望的是当StoreService处理购物车功能时，它所使用的ShoppingCart实例恰好是当前会话所对应的那一个。</p>
+
+<p>Spring<strong><code class="language-plaintext highlighter-rouge">并不会</code></strong>将实际的ShoppingCart bean注入到StoreService中，Spring会注入一个到<strong><code class="language-plaintext highlighter-rouge">ShoppingCart bean的代理</code></strong>，如图3.1所示。这个代理会暴露与ShoppingCart相同的方法，所以StoreService会认为它就是一个购物车。但是，当StoreService调用ShoppingCart的方法时，代理会对其进行<strong><code class="language-plaintext highlighter-rouge">懒解析</code></strong>并将调用<strong><code class="language-plaintext highlighter-rouge">委托</code></strong>给会话作用域内真正的ShoppingCart bean。</p>
+
+<p>现在，我们带着对这个作用域的理解，讨论一下proxyMode属性。如配置所示，proxyMode属性被设置成了ScopedProxyMode.INTERFACES，这<strong><code class="language-plaintext highlighter-rouge">表明这个代理要实现ShoppingCart接口</code></strong>，并将调用委托给实现bean。</p>
+
+<p>如果ShoppingCart是接口而不是类的话，这是可以的（也是最为理想的代理模式）。但如果ShoppingCart是一个具体的类的话，Spring就没有办法创建基于接口的代理了。此时，它必须使用<strong><code class="language-plaintext highlighter-rouge">CGLib</code></strong>来生成<strong><code class="language-plaintext highlighter-rouge">基于类的代理</code></strong>。所以，如果bean类型是具体类的话，我们必须要将proxyMode属性设置为<strong><code class="language-plaintext highlighter-rouge">ScopedProxyMode.TARGET_CLASS</code></strong>，以此来表明要以生成目标类扩展的方式创建代理。</p>
+
+<p>尽管我主要关注了会话作用域，但是请求作用域的bean会面临相同的装配问题。因此，请求作用域的bean应该也以作用域代理的方式进行注入。</p>
+
+<p><img src="/assets/img/d206d0ebe8d5ea1ed650dd5e.png" alt="图3.1　作用域代理能够延迟注入请求和会话作用域的bean" /></p>
+
+<p>图3.1　作用域代理能够延迟注入请求和会话作用域的bean</p>
+
+<h2 id="2-在xml中声明作用域代理">2 在XML中声明作用域代理</h2>
+
+<p>如果你需要使用XML来声明会话或请求作用域的bean，那么就不能使用@Scope注解及其proxyMode属性了。<strong><code class="language-plaintext highlighter-rouge">&lt;bean&gt;</code></strong>元素的<strong><code class="language-plaintext highlighter-rouge">scope属性</code></strong>能够设置bean的作用域，但是该怎样指定代理模式呢？</p>
+
+<p>要设置代理模式，我们需要使用Spring aop命名空间的一个新元素：</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"cart"</span>
+      <span class="na">class=</span><span class="s">"com.myapp.ShoppingCart"</span>
+      <span class="na">scope=</span><span class="s">"session"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;aop:scoped-proxy</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/bean&gt;</span>
+</code></pre></div></div>
+
+<p><strong><code class="language-plaintext highlighter-rouge">&lt;aop:scoped-proxy&gt;</code></strong>是与<strong><code class="language-plaintext highlighter-rouge">@Scope</code></strong>注解的proxyMode属性功能相同的Spring XML配置元素。它会告诉Spring为bean创建一个作用域代理。默认情况下，它会<strong><code class="language-plaintext highlighter-rouge">使用CGLib创建目标类的代理</code></strong>。但是我们也可以将<strong><code class="language-plaintext highlighter-rouge">proxy-target-class</code></strong>属性设置为false，进而要求它生成基于接口的代理：</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"cart"</span>
+      <span class="na">class=</span><span class="s">"com.myapp.ShoppingCart"</span>
+      <span class="na">scope=</span><span class="s">"session"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;aop:scoped-proxy</span> <span class="na">proxy-target-class=</span><span class="s">"false"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/bean&gt;</span>
+</code></pre></div></div>
+
+<p>为了使用<strong><code class="language-plaintext highlighter-rouge">&lt;aop:scoped-proxy&gt;</code></strong>元素，我们必须在XML配置中声明Spring的aop命名空间：</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;beans</span> <span class="na">xmlns=</span><span class="s">"http://www.springframework.org/schema/beans"</span>
+  <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
+  <span class="na">xmlns:aop=</span><span class="s">"http://www.springframework.org/schema/aop"</span>
+  <span class="na">xsi:schemaLocation=</span><span class="s">"
+    http://www.springframework.org/schema/aop
+    http://www.springframework.org/schema/aop/spring-aop.xsd
+    http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd"</span><span class="nt">&gt;</span>
+...
+<span class="nt">&lt;/beans&gt;</span>
+</code></pre></div></div>
+
+  </div><a class="u-url" href="/2017/09/02/Spring%E6%A1%86%E6%9E%B6Bean%E4%BD%9C%E7%94%A8%E5%9F%9F.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">/home/zenuo</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">/home/zenuo</li><li><a class="u-email" href="mailto:zenuo@protonmail.com">zenuo@protonmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/zenuo"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">zenuo</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>The quieter you become, the more you are able to hear.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

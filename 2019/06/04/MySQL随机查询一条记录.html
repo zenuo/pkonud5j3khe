@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Mysql随机查询一条记录 | /home/zenuo</title>
+<meta name="generator" content="Jekyll v4.2.0" />
+<meta property="og:title" content="Mysql随机查询一条记录" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="表结构" />
+<meta property="og:description" content="表结构" />
+<link rel="canonical" href="https://zenuo.github.io/2019/06/04/MySQL%E9%9A%8F%E6%9C%BA%E6%9F%A5%E8%AF%A2%E4%B8%80%E6%9D%A1%E8%AE%B0%E5%BD%95.html" />
+<meta property="og:url" content="https://zenuo.github.io/2019/06/04/MySQL%E9%9A%8F%E6%9C%BA%E6%9F%A5%E8%AF%A2%E4%B8%80%E6%9D%A1%E8%AE%B0%E5%BD%95.html" />
+<meta property="og:site_name" content="/home/zenuo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-06-04T00:00:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Mysql随机查询一条记录" />
+<script type="application/ld+json">
+{"description":"表结构","url":"https://zenuo.github.io/2019/06/04/MySQL%E9%9A%8F%E6%9C%BA%E6%9F%A5%E8%AF%A2%E4%B8%80%E6%9D%A1%E8%AE%B0%E5%BD%95.html","@type":"BlogPosting","headline":"Mysql随机查询一条记录","dateModified":"2019-06-04T00:00:00+00:00","datePublished":"2019-06-04T00:00:00+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://zenuo.github.io/2019/06/04/MySQL%E9%9A%8F%E6%9C%BA%E6%9F%A5%E8%AF%A2%E4%B8%80%E6%9D%A1%E8%AE%B0%E5%BD%95.html"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://zenuo.github.io/feed.xml" title="/home/zenuo" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">/home/zenuo</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Mysql随机查询一条记录</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-06-04T00:00:00+00:00" itemprop="datePublished">Jun 4, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h2 id="表结构">表结构</h2>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="nv">`poet`</span> <span class="p">(</span>
+  <span class="nv">`id`</span> <span class="nb">bigint</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="nb">unsigned</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="n">AUTO_INCREMENT</span><span class="p">,</span>
+  <span class="nv">`dynasty`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span> <span class="k">DEFAULT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="nv">`author`</span> <span class="nb">text</span> <span class="k">DEFAULT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="nv">`paragraph`</span> <span class="nb">text</span> <span class="k">DEFAULT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="nv">`strains`</span> <span class="nb">text</span> <span class="k">DEFAULT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="nv">`title`</span> <span class="nb">text</span> <span class="k">DEFAULT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="nv">`id`</span><span class="p">),</span>
+  <span class="k">KEY</span> <span class="nv">`poet_title`</span> <span class="p">(</span><span class="nv">`title`</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span> <span class="k">USING</span> <span class="n">BTREE</span><span class="p">,</span>
+  <span class="k">KEY</span> <span class="nv">`poet_dynasty`</span> <span class="p">(</span><span class="nv">`dynasty`</span><span class="p">)</span> <span class="k">USING</span> <span class="n">HASH</span><span class="p">,</span>
+  <span class="k">KEY</span> <span class="nv">`poet_author`</span> <span class="p">(</span><span class="nv">`author`</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span> <span class="k">USING</span> <span class="n">BTREE</span>
+<span class="p">)</span> <span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span> <span class="n">AUTO_INCREMENT</span><span class="o">=</span><span class="mi">311862</span> <span class="k">DEFAULT</span> <span class="n">CHARSET</span><span class="o">=</span><span class="n">utf8mb4</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="查询语句">查询语句</h2>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">r1</span><span class="p">.</span><span class="n">title</span><span class="p">,</span>
+       <span class="n">r1</span><span class="p">.</span><span class="n">author</span><span class="p">,</span>
+       <span class="n">r1</span><span class="p">.</span><span class="n">paragraph</span>
+<span class="k">FROM</span> <span class="n">poet</span> <span class="k">AS</span> <span class="n">r1</span>
+<span class="k">JOIN</span>
+  <span class="p">(</span><span class="k">SELECT</span> <span class="n">CEIL</span><span class="p">(</span><span class="n">RAND</span><span class="p">()</span> <span class="o">*</span>
+                 <span class="p">(</span><span class="k">SELECT</span> <span class="k">MAX</span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
+                  <span class="k">FROM</span> <span class="n">poet</span><span class="p">))</span> <span class="k">AS</span> <span class="n">id</span><span class="p">)</span> <span class="k">AS</span> <span class="n">r2</span>
+<span class="k">WHERE</span> <span class="n">r1</span><span class="p">.</span><span class="n">id</span> <span class="o">&gt;=</span> <span class="n">r2</span><span class="p">.</span><span class="n">id</span>
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="n">r1</span><span class="p">.</span><span class="n">id</span> <span class="k">ASC</span>
+<span class="k">LIMIT</span> <span class="mi">1</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>结果样例：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>*************************** 1. row ***************************
+    title: 雜詠下 林禽
+   author: 洪适
+paragraph: 蒙潤碧千顆，迎曦紅半頰。閱古憩鵝池，牽連青李帖。
+1 row in set (0.001 sec)
+</code></pre></div></div>
+
+<p>若要查询随机的一条<code class="language-plaintext highlighter-rouge">author</code>为<code class="language-plaintext highlighter-rouge">李白</code>的记录，此处使用存储过程来实现：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">DELIMITER</span> <span class="err">$</span>
+
+<span class="k">CREATE</span> <span class="k">DEFINER</span><span class="o">=</span><span class="nv">`app`</span><span class="o">@</span><span class="nv">`%`</span> <span class="k">PROCEDURE</span> <span class="nv">`random_poet_of_libai`</span><span class="p">(</span> <span class="p">)</span>
+<span class="k">BEGIN</span>
+<span class="k">SET</span> <span class="o">@</span><span class="n">_rand_index</span> <span class="p">:</span><span class="o">=</span> <span class="n">CEIL</span><span class="p">(</span> <span class="n">RAND</span><span class="p">(</span> <span class="p">)</span> <span class="o">*</span> <span class="p">(</span> <span class="k">SELECT</span> <span class="k">COUNT</span><span class="p">(</span> <span class="o">*</span> <span class="p">)</span> <span class="k">FROM</span> <span class="n">poet</span> <span class="k">WHERE</span> <span class="n">author</span> <span class="o">=</span> <span class="s1">'李白'</span> <span class="p">)</span> <span class="p">);</span>
+<span class="k">PREPARE</span> <span class="n">stmt</span> <span class="k">FROM</span> <span class="s1">'SELECT title, author, paragraph FROM poet WHERE author = </span><span class="se">\'</span><span class="s1">李白</span><span class="se">\'</span><span class="s1"> LIMIT ?, 1;'</span><span class="p">;</span>
+<span class="k">EXECUTE</span> <span class="n">stmt</span> <span class="k">USING</span> <span class="o">@</span><span class="n">_rand_index</span><span class="p">;</span>
+<span class="k">DEALLOCATE</span> <span class="k">PREPARE</span> <span class="n">stmt</span><span class="p">;</span>
+<span class="k">END</span>
+
+<span class="k">DELIMITER</span> <span class="p">;</span>
+
+<span class="k">CALL</span> <span class="n">random_poet_of_libai</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>结果样例：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>*************************** 1. row ***************************
+    title: 雜曲歌辭 鳴雁行
+   author: 李白
+paragraph: 胡雁鳴，辭燕山，昨發委羽朝度關。一一銜蘆枝，南飛散落天地間。連行接翼往復還，客居煙波寄湘吳。凌霜觸雪毛體枯，畏逢矰繳驚相呼。
+1 row in set (0.008 sec)
+</code></pre></div></div>
+
+<h2 id="参考">参考</h2>
+
+<ul>
+  <li><a href="https://stackoverflow.com/questions/4329396/mysql-select-10-random-rows-from-600k-rows-fast">MySQL select 10 random rows from 600K rows fast</a></li>
+  <li><a href="https://stackoverflow.com/a/10025538">Using variable in a LIMIT clause in MySQL</a></li>
+</ul>
+
+  </div><a class="u-url" href="/2019/06/04/MySQL%E9%9A%8F%E6%9C%BA%E6%9F%A5%E8%AF%A2%E4%B8%80%E6%9D%A1%E8%AE%B0%E5%BD%95.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">/home/zenuo</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">/home/zenuo</li><li><a class="u-email" href="mailto:zenuo@protonmail.com">zenuo@protonmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/zenuo"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">zenuo</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>The quieter you become, the more you are able to hear.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

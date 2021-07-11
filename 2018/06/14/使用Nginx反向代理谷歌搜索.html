@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>使用nginx反向代理谷歌搜索 | /home/zenuo</title>
+<meta name="generator" content="Jekyll v4.2.0" />
+<meta property="og:title" content="使用nginx反向代理谷歌搜索" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="1 什么是代理" />
+<meta property="og:description" content="1 什么是代理" />
+<link rel="canonical" href="https://zenuo.github.io/2018/06/14/%E4%BD%BF%E7%94%A8Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E8%B0%B7%E6%AD%8C%E6%90%9C%E7%B4%A2.html" />
+<meta property="og:url" content="https://zenuo.github.io/2018/06/14/%E4%BD%BF%E7%94%A8Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E8%B0%B7%E6%AD%8C%E6%90%9C%E7%B4%A2.html" />
+<meta property="og:site_name" content="/home/zenuo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-06-14T00:00:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="使用nginx反向代理谷歌搜索" />
+<script type="application/ld+json">
+{"description":"1 什么是代理","url":"https://zenuo.github.io/2018/06/14/%E4%BD%BF%E7%94%A8Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E8%B0%B7%E6%AD%8C%E6%90%9C%E7%B4%A2.html","@type":"BlogPosting","headline":"使用nginx反向代理谷歌搜索","dateModified":"2018-06-14T00:00:00+00:00","datePublished":"2018-06-14T00:00:00+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://zenuo.github.io/2018/06/14/%E4%BD%BF%E7%94%A8Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E8%B0%B7%E6%AD%8C%E6%90%9C%E7%B4%A2.html"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://zenuo.github.io/feed.xml" title="/home/zenuo" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">/home/zenuo</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">使用nginx反向代理谷歌搜索</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2018-06-14T00:00:00+00:00" itemprop="datePublished">Jun 14, 2018
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h2 id="1-什么是代理">1 什么是代理</h2>
+
+<p>在计算机网络基础设施架构中，代理(Proxy)是在客户端(Client)与服务器(Server)之间的服务与设施。代理监听来自客户端的请求，并将请求转发给服务器，待服务器返回结果后，代理将结果转发给客户端，可以理解为中间人。</p>
+
+<h2 id="2-依赖">2 依赖</h2>
+
+<ul>
+  <li>一台可以访问<a href="https://google.com">谷歌搜索</a>的主机，可以在各大主机提供商购买</li>
+  <li>Nginx程序</li>
+</ul>
+
+<h2 id="3-安装nginx">3 安装Nginx</h2>
+
+<h2 id="4-安装nginx">4 安装Nginx</h2>
+
+<h3 id="41-安装开发套件">4.1 安装开发套件</h3>
+
+<p>执行命令：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>apt-get <span class="nb">install </span>build-essential libtool
+</code></pre></div></div>
+
+<h3 id="42-安装pcre">4.2 安装PCRE</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>wget <span class="nt">-O</span> /usr/local/src/pcre-8.41.zip https://ftp.pcre.org/pub/pcre/pcre-8.41.zip
+<span class="nv">$ </span><span class="nb">cd</span> /usr/local/src
+<span class="nv">$ </span><span class="nb">sudo </span>unzip pcre-8.41.zip
+<span class="nv">$ </span><span class="nb">cd </span>pcre-8.41
+<span class="nv">$ </span><span class="nb">sudo</span> ./configure
+<span class="nv">$ </span><span class="nb">sudo </span>make
+<span class="nv">$ </span><span class="nb">sudo </span>make <span class="nb">install</span>
+</code></pre></div></div>
+
+<h3 id="43-安装zlib">4.3 安装zlib</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>wget <span class="nt">-O</span> /usr/local/src/zlib-1.2.11.tar.gz https://zlib.net/zlib-1.2.11.tar.gz
+<span class="nv">$ </span><span class="nb">cd</span> /usr/local/src
+<span class="nv">$ </span><span class="nb">sudo tar </span>zxf zlib-1.2.11.tar.gz
+<span class="nv">$ </span><span class="nb">cd </span>zlib-1.2.11
+<span class="nv">$ </span><span class="nb">sudo</span> ./configure
+<span class="nv">$ </span><span class="nb">sudo </span>make
+<span class="nv">$ </span><span class="nb">sudo </span>make <span class="nb">install</span>
+</code></pre></div></div>
+
+<h3 id="44-安装openssl">4.4 安装OpenSSL</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>wget <span class="nt">-O</span> /usr/local/src/openssl-1.1.0f.tar.gz https://www.openssl.org/source/openssl-1.1.0f.tar.gz
+<span class="nv">$ </span><span class="nb">cd</span> /usr/local/src
+<span class="nv">$ </span><span class="nb">sudo tar </span>zxf openssl-1.1.0f.tar.gz
+<span class="nv">$ </span><span class="nb">cd </span>openssl-1.1.0f
+<span class="nv">$ </span><span class="nb">sudo</span> ./config
+<span class="nv">$ </span><span class="nb">sudo </span>make
+<span class="nv">$ </span><span class="nb">sudo </span>make <span class="nb">install</span>
+</code></pre></div></div>
+
+<h3 id="45-下载ngx_http_substitutions_filter插件源代码">4.5 下载ngx_http_substitutions_filter插件源代码</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>wget <span class="nt">-O</span> /usr/local/src/master.zip https://github.com/yaoweibin/ngx_http_substitutions_filter_module/archive/master.zip
+<span class="nv">$ </span><span class="nb">cd</span> /usr/local/src
+<span class="nv">$ </span><span class="nb">sudo </span>unzip master.zip
+</code></pre></div></div>
+
+<h3 id="46-安装nginx">4.6 安装Nginx</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>wget <span class="nt">-O</span> /usr/local/nginx-1.13.5.tar.gz http://nginx.org/download/nginx-1.13.5.tar.gz
+<span class="nv">$ </span><span class="nb">cd</span> /usr/local/src
+<span class="nv">$ </span><span class="nb">sudo tar </span>zxf nginx-1.13.5.tar.gz
+<span class="nv">$ </span><span class="nb">cd </span>nginx-1.13.5
+<span class="nv">$ </span><span class="nb">sudo</span> ./configure <span class="nt">--sbin-path</span><span class="o">=</span>/usr/local/nginx/nginx <span class="se">\</span>
+<span class="nt">--conf-path</span><span class="o">=</span>/usr/local/nginx/nginx.conf <span class="se">\</span>
+<span class="nt">--pid-path</span><span class="o">=</span>/usr/local/nginx/nginx.pid <span class="se">\</span>
+<span class="nt">--with-http_ssl_module</span> <span class="se">\</span>
+<span class="nt">--with-pcre</span><span class="o">=</span>/usr/local/src/pcre-8.41 <span class="se">\</span>
+<span class="nt">--with-http_stub_status_module</span> <span class="se">\</span>
+<span class="nt">--with-http_gzip_static_module</span> <span class="se">\</span>
+<span class="nt">--with-zlib</span><span class="o">=</span>/usr/local/src/zlib-1.2.11 <span class="se">\</span>
+<span class="nt">--with-openssl</span><span class="o">=</span>/usr/local/src/openssl-1.1.0f <span class="se">\</span>
+<span class="nt">--add-module</span><span class="o">=</span>/usr/local/src/ngx_http_substitutions_filter_module-master
+<span class="nv">$ </span><span class="nb">sudo sudo </span>make
+<span class="nv">$ </span><span class="nb">sudo sudo </span>make <span class="nb">install</span>
+</code></pre></div></div>
+
+<p>若以上过程成功完成，请试运行nginx：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo</span> /usr/local/nginx/nginx
+</code></pre></div></div>
+
+<h3 id="47-开放80端口">4.7 开放80端口</h3>
+
+<blockquote>
+  <p>此处演示如何设置防火墙允许外界访问80端口</p>
+</blockquote>
+
+<p>执行命令：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ sudo ufw allow 80
+</code></pre></div></div>
+
+<blockquote>
+  <p>若使用阿里云ECS，因为其”安全组”设置作用和防火墙类似，请参考其文档；</p>
+</blockquote>
+
+<p>访问主机的80端口，若出现欢迎界面，则安装成功，若失败，请尝试排除错误。</p>
+
+<h2 id="5-编辑nginx虚拟主机">5 编辑Nginx虚拟主机</h2>
+
+<p>编辑Nginx配置文件，若按照上面的安装过程，配置文件的绝对路径为<code class="language-plaintext highlighter-rouge">/usr/local/nginx/nginx.conf</code>，使用文本编辑器修改该文件，设置监听80端口的虚拟主机，内容如下：</p>
+
+<div class="language-conf highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">server</span> {
+
+	<span class="n">listen</span> <span class="m">80</span>;
+	<span class="n">server_name</span> $主机<span class="n">IP</span>或者域名;
+	<span class="c">#变量，代理域名
+</span>	<span class="n">set</span> $<span class="n">proxy_hostname</span> <span class="n">www</span>.<span class="n">google</span>.<span class="n">com</span>;
+
+	<span class="n">location</span> / {
+		<span class="c">#代理设置
+</span>		<span class="n">proxy_cookie_domain</span> $<span class="n">proxy_hostname</span> $<span class="n">server_name</span>;
+		<span class="n">proxy_pass</span> <span class="n">https</span>://$<span class="n">proxy_hostname</span>;
+		<span class="n">proxy_ssl_name</span> $<span class="n">proxy_hostname</span>;
+		<span class="c">#设定转发后端服务器的header
+</span>		<span class="n">proxy_set_header</span> <span class="n">Host</span> $<span class="n">proxy_hostname</span>;
+		<span class="n">proxy_set_header</span> <span class="n">User</span>-<span class="n">Agent</span> $<span class="n">http_user_agent</span>;
+		<span class="n">proxy_set_header</span> <span class="n">Referer</span> <span class="n">http</span>://$<span class="n">proxy_hostname</span>;
+		<span class="n">proxy_set_header</span> <span class="n">X</span>-<span class="n">Real_IP</span> $<span class="n">remote_addr</span>;
+		<span class="c">#谷歌搜索响应页面不被压缩，使得替换插件能够工作
+</span>		<span class="n">proxy_set_header</span> <span class="n">Accept</span>-<span class="n">Encoding</span> <span class="s2">""</span>;
+		<span class="n">proxy_set_header</span> <span class="n">X</span>-<span class="n">Forwarded</span>-<span class="n">For</span> $<span class="n">proxy_add_x_forwarded_for</span>;
+		<span class="n">proxy_set_header</span> <span class="n">X</span>-<span class="n">Forwarded</span>-<span class="n">Proto</span> <span class="n">https</span>;
+		<span class="n">proxy_set_header</span> <span class="n">Cookie</span> <span class="s2">""</span>;
+		<span class="n">proxy_set_header</span> <span class="n">referer</span> <span class="n">https</span>://$<span class="n">proxy_hostname</span>$<span class="n">request_uri</span>;
+		<span class="c">#替换谷歌搜索域名为当前主机名称
+</span>		<span class="n">subs_filter</span> <span class="n">https</span>://$<span class="n">proxy_hostname</span> <span class="n">http</span>://$<span class="n">server_name</span> <span class="n">g</span>;
+		<span class="c">#消除桌面版页面的跟踪
+</span>		<span class="n">subs_filter</span> <span class="n">ping</span>=\<span class="s2">"(.+?)\"</span> <span class="s1">''</span> <span class="n">ir</span>;
+		<span class="n">subs_filter</span> <span class="n">oncontextmenu</span>=\<span class="s2">"google.ctpacw.cm(this)\"</span> <span class="s1">''</span> <span class="n">ir</span>;
+		<span class="c">#替换文件类型
+</span>		<span class="n">subs_filter_types</span> <span class="n">text</span>/<span class="n">css</span> <span class="n">text</span>/<span class="n">xml</span> <span class="n">text</span>/<span class="n">javascript</span>;
+	}
+}
+</code></pre></div></div>
+
+<p>重启nginx，执行命令：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo</span> /usr/local/nginx/nginx <span class="nt">-s</span> reload
+</code></pre></div></div>
+
+<p>使用浏览器访问你的域名，若成功响应谷歌搜索页面，则设置成功。</p>
+
+<p>如有问题，欢迎来信哦📨️～</p>
+
+  </div><a class="u-url" href="/2018/06/14/%E4%BD%BF%E7%94%A8Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E8%B0%B7%E6%AD%8C%E6%90%9C%E7%B4%A2.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">/home/zenuo</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">/home/zenuo</li><li><a class="u-email" href="mailto:zenuo@protonmail.com">zenuo@protonmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/zenuo"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">zenuo</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>The quieter you become, the more you are able to hear.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

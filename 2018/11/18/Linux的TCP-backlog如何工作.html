@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Linux的tcp backlog如何工作 | /home/zenuo</title>
+<meta name="generator" content="Jekyll v4.2.0" />
+<meta property="og:title" content="Linux的tcp backlog如何工作" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="本文翻译自How TCP backlog works in Linux。" />
+<meta property="og:description" content="本文翻译自How TCP backlog works in Linux。" />
+<link rel="canonical" href="https://zenuo.github.io/2018/11/18/Linux%E7%9A%84TCP-backlog%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C.html" />
+<meta property="og:url" content="https://zenuo.github.io/2018/11/18/Linux%E7%9A%84TCP-backlog%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C.html" />
+<meta property="og:site_name" content="/home/zenuo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-11-18T00:00:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Linux的tcp backlog如何工作" />
+<script type="application/ld+json">
+{"description":"本文翻译自How TCP backlog works in Linux。","url":"https://zenuo.github.io/2018/11/18/Linux%E7%9A%84TCP-backlog%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C.html","@type":"BlogPosting","headline":"Linux的tcp backlog如何工作","dateModified":"2018-11-18T00:00:00+00:00","datePublished":"2018-11-18T00:00:00+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://zenuo.github.io/2018/11/18/Linux%E7%9A%84TCP-backlog%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C.html"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://zenuo.github.io/feed.xml" title="/home/zenuo" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">/home/zenuo</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Linux的tcp backlog如何工作</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2018-11-18T00:00:00+00:00" itemprop="datePublished">Nov 18, 2018
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <blockquote>
+  <p>本文翻译自<a href="http://veithen.github.io/2014/01/01/how-tcp-backlog-works-in-linux.html">How TCP backlog works in Linux</a>。</p>
+</blockquote>
+
+<p>当某个应用程序使用<a href="http://linux.die.net/man/2/listen">listen系统调用</a>将一个socket置为<code class="language-plaintext highlighter-rouge">LISTEN</code>状态时，需要为这个socket设置参数<code class="language-plaintext highlighter-rouge">backlog</code>，该参数通常被描述为传入（incoming）连接队列的数量限制。</p>
+
+<p><img src="/assets/img/3d75825650e82a8afd29e773.png" alt="TCP state diagram" /></p>
+
+<p>因为TCP使用三步握手（3-way handshake），在一个传入的连接在到达<code class="language-plaintext highlighter-rouge">ESTABLISHED</code>状态之前必须经过中间（intermediate）状态<code class="language-plaintext highlighter-rouge">SYN RECEIVED</code>，并且可由<a href="http://linux.die.net/man/2/accept">accept系统调用</a>返回到应用程序（请参阅上面复制的<a href="http://commons.wikimedia.org/wiki/File:Tcp_state_diagram_fixed.svg">TCP状态图</a>）。这意味着TCP/IP堆栈有两个选项来实现<code class="language-plaintext highlighter-rouge">LISTEN</code>状态的socket的积压队列（backlog queue）：</p>
+
+<p>1) 使用大小由<code class="language-plaintext highlighter-rouge">listen系统调用</code>的<code class="language-plaintext highlighter-rouge">backlog</code>参数决定的单队列实现。当某个connection接收<code class="language-plaintext highlighter-rouge">SYN</code>分组时，它会发回<code class="language-plaintext highlighter-rouge">SYN/ACK</code>分组并将连接入列；当接收到相应的<code class="language-plaintext highlighter-rouge">ACK</code>分组时，连接将其状态改变为<code class="language-plaintext highlighter-rouge">ESTABLISHED</code>并且有资格切换到应用程序。也就是说，队列中包含两种不同状态——<code class="language-plaintext highlighter-rouge">SYN RECEIVED</code>和<code class="language-plaintext highlighter-rouge">ESTABLISHED</code>，只有后一种状态的connection才能通过<code class="language-plaintext highlighter-rouge">accept系统调用</code>返回给应用程序。</p>
+
+<p>2) 使用一个<code class="language-plaintext highlighter-rouge">SYN</code>队列（未完成的连接队列）和一个<code class="language-plaintext highlighter-rouge">accept</code>队列（已完成的连接队列）。状态<code class="language-plaintext highlighter-rouge">SYN RECEIVED</code>中的connection被添加到<code class="language-plaintext highlighter-rouge">SYN</code>队列中，并且当它们的状态变为<code class="language-plaintext highlighter-rouge">ESTABLISHED</code>时，即当接收到3次握手中的<code class="language-plaintext highlighter-rouge">ACK</code>分组时，移动到accept队列。顾名思义，<code class="language-plaintext highlighter-rouge">accept系统调用</code>然后只是为了消费（consume）来自accept队列的连接而实现。在这种情况下，<code class="language-plaintext highlighter-rouge">listen系统调用</code>的<code class="language-plaintext highlighter-rouge">backlog</code>参数确定accept队列的大小。</p>
+
+<p>从历史上看，BSD派生的TCP实现使用第一种选项，意味着当达到最大backlog时，系统将不再发回<code class="language-plaintext highlighter-rouge">SYN/ACK</code>分组以响应<code class="language-plaintext highlighter-rouge">SYN</code>分组。通常，TCP实现只会丢弃<code class="language-plaintext highlighter-rouge">SYN</code>分组（而不是响应<code class="language-plaintext highlighter-rouge">RST</code>分组），以便客户端重试。这是W. Richard Stevens的经典教材<a href="https://book.douban.com/subject/26790662/">TCP/IP详解 卷3</a>的第14.5节<code class="language-plaintext highlighter-rouge">listen Backlog Queue</code>描述的内容。</p>
+
+<p>请注意，Stevens实际上解释了BSD实现确实使用了两个单独的队列，但它们表现为单个队列，其固定的最大大小由<code class="language-plaintext highlighter-rouge">backlog参数</code>确定（但不一定完全等于），即BSD在逻辑上表现如第一个选项所述：</p>
+
+<blockquote>
+  <p>队列限制适用于[…]不完整连接队列上的条目数和[…]已完成连接队列[…]上的条目数之和。</p>
+</blockquote>
+
+<p>在Linux上，事情是不同的，如<code class="language-plaintext highlighter-rouge">listen系统调用</code>的<a href="http://linux.die.net/man/2/listen">手册页</a>中所述：</p>
+
+<blockquote>
+  <p>Linux 2.2修改了TCP socket的<code class="language-plaintext highlighter-rouge">backlog</code>参数的行为。现在它指定了等待被accept的<code class="language-plaintext highlighter-rouge">完全</code>建立的套接字的队列长度，而不是<code class="language-plaintext highlighter-rouge">未完成</code>的连接请求的数量。可以在文件<code class="language-plaintext highlighter-rouge">/proc/sys/net/ipv4/tcp_max_syn_backlog</code>中设置<code class="language-plaintext highlighter-rouge">未完成</code>的socket队列的长度。</p>
+</blockquote>
+
+<p>这意味着当前的Linux版本使用具有两个不同队列的第二个选项：具有由系统范围设置指定的大小的<code class="language-plaintext highlighter-rouge">SYN</code>队列和具有由应用程序指定的大小的accept队列。</p>
+
+<p>现在有趣的问题是，如果接受队列已满并且需要将连接从SYN队列移动到接受队列，即当接收到3次握手的ACK分组时，这种实现如何表现。这种情况由<code class="language-plaintext highlighter-rouge">net/ipv4/tcp_minisocks.c</code>中的<code class="language-plaintext highlighter-rouge">tcp_check_req</code>函数处理，相关代码如下：</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">child</span> <span class="o">=</span> <span class="n">inet_csk</span><span class="p">(</span><span class="n">sk</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">icsk_af_ops</span><span class="o">-&gt;</span><span class="n">syn_recv_sock</span><span class="p">(</span><span class="n">sk</span><span class="p">,</span> <span class="n">skb</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">child</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
+        <span class="k">goto</span> <span class="n">listen_overflow</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>对于IPv4，第一行代码实际调用<code class="language-plaintext highlighter-rouge">net/ipv4/tcp_ipv4.c</code>中的<code class="language-plaintext highlighter-rouge">tcp_v4_syn_recv_sock</code>函数，包含以下代码：</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="p">(</span><span class="n">sk_acceptq_is_full</span><span class="p">(</span><span class="n">sk</span><span class="p">))</span>
+        <span class="k">goto</span> <span class="n">exit_overflow</span><span class="p">;</span>
+</code></pre></div></div>
+<p>此处的代码对accept队列进行了check。<code class="language-plaintext highlighter-rouge">exit_overflow</code>标签之后的代码将执行一些清理，更新<code class="language-plaintext highlighter-rouge">/proc/net/netstat</code>中的<code class="language-plaintext highlighter-rouge">ListenOverflows</code>和<code class="language-plaintext highlighter-rouge">ListenDrops</code>统计信息，然后返回<code class="language-plaintext highlighter-rouge">NULL</code>。这将引发<code class="language-plaintext highlighter-rouge">tcp_check_req</code>函数中的<code class="language-plaintext highlighter-rouge">listen_overflow</code>代码的执行：</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">listen_overflow:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">sysctl_tcp_abort_on_overflow</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">inet_rsk</span><span class="p">(</span><span class="n">req</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">acked</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+                <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+        <span class="p">}</span>
+</code></pre></div></div>
+
+<p>这意味着除非<code class="language-plaintext highlighter-rouge">/proc/sys/net/ipv4/tcp_abort_on_overflow</code>被置为<code class="language-plaintext highlighter-rouge">1</code>（在这种情况下，上面显示的代码之后的代码将发送一个<code class="language-plaintext highlighter-rouge">RST</code>分组），这种实现基本上不做处理。</p>
+
+<p>总而言之，如果Linux中的TCP实现接收到3次握手的<code class="language-plaintext highlighter-rouge">ACK</code>分组并且accept队列已满，它将基本上忽略该分组。乍看起来很奇怪，但是别忘记有一个与<code class="language-plaintext highlighter-rouge">SYN RECEIVED</code>状态相关联的定时器：若没有收到<code class="language-plaintext highlighter-rouge">ACK</code>分组（或者如果它被忽略，如此处所考虑的情况），那么TCP实现将重新发送<code class="language-plaintext highlighter-rouge">SYN / ACK</code>分组（具有由<code class="language-plaintext highlighter-rouge">/proc/sys/net/ipv4/tcp_synack_retries</code>指定的重试次数，并使用<a href="http://en.wikipedia.org/wiki/Exponential_backoff">指数退避算法</a>）。</p>
+
+<p>对于尝试连接（并发送数据）到达已达到其最大backlog的socket的客户端，可以在以下数据包跟踪中看到：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0.000  127.0.0.1 -&gt; 127.0.0.1  TCP 74 53302 &gt; 9999 [SYN] Seq=0 Len=0
+  0.000  127.0.0.1 -&gt; 127.0.0.1  TCP 74 9999 &gt; 53302 [SYN, ACK] Seq=0 Ack=1 Len=0
+  0.000  127.0.0.1 -&gt; 127.0.0.1  TCP 66 53302 &gt; 9999 [ACK] Seq=1 Ack=1 Len=0
+  0.000  127.0.0.1 -&gt; 127.0.0.1  TCP 71 53302 &gt; 9999 [PSH, ACK] Seq=1 Ack=1 Len=5
+  0.207  127.0.0.1 -&gt; 127.0.0.1  TCP 71 [TCP Retransmission] 53302 &gt; 9999 [PSH, ACK] Seq=1 Ack=1 Len=5
+  0.623  127.0.0.1 -&gt; 127.0.0.1  TCP 71 [TCP Retransmission] 53302 &gt; 9999 [PSH, ACK] Seq=1 Ack=1 Len=5
+  1.199  127.0.0.1 -&gt; 127.0.0.1  TCP 74 9999 &gt; 53302 [SYN, ACK] Seq=0 Ack=1 Len=0
+  1.199  127.0.0.1 -&gt; 127.0.0.1  TCP 66 [TCP Dup ACK 6#1] 53302 &gt; 9999 [ACK] Seq=6 Ack=1 Len=0
+  1.455  127.0.0.1 -&gt; 127.0.0.1  TCP 71 [TCP Retransmission] 53302 &gt; 9999 [PSH, ACK] Seq=1 Ack=1 Len=5
+  3.123  127.0.0.1 -&gt; 127.0.0.1  TCP 71 [TCP Retransmission] 53302 &gt; 9999 [PSH, ACK] Seq=1 Ack=1 Len=5
+  3.399  127.0.0.1 -&gt; 127.0.0.1  TCP 74 9999 &gt; 53302 [SYN, ACK] Seq=0 Ack=1 Len=0
+  3.399  127.0.0.1 -&gt; 127.0.0.1  TCP 66 [TCP Dup ACK 10#1] 53302 &gt; 9999 [ACK] Seq=6 Ack=1 Len=0
+  6.459  127.0.0.1 -&gt; 127.0.0.1  TCP 71 [TCP Retransmission] 53302 &gt; 9999 [PSH, ACK] Seq=1 Ack=1 Len=5
+  7.599  127.0.0.1 -&gt; 127.0.0.1  TCP 74 9999 &gt; 53302 [SYN, ACK] Seq=0 Ack=1 Len=0
+  7.599  127.0.0.1 -&gt; 127.0.0.1  TCP 66 [TCP Dup ACK 13#1] 53302 &gt; 9999 [ACK] Seq=6 Ack=1 Len=0
+ 13.131  127.0.0.1 -&gt; 127.0.0.1  TCP 71 [TCP Retransmission] 53302 &gt; 9999 [PSH, ACK] Seq=1 Ack=1 Len=5
+ 15.599  127.0.0.1 -&gt; 127.0.0.1  TCP 74 9999 &gt; 53302 [SYN, ACK] Seq=0 Ack=1 Len=0
+ 15.599  127.0.0.1 -&gt; 127.0.0.1  TCP 66 [TCP Dup ACK 16#1] 53302 &gt; 9999 [ACK] Seq=6 Ack=1 Len=0
+ 26.491  127.0.0.1 -&gt; 127.0.0.1  TCP 71 [TCP Retransmission] 53302 &gt; 9999 [PSH, ACK] Seq=1 Ack=1 Len=5
+ 31.599  127.0.0.1 -&gt; 127.0.0.1  TCP 74 9999 &gt; 53302 [SYN, ACK] Seq=0 Ack=1 Len=0
+ 31.599  127.0.0.1 -&gt; 127.0.0.1  TCP 66 [TCP Dup ACK 19#1] 53302 &gt; 9999 [ACK] Seq=6 Ack=1 Len=0
+ 53.179  127.0.0.1 -&gt; 127.0.0.1  TCP 71 [TCP Retransmission] 53302 &gt; 9999 [PSH, ACK] Seq=1 Ack=1 Len=5
+106.491  127.0.0.1 -&gt; 127.0.0.1  TCP 71 [TCP Retransmission] 53302 &gt; 9999 [PSH, ACK] Seq=1 Ack=1 Len=5
+106.491  127.0.0.1 -&gt; 127.0.0.1  TCP 54 9999 &gt; 53302 [RST] Seq=1 Len=0
+</code></pre></div></div>
+
+<p>由于客户端上的TCP实现获得多个<code class="language-plaintext highlighter-rouge">SYN/ACK</code>分组，因此它将假设<code class="language-plaintext highlighter-rouge">ACK</code>分组丢失并重新发送（请参阅上面跟踪中带有<code class="language-plaintext highlighter-rouge">TCP Dup ACK</code>的行）。若服务器端的应用程序在达到最大<code class="language-plaintext highlighter-rouge">SYN/ACK</code>重试次数之前减少了backlog（即从accept队列中消费了一个entry），那么TCP实现最终将处理其中一个重复的<code class="language-plaintext highlighter-rouge">ACK</code>，转换状态从<code class="language-plaintext highlighter-rouge">SYN RECEIVED</code>到<code class="language-plaintext highlighter-rouge">ESTABLISHED</code>的connection，并将其添加到accept队列。否则，客户端最终将获得<code class="language-plaintext highlighter-rouge">RST</code>分组（如上面显示的示例）。</p>
+
+<p>上述数据包跟踪还显示了此行为的另一个有趣方面。从客户端的角度来看，在接收到第一个<code class="language-plaintext highlighter-rouge">SYN/ACK</code>分组后，connection将处于<code class="language-plaintext highlighter-rouge">ESTABLISHED</code>状态。如果它发送数据（不先从服务器等待数据），那么也将重传该数据。幸运的是，<a href="http://en.wikipedia.org/wiki/Slow-start">TCP慢启动</a>应该限制在此阶段发送的段数（the number of segments sent）。</p>
+
+<p>另一方面，如果客户端首先等待来自服务器的数据并且服务器永远不会减少backlog，那么最终结果是在客户端，连接处于<code class="language-plaintext highlighter-rouge">ESTABLISHED</code>状态，而在服务器端，connection被视为<code class="language-plaintext highlighter-rouge">CLOSED</code>。这意味着我们最终会建立<a href="http://en.wikipedia.org/wiki/Half-open_connection">半开连接</a>！</p>
+
+<p>还有一个方面我们尚未讨论。来自<code class="language-plaintext highlighter-rouge">listen系统调用</code>的手册页的引用表明每个<code class="language-plaintext highlighter-rouge">SYN</code>分组都会导致一个connection被添加到<code class="language-plaintext highlighter-rouge">SYN</code>队列（除非该队列已满）。事实并非如此。原因在<code class="language-plaintext highlighter-rouge">net/ipv4/tcp_ipv4.c</code>的<code class="language-plaintext highlighter-rouge">tcp_v4_conn_request</code>方法（处理<code class="language-plaintext highlighter-rouge">SYN</code>分组）的如下代码中：</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/* Accept backlog 已满。如果我们已经在`SYN`队列中排队了足够的热条目，则删除请求。它比使用指数增加超时的openreqs堵塞`SYN`队列更好。
+*/</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">sk_acceptq_is_full</span><span class="p">(</span><span class="n">sk</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">inet_csk_reqsk_queue_young</span><span class="p">(</span><span class="n">sk</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">NET_INC_STATS_BH</span><span class="p">(</span><span class="n">sock_net</span><span class="p">(</span><span class="n">sk</span><span class="p">),</span> <span class="n">LINUX_MIB_LISTENOVERFLOWS</span><span class="p">);</span>
+        <span class="k">goto</span> <span class="n">drop</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>这意味着若accept队列已满，则内核将对接受<code class="language-plaintext highlighter-rouge">SYN</code>分组的速率施加限制。若收到太多的<code class="language-plaintext highlighter-rouge">SYN</code>分组，其中一些将被丢弃。在这种情况下，由客户端重试发送<code class="language-plaintext highlighter-rouge">SYN</code>分组，我们最终得到的行为与BSD派生的实现相同。</p>
+
+<p>最后，让我们试着了解为什么Linux的设计选择优于传统的BSD实现。Stevens提出以下有趣的观点：</p>
+
+<blockquote>
+  <p>The backlog can be reached if the completed connection queue fills (i.e., the server process or the server host is so busy that the process cannot call accept fast enough to take the completed entries off the queue) or if the incomplete connection queue fills. The latter is the problem that HTTP servers face, when the round-trip time between the client and server is long, compared to the arrival rate of new connection requests, because a new SYN occupies an entry on this queue for one round-trip time. […]</p>
+</blockquote>
+
+<blockquote>
+  <p>The completed connection queue is almost always empty because when an entry is placed on this queue, the server’s call to accept returns, and the server takes the completed connection off the queue.</p>
+</blockquote>
+
+<p>Stevens建议的解决方案只是增加backlog。这样做的问题在于，它假定应用程序需要调整backlog，不仅要考虑它如何处理新建立的传入连接（incoming connection），还要考虑到诸如往返时间（round-trip time）等流量特性（traffic characteristics）的功能。Linux中的实现有效地区分了这两个问题：应用程序只负责调整backlog，以便它可以足够快地调用<code class="language-plaintext highlighter-rouge">accept系统调用</code>以避免填充accept队列），然后，系统管理员可以根据流量特征调整<code class="language-plaintext highlighter-rouge">/proc/sys/net/ipv4/tcp_max_syn_backlog</code>。</p>
+
+
+  </div><a class="u-url" href="/2018/11/18/Linux%E7%9A%84TCP-backlog%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">/home/zenuo</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">/home/zenuo</li><li><a class="u-email" href="mailto:zenuo@protonmail.com">zenuo@protonmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/zenuo"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">zenuo</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>The quieter you become, the more you are able to hear.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>基于nginx的反向代理 | /home/zenuo</title>
+<meta name="generator" content="Jekyll v4.2.0" />
+<meta property="og:title" content="基于nginx的反向代理" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="配置文件如下：" />
+<meta property="og:description" content="配置文件如下：" />
+<link rel="canonical" href="https://zenuo.github.io/2019/06/03/%E5%9F%BA%E4%BA%8ENginx%E7%9A%84%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86.html" />
+<meta property="og:url" content="https://zenuo.github.io/2019/06/03/%E5%9F%BA%E4%BA%8ENginx%E7%9A%84%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86.html" />
+<meta property="og:site_name" content="/home/zenuo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-06-03T00:00:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="基于nginx的反向代理" />
+<script type="application/ld+json">
+{"description":"配置文件如下：","url":"https://zenuo.github.io/2019/06/03/%E5%9F%BA%E4%BA%8ENginx%E7%9A%84%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86.html","@type":"BlogPosting","headline":"基于nginx的反向代理","dateModified":"2019-06-03T00:00:00+00:00","datePublished":"2019-06-03T00:00:00+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://zenuo.github.io/2019/06/03/%E5%9F%BA%E4%BA%8ENginx%E7%9A%84%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86.html"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://zenuo.github.io/feed.xml" title="/home/zenuo" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">/home/zenuo</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">基于nginx的反向代理</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-06-03T00:00:00+00:00" itemprop="datePublished">Jun 3, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>配置文件如下：</p>
+
+<div class="language-conf highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">user</span>  <span class="n">www</span>;
+<span class="n">worker_processes</span>  <span class="m">1</span>;
+
+<span class="n">pid</span>        <span class="n">logs</span>/<span class="n">nginx</span>.<span class="n">pid</span>;
+
+<span class="n">events</span> {
+    <span class="n">worker_connections</span>  <span class="m">1024</span>;
+    <span class="n">use</span> <span class="n">epoll</span>;
+}
+
+<span class="n">http</span> {
+
+    <span class="n">log_format</span>  <span class="n">main</span>  <span class="s1">'$remote_addr - $remote_user [$time_local] "$request" '</span>
+                      <span class="s1">'$status $body_bytes_sent "$http_referer" '</span>
+                      <span class="s1">'"$http_user_agent" "$google"'</span>;
+
+    <span class="n">access_log</span>  <span class="n">logs</span>/<span class="n">access</span>.<span class="n">log</span>  <span class="n">main</span>;
+
+    <span class="n">access_log</span> <span class="n">off</span>;
+    <span class="n">include</span>       <span class="n">mime</span>.<span class="n">types</span>;
+    <span class="n">default_type</span>  <span class="n">application</span>/<span class="n">octet</span>-<span class="n">stream</span>;
+    <span class="n">client_max_body_size</span> <span class="m">5</span><span class="n">M</span>;
+    <span class="n">client_body_buffer_size</span> <span class="m">256</span><span class="n">K</span>;
+    <span class="n">types_hash_max_size</span> <span class="m">2048</span>;
+
+    <span class="c">#设定DNS
+</span>    <span class="n">resolver</span> [<span class="m">2001</span>:<span class="m">4860</span>:<span class="m">4860</span>::<span class="m">8888</span>] [<span class="m">2001</span>:<span class="m">4860</span>:<span class="m">4860</span>::<span class="m">8844</span>];
+    <span class="n">sendfile</span>        <span class="n">on</span>;
+    <span class="n">tcp_nopush</span>     <span class="n">on</span>;
+    <span class="n">keepalive_timeout</span>  <span class="m">65</span>;
+    <span class="n">gzip</span>  <span class="n">on</span>;
+    <span class="n">proxy_connect_timeout</span>    <span class="m">5</span>;
+    <span class="n">proxy_read_timeout</span>       <span class="m">60</span>;
+    <span class="n">proxy_send_timeout</span>       <span class="m">5</span>;
+    <span class="n">proxy_buffer_size</span>        <span class="m">16</span><span class="n">k</span>;
+    <span class="n">proxy_buffers</span>            <span class="m">4</span> <span class="m">64</span><span class="n">k</span>;
+    <span class="n">proxy_busy_buffers_size</span> <span class="m">128</span><span class="n">k</span>;
+    <span class="c">#proxy_temp_file_write_size 128k;
+</span>    <span class="c">#proxy_temp_path   /var/nginx_cache/temp;
+</span>    <span class="c">#设定缓存的路径和其他参数，http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_cache_path
+</span>    <span class="c">#proxy_cache_path  /var/nginx_cache/cache levels=1:2 keys_zone=one:16m inactive=1d max_size=512m;
+</span>
+    <span class="c">#设定复用SSL会话
+</span>    <span class="n">proxy_ssl_session_reuse</span> <span class="n">on</span>;
+    <span class="n">proxy_redirect</span> <span class="n">off</span>;
+    <span class="n">proxy_ssl_server_name</span> <span class="n">on</span>;
+    <span class="c">#缓存key规则，用于自动清除缓存
+</span>    <span class="n">proxy_cache_key</span> $<span class="n">scheme</span>://$<span class="n">host</span>$<span class="n">request_uri</span>;
+    <span class="c">#缓存区名称，设定于proxy_cache_path
+</span>    <span class="c">#proxy_cache one;
+</span>    <span class="c">#200 304状态缓存3小时
+</span>    <span class="n">proxy_cache_valid</span> <span class="m">200</span> <span class="m">304</span> <span class="m">10</span><span class="n">m</span>;
+    <span class="c">#301状态缓存3天
+</span>    <span class="n">proxy_cache_valid</span> <span class="m">301</span> <span class="m">3</span><span class="n">d</span>;
+    <span class="c">#其他状态缓存（如502 404）1分钟
+</span>    <span class="n">proxy_cache_valid</span> <span class="n">any</span> <span class="m">0</span><span class="n">s</span>;
+    <span class="c">#当后端出现错误、超时、502状态时启用过期缓存
+</span>    <span class="n">proxy_cache_use_stale</span> <span class="n">invalid_header</span> <span class="n">error</span> <span class="n">timeout</span> <span class="n">http_502</span>;
+
+    <span class="n">ssl_session_timeout</span> <span class="m">5</span><span class="n">m</span>;
+    <span class="n">ssl_ciphers</span> <span class="n">ECDHE</span>-<span class="n">RSA</span>-<span class="n">AES128</span>-<span class="n">GCM</span>-<span class="n">SHA256</span>:<span class="n">AES128</span>+<span class="n">EECDH</span>:<span class="n">AES128</span>+<span class="n">EDH</span>:<span class="n">ECDHE</span>:<span class="n">ECDH</span>:<span class="n">AES</span>:<span class="n">HIGH</span>:!<span class="n">NULL</span>:!<span class="n">aNULL</span>:!<span class="n">MD5</span>:!<span class="n">ADH</span>:!<span class="n">RC4</span>;
+    <span class="n">ssl_protocols</span> <span class="n">TLSv1</span> <span class="n">TLSv1</span>.<span class="m">1</span> <span class="n">TLSv1</span>.<span class="m">2</span>;
+    <span class="n">ssl_prefer_server_ciphers</span> <span class="n">on</span>;
+    <span class="n">ssl_dhparam</span> /<span class="n">etc</span>/<span class="n">ssl</span>/<span class="n">certs</span>/<span class="n">dhparam</span>.<span class="n">pem</span>;
+    <span class="n">ssl_session_cache</span> <span class="n">shared</span>:<span class="n">SSL</span>:<span class="m">10</span><span class="n">m</span>;
+    <span class="n">add_header</span> <span class="n">Strict</span>-<span class="n">Transport</span>-<span class="n">Security</span> <span class="n">max</span>-<span class="n">age</span>=<span class="m">63072000</span>;
+    <span class="n">add_header</span> <span class="n">X</span>-<span class="n">Frame</span>-<span class="n">Options</span> <span class="n">DENY</span>;
+    <span class="n">add_header</span> <span class="n">X</span>-<span class="n">Content</span>-<span class="n">Type</span>-<span class="n">Options</span> <span class="n">nosniff</span>;
+
+    <span class="c"># 勾勾
+</span>    <span class="n">upstream</span> <span class="n">gogo</span> {
+        <span class="n">server</span> <span class="m">127</span>.<span class="m">0</span>.<span class="m">0</span>.<span class="m">1</span>:<span class="m">4999</span>;
+    }
+
+    <span class="n">server</span> {
+        <span class="n">listen</span> <span class="m">5000</span> <span class="n">ssl</span>;
+        <span class="n">server_name</span> <span class="m">176</span>.<span class="m">122</span>.<span class="m">157</span>.<span class="m">73</span>;
+
+        <span class="n">ssl_certificate</span> <span class="n">cert</span>/<span class="m">176</span>.<span class="m">122</span>.<span class="m">157</span>.<span class="m">73</span>.<span class="n">crt</span>;
+        <span class="n">ssl_certificate_key</span> <span class="n">cert</span>/<span class="m">176</span>.<span class="m">122</span>.<span class="m">157</span>.<span class="m">73</span>.<span class="n">key</span>;
+
+        <span class="n">location</span> / {
+                <span class="n">proxy_pass</span> <span class="n">http</span>://<span class="n">gogo</span>;
+                <span class="c">#proxy_pass https://176.122.157.73:5001;
+</span>        }
+    }
+
+
+    <span class="c">#桌面版中文维基
+</span>    <span class="n">server</span> {
+    <span class="n">listen</span> <span class="m">3457</span> <span class="n">ssl</span>;
+    <span class="n">server_name</span> <span class="m">176</span>.<span class="m">122</span>.<span class="m">157</span>.<span class="m">73</span>;
+
+        <span class="n">ssl_certificate</span> <span class="n">cert</span>/<span class="m">176</span>.<span class="m">122</span>.<span class="m">157</span>.<span class="m">73</span>.<span class="n">crt</span>;
+        <span class="n">ssl_certificate_key</span> <span class="n">cert</span>/<span class="m">176</span>.<span class="m">122</span>.<span class="m">157</span>.<span class="m">73</span>.<span class="n">key</span>;
+
+        <span class="n">location</span> / {
+                <span class="c">#proxy_cache one;
+</span>                <span class="n">proxy_pass</span> <span class="n">https</span>://<span class="n">zh</span>.<span class="n">wikipedia</span>.<span class="n">org</span>; 
+                <span class="n">proxy_buffering</span> <span class="n">off</span>;
+                <span class="n">proxy_cookie_domain</span> <span class="n">zh</span>.<span class="n">wikipedia</span>.<span class="n">org</span> $<span class="n">server_name</span>:$<span class="n">server_port</span>;
+                <span class="n">proxy_redirect</span> <span class="n">https</span>://<span class="n">zh</span>.<span class="n">wikipedia</span>.<span class="n">org</span>/ /;
+                <span class="n">proxy_redirect</span> <span class="n">https</span>://<span class="n">zh</span>.<span class="n">m</span>.<span class="n">wikipedia</span>.<span class="n">org</span>/ <span class="n">https</span>://$<span class="n">server_name</span>:<span class="m">3458</span>/;
+                <span class="n">proxy_set_header</span> <span class="n">X</span>-<span class="n">Real_IP</span> $<span class="n">remote_addr</span>;
+                <span class="n">proxy_set_header</span> <span class="n">User</span>-<span class="n">Agent</span> $<span class="n">http_user_agent</span>;
+                <span class="n">proxy_set_header</span> <span class="n">Accept</span>-<span class="n">Encoding</span> <span class="s2">""</span>;
+                <span class="n">proxy_set_header</span> <span class="n">referer</span> <span class="s2">"https://zh.wikipedia.org$request_uri"</span>;
+
+                <span class="c">#替换手机版视图为代理
+</span>                <span class="n">subs_filter</span> <span class="n">zh</span>.<span class="n">m</span>.<span class="n">wikipedia</span>.<span class="n">org</span> $<span class="n">server_name</span>:<span class="m">3458</span> <span class="n">g</span>;
+                <span class="n">subs_filter</span> <span class="n">zh</span>.<span class="n">wikipedia</span>.<span class="n">org</span> $<span class="n">server_name</span>:$<span class="n">server_port</span> <span class="n">g</span>;
+                <span class="n">subs_filter</span> <span class="n">en</span>.<span class="n">m</span>.<span class="n">wikipedia</span>.<span class="n">org</span> $<span class="n">server_name</span>:<span class="m">5005</span> <span class="n">g</span>;
+                <span class="n">subs_filter</span> <span class="n">en</span>.<span class="n">wikipedia</span>.<span class="n">org</span> $<span class="n">server_name</span>:<span class="m">5004</span> <span class="n">g</span>;
+        }
+
+        <span class="n">location</span> <span class="n">https</span>://<span class="n">zh</span>.<span class="n">m</span>.<span class="n">wikipedia</span>.<span class="n">org</span>/ {
+                <span class="n">rewrite</span> ^/(.*) <span class="n">https</span>://$<span class="n">server_name</span>:<span class="m">3458</span>/$<span class="m">1</span> <span class="n">permanent</span>;
+        }
+    }
+
+    <span class="c">#移动版中文维基
+</span>    <span class="n">server</span> {
+        <span class="n">listen</span> <span class="m">3458</span> <span class="n">ssl</span>;
+        <span class="n">server_name</span> <span class="m">176</span>.<span class="m">122</span>.<span class="m">157</span>.<span class="m">73</span>;
+
+        <span class="n">ssl_certificate</span> <span class="n">cert</span>/<span class="m">176</span>.<span class="m">122</span>.<span class="m">157</span>.<span class="m">73</span>.<span class="n">crt</span>;
+        <span class="n">ssl_certificate_key</span> <span class="n">cert</span>/<span class="m">176</span>.<span class="m">122</span>.<span class="m">157</span>.<span class="m">73</span>.<span class="n">key</span>;
+
+        <span class="n">location</span> / {
+            <span class="c">#proxy_cache one;
+</span>            <span class="n">proxy_pass</span> <span class="n">https</span>://<span class="n">zh</span>.<span class="n">m</span>.<span class="n">wikipedia</span>.<span class="n">org</span>;
+            <span class="n">proxy_buffering</span> <span class="n">off</span>;
+            <span class="n">proxy_redirect</span> <span class="n">https</span>://<span class="n">zh</span>.<span class="n">m</span>.<span class="n">wikipedia</span>.<span class="n">org</span>/ /;
+            <span class="n">proxy_cookie_domain</span> <span class="n">zh</span>.<span class="n">m</span>.<span class="n">wikipedia</span>.<span class="n">org</span> $<span class="n">server_name</span>:$<span class="n">server_port</span>;
+
+            <span class="n">proxy_set_header</span> <span class="n">X</span>-<span class="n">Real_IP</span> $<span class="n">remote_addr</span>;
+            <span class="n">proxy_set_header</span> <span class="n">User</span>-<span class="n">Agent</span> $<span class="n">http_user_agent</span>;
+            <span class="n">proxy_set_header</span> <span class="n">Accept</span>-<span class="n">Encoding</span> <span class="s2">""</span>;
+            <span class="n">proxy_set_header</span> <span class="n">referer</span> <span class="n">https</span>://<span class="n">zh</span>.<span class="n">m</span>.<span class="n">wikipedia</span>.<span class="n">org</span>$<span class="n">request_uri</span>;
+
+                <span class="c">#替换桌面版视图为代理
+</span>            <span class="n">subs_filter</span> <span class="n">zh</span>.<span class="n">wikipedia</span>.<span class="n">org</span> $<span class="n">server_name</span>:<span class="m">3457</span> <span class="n">g</span>;
+            <span class="n">subs_filter</span> <span class="n">zh</span>.<span class="n">m</span>.<span class="n">wikipedia</span>.<span class="n">org</span> $<span class="n">server_name</span>:$<span class="n">server_port</span> <span class="n">g</span>;
+            <span class="n">subs_filter</span> <span class="n">en</span>.<span class="n">m</span>.<span class="n">wikipedia</span>.<span class="n">org</span> $<span class="n">server_name</span>:<span class="m">5005</span> <span class="n">g</span>;
+            <span class="n">subs_filter</span> <span class="n">en</span>.<span class="n">wikipedia</span>.<span class="n">org</span> $<span class="n">server_name</span>:<span class="m">5004</span> <span class="n">g</span>;
+        }
+    }
+
+    <span class="c">#谷歌搜索
+</span>    <span class="n">server</span> {
+        <span class="n">listen</span> <span class="m">5001</span> <span class="n">ssl</span>;
+        <span class="n">server_name</span> <span class="m">176</span>.<span class="m">122</span>.<span class="m">157</span>.<span class="m">73</span>;
+
+        <span class="n">set</span> $<span class="n">google</span> <span class="s2">""</span>;
+        <span class="n">rewrite_by_lua</span> <span class="err">'</span>
+                        <span class="n">local</span> <span class="n">googles</span> = {
+                                <span class="s2">"www.google.is"</span>,
+                                <span class="s2">"www.google.dk"</span>,
+                                <span class="s2">"www.google.no"</span>,
+                                <span class="s2">"www.google.se"</span>,
+                                <span class="s2">"www.google.fi"</span>,
+                                <span class="s2">"www.google.ee"</span>,
+                                <span class="s2">"www.google.lv"</span>,
+                                <span class="s2">"www.google.lt"</span>,
+                                <span class="s2">"www.google.ie"</span>,
+                                <span class="s2">"www.google.co.uk"</span>,
+                                <span class="s2">"www.google.gg"</span>,
+                                <span class="s2">"www.google.je"</span>,
+                                <span class="s2">"www.google.im"</span>,
+                                <span class="s2">"www.google.fr"</span>,
+                                <span class="s2">"www.google.nl"</span>,
+                                <span class="s2">"www.google.be"</span>,
+                                <span class="s2">"www.google.lu"</span>,
+                                <span class="s2">"www.google.de"</span>,
+                                <span class="s2">"www.google.at"</span>,
+                                <span class="s2">"www.google.ch"</span>,
+                                <span class="s2">"www.google.li"</span>,
+                                <span class="s2">"www.google.pt"</span>,
+                                <span class="s2">"www.google.es"</span>,
+                                <span class="s2">"www.google.com.gi"</span>,
+                                <span class="s2">"www.google.ad"</span>,
+                                <span class="s2">"www.google.it"</span>,
+                                <span class="s2">"www.google.com.mt"</span>,
+                                <span class="s2">"www.google.sm"</span>,
+                                <span class="s2">"www.google.gr"</span>,
+                                <span class="s2">"www.google.ru"</span>,
+                                <span class="s2">"www.google.com.by"</span>,
+                                <span class="s2">"www.google.com.ua"</span>,
+                                <span class="s2">"www.google.pl"</span>,
+                                <span class="s2">"www.google.cz"</span>,
+                                <span class="s2">"www.google.sk"</span>,
+                                <span class="s2">"www.google.hu"</span>,
+                                <span class="s2">"www.google.si"</span>,
+                                <span class="s2">"www.google.hr"</span>,
+                                <span class="s2">"www.google.ba"</span>,
+                                <span class="s2">"www.google.me"</span>,
+                                <span class="s2">"www.google.rs"</span>,
+                                <span class="s2">"www.google.mk"</span>,
+                                <span class="s2">"www.google.bg"</span>,
+                                <span class="s2">"www.google.ro"</span>,
+                                <span class="s2">"www.google.md"</span>,
+                                <span class="s2">"www.google.mn"</span>,
+                                <span class="s2">"www.google.co.kr"</span>,
+                                <span class="s2">"www.google.co.jp"</span>,
+                                <span class="s2">"www.google.com.vn"</span>,
+                                <span class="s2">"www.google.la"</span>,
+                                <span class="s2">"www.google.com.kh"</span>,
+                                <span class="s2">"www.google.co.th"</span>,
+                                <span class="s2">"www.google.com.my"</span>,
+                                <span class="s2">"www.google.com.sg"</span>,
+                                <span class="s2">"www.google.com.bn"</span>,
+                                <span class="s2">"www.google.com.ph"</span>,
+                                <span class="s2">"www.google.co.id"</span>,
+                                <span class="s2">"www.google.kz"</span>,
+                                <span class="s2">"www.google.kg"</span>,
+                                <span class="s2">"www.google.com.tj"</span>,
+                                <span class="s2">"www.google.co.uz"</span>,
+                                <span class="s2">"www.google.tm"</span>,
+                                <span class="s2">"www.google.com.af"</span>,
+                                <span class="s2">"www.google.com.pk"</span>,
+                                <span class="s2">"www.google.com.np"</span>,
+                                <span class="s2">"www.google.co.in"</span>,
+                                <span class="s2">"www.google.com.bd"</span>,
+                                <span class="s2">"www.google.lk"</span>,
+                                <span class="s2">"www.google.mv"</span>,
+                                <span class="s2">"www.google.com.kw"</span>,
+                                <span class="s2">"www.google.com.sa"</span>,
+                                <span class="s2">"www.google.com.bh"</span>,
+                                <span class="s2">"www.google.ae"</span>,
+                                <span class="s2">"www.google.com.om"</span>,
+                                <span class="s2">"www.google.jo"</span>,
+                                <span class="s2">"www.google.co.il"</span>,
+                                <span class="s2">"www.google.com.lb"</span>,
+                                <span class="s2">"www.google.com.tr"</span>,
+                                <span class="s2">"www.google.az"</span>,
+                                <span class="s2">"www.google.am"</span>,
+                                <span class="s2">"www.google.co.ls"</span>,
+                                <span class="s2">"www.google.com.eg"</span>,
+                                <span class="s2">"www.google.com.ly"</span>,
+                                <span class="s2">"www.google.dz"</span>,
+                                <span class="s2">"www.google.co.ma"</span>,
+                                <span class="s2">"www.google.sn"</span>,
+                                <span class="s2">"www.google.gm"</span>,
+                                <span class="s2">"www.google.ml"</span>,
+                                <span class="s2">"www.google.bf"</span>,
+                                <span class="s2">"www.google.com.sl"</span>,
+                                <span class="s2">"www.google.ci"</span>,
+                                <span class="s2">"www.google.com.gh"</span>,
+                                <span class="s2">"www.google.tg"</span>,
+                                <span class="s2">"www.google.bj"</span>,
+                                <span class="s2">"www.google.ne"</span>,
+                                <span class="s2">"www.google.com.ng"</span>,
+                                <span class="s2">"www.google.sh"</span>,
+                                <span class="s2">"www.google.cm"</span>,
+                                <span class="s2">"www.google.td"</span>,
+                                <span class="s2">"www.google.cf"</span>,
+                                <span class="s2">"www.google.ga"</span>,
+                                <span class="s2">"www.google.cg"</span>,
+                                <span class="s2">"www.google.cd"</span>,
+                                <span class="s2">"www.google.it.ao"</span>,
+                                <span class="s2">"www.google.com.et"</span>,
+                                <span class="s2">"www.google.dj"</span>,
+                                <span class="s2">"www.google.co.ke"</span>,
+                                <span class="s2">"www.google.co.ug"</span>,
+                                <span class="s2">"www.google.co.tz"</span>,
+                                <span class="s2">"www.google.rw"</span>,
+                                <span class="s2">"www.google.bi"</span>,
+                                <span class="s2">"www.google.mw"</span>,
+                                <span class="s2">"www.google.co.mz"</span>,
+                                <span class="s2">"www.google.mg"</span>,
+                                <span class="s2">"www.google.sc"</span>,
+                                <span class="s2">"www.google.mu"</span>,
+                                <span class="s2">"www.google.co.zm"</span>,
+                                <span class="s2">"www.google.co.zw"</span>,
+                                <span class="s2">"www.google.co.bw"</span>,
+                                <span class="s2">"www.google.com.na"</span>,
+                                <span class="s2">"www.google.co.za"</span>,
+                                <span class="s2">"www.google.com.au"</span>,
+                                <span class="s2">"www.google.com.nf"</span>,
+                                <span class="s2">"www.google.co.nz"</span>,
+                                <span class="s2">"www.google.com.sb"</span>,
+                                <span class="s2">"www.google.com.fj"</span>,
+                                <span class="s2">"www.google.fm"</span>,
+                                <span class="s2">"www.google.ki"</span>,
+                                <span class="s2">"www.google.nr"</span>,
+                                <span class="s2">"www.google.tk"</span>,
+                                <span class="s2">"www.google.ws"</span>,
+                                <span class="s2">"www.google.as"</span>,
+                                <span class="s2">"www.google.to"</span>,
+                                <span class="s2">"www.google.nu"</span>,
+                                <span class="s2">"www.google.co.ck"</span>,
+                                <span class="s2">"www.google.com.do"</span>,
+                                <span class="s2">"www.google.tt"</span>,
+                                <span class="s2">"www.google.com.co"</span>,
+                                <span class="s2">"www.google.com.ec"</span>,
+                                <span class="s2">"www.google.co.ve"</span>,
+                                <span class="s2">"www.google.gy"</span>,
+                                <span class="s2">"www.google.com.pe"</span>,
+                                <span class="s2">"www.google.com.bo"</span>,
+                                <span class="s2">"www.google.com.py"</span>,
+                                <span class="s2">"www.google.com.br"</span>,
+                                <span class="s2">"www.google.com.uy"</span>,
+                                <span class="s2">"www.google.com.ar"</span>,
+                                <span class="s2">"www.google.cl"</span>,
+                                <span class="s2">"www.google.gl"</span>,
+                                <span class="s2">"www.google.ca"</span>,
+                                <span class="s2">"www.google.com"</span>,
+                                <span class="s2">"www.google.com.mx"</span>,
+                                <span class="s2">"www.google.com.gt"</span>,
+                                <span class="s2">"www.google.com.bz"</span>,
+                                <span class="s2">"www.google.com.sv"</span>,
+                                <span class="s2">"www.google.hn"</span>,
+                                <span class="s2">"www.google.com.ni"</span>,
+                                <span class="s2">"www.google.co.cr"</span>,
+                                <span class="s2">"www.google.com.pa"</span>,
+                                <span class="s2">"www.google.bs"</span>,
+                                <span class="s2">"www.google.com.cu"</span>,
+                                <span class="s2">"www.google.com.jm"</span>,
+                                <span class="s2">"www.google.ht"</span>}
+                        <span class="n">ngx</span>.<span class="n">var</span>.<span class="n">google</span> = <span class="n">googles</span>[ <span class="n">math</span>.<span class="n">random</span>( <span class="c">#googles )]';
+</span>
+        <span class="n">ssl_certificate</span> <span class="n">cert</span>/<span class="m">176</span>.<span class="m">122</span>.<span class="m">157</span>.<span class="m">73</span>.<span class="n">crt</span>;
+        <span class="n">ssl_certificate_key</span> <span class="n">cert</span>/<span class="m">176</span>.<span class="m">122</span>.<span class="m">157</span>.<span class="m">73</span>.<span class="n">key</span>;
+
+        <span class="n">location</span> / {
+            <span class="c">#代理设置
+</span>            <span class="n">proxy_cookie_domain</span> $<span class="n">google</span> $<span class="n">server_name</span>;
+            <span class="n">proxy_pass</span> <span class="n">https</span>://$<span class="n">google</span>;
+            <span class="n">proxy_ssl_name</span> $<span class="n">google</span>;
+            <span class="c">#设定转发后端服务器的header
+</span>            <span class="n">proxy_set_header</span> <span class="n">Host</span> $<span class="n">google</span>;
+            <span class="n">proxy_set_header</span> <span class="n">User</span>-<span class="n">Agent</span> $<span class="n">http_user_agent</span>;
+            <span class="c">#proxy_set_header User-Agent "Mozilla/5.0 (compatible; MSIE 10.0; Windows Phone 8.0; Trident/6.0; IEMobile/10.0; ARM; Touch; NOKIA; Lumia 920)";
+</span>            <span class="n">proxy_set_header</span> <span class="n">Referer</span> <span class="n">https</span>://$<span class="n">google</span>;
+            <span class="n">proxy_set_header</span> <span class="n">X</span>-<span class="n">Real_IP</span> $<span class="n">remote_addr</span>;
+            <span class="n">proxy_set_header</span> <span class="n">Accept</span>-<span class="n">Encoding</span> <span class="s2">""</span>;
+            <span class="n">proxy_set_header</span> <span class="n">X</span>-<span class="n">Forwarded</span>-<span class="n">For</span> $<span class="n">proxy_add_x_forwarded_for</span>;
+            <span class="n">proxy_set_header</span> <span class="n">X</span>-<span class="n">Forwarded</span>-<span class="n">Proto</span> <span class="n">https</span>;
+            <span class="c">#重定向
+</span>            <span class="n">proxy_redirect</span> <span class="n">https</span>://$<span class="n">google</span> <span class="n">Https</span>://$<span class="n">server_name</span>:$<span class="n">server_port</span>;
+            <span class="c">#设定语言为大陆中文
+</span>            <span class="n">proxy_set_header</span> <span class="n">Accept</span>-<span class="n">Language</span> <span class="s2">"zh-CN"</span>;
+            <span class="n">proxy_set_header</span> <span class="n">referer</span> <span class="n">https</span>://$<span class="n">google</span>$<span class="n">request_uri</span>;
+            <span class="c">#去除跟踪
+</span>            <span class="n">subs_filter</span> <span class="n">ping</span>=\<span class="s2">"(.+?)\"</span> <span class="s1">''</span> <span class="n">ir</span>;
+            <span class="n">subs_filter</span> <span class="n">oncontextmenu</span>=\<span class="s2">"google.ctpacw.cm\(this\)\"</span> <span class="s1">''</span> <span class="n">ir</span>;
+            <span class="n">subs_filter</span> <span class="n">onmousedown</span>=\<span class="s2">"(.+?)\"</span> <span class="s1">''</span> <span class="n">ir</span>;
+
+            <span class="c">#去除定位消息
+</span>            <span class="n">subs_filter</span> <span class="s2">"&lt;div class=\"</span><span class="n">smiUbb</span>(.*?)&lt;\/<span class="n">div</span>&gt;<span class="err">"</span> <span class="s1">''</span> <span class="n">ir</span>;
+            <span class="c">#替换中文维基为代理
+</span>            <span class="n">subs_filter</span> <span class="n">zh</span>.<span class="n">wikipedia</span>.<span class="n">org</span> $<span class="n">server_name</span>:<span class="m">3457</span> <span class="n">g</span>;
+            <span class="n">subs_filter</span> <span class="n">zh</span>.<span class="n">m</span>.<span class="n">wikipedia</span>.<span class="n">org</span> $<span class="n">server_name</span>:<span class="m">3458</span> <span class="n">g</span>;
+            <span class="n">subs_filter</span> <span class="n">en</span>.<span class="n">m</span>.<span class="n">wikipedia</span>.<span class="n">org</span> $<span class="n">server_name</span>:<span class="m">5005</span> <span class="n">g</span>;
+            <span class="n">subs_filter</span> <span class="n">en</span>.<span class="n">wikipedia</span>.<span class="n">org</span> $<span class="n">server_name</span>:<span class="m">5004</span> <span class="n">g</span>;
+            <span class="c">#替换Logo链接
+</span>            <span class="n">subs_filter</span> $<span class="n">google</span> $<span class="n">server_name</span>:$<span class="n">server_port</span> <span class="n">g</span>;
+            <span class="n">subs_filter</span> <span class="n">www</span>.<span class="n">google</span>.<span class="n">com</span> $<span class="n">server_name</span>:$<span class="n">server_port</span> <span class="n">g</span>;
+            <span class="c">#替换文件类型
+</span>            <span class="n">subs_filter_types</span> <span class="n">text</span>/<span class="n">css</span> <span class="n">text</span>/<span class="n">xml</span> <span class="n">text</span>/<span class="n">javascript</span>;
+        }
+    }
+
+    <span class="c">#桌面版英文维基
+</span>    <span class="n">server</span> {
+        <span class="n">listen</span> <span class="m">5004</span> <span class="n">ssl</span>;
+        <span class="n">server_name</span> <span class="m">176</span>.<span class="m">122</span>.<span class="m">157</span>.<span class="m">73</span>;
+        <span class="n">ssl_certificate</span> <span class="n">cert</span>/<span class="m">176</span>.<span class="m">122</span>.<span class="m">157</span>.<span class="m">73</span>.<span class="n">crt</span>;
+        <span class="n">ssl_certificate_key</span> <span class="n">cert</span>/<span class="m">176</span>.<span class="m">122</span>.<span class="m">157</span>.<span class="m">73</span>.<span class="n">key</span>;
+        <span class="n">location</span> / {
+                <span class="c">#proxy_cache one;
+</span>                <span class="n">proxy_pass</span> <span class="n">https</span>://<span class="n">en</span>.<span class="n">wikipedia</span>.<span class="n">org</span>;
+                <span class="n">proxy_buffering</span> <span class="n">off</span>;
+                <span class="n">proxy_cookie_domain</span> <span class="n">en</span>.<span class="n">wikipedia</span>.<span class="n">org</span> $<span class="n">server_name</span>:$<span class="n">server_port</span>;
+                <span class="n">proxy_redirect</span> <span class="n">https</span>://<span class="n">en</span>.<span class="n">wikipedia</span>.<span class="n">org</span>/ /;
+                <span class="n">proxy_redirect</span> <span class="n">https</span>://<span class="n">en</span>.<span class="n">m</span>.<span class="n">wikipedia</span>.<span class="n">org</span>/ <span class="n">https</span>://$<span class="n">server_name</span>:<span class="m">5005</span>/;
+                <span class="n">proxy_set_header</span> <span class="n">X</span>-<span class="n">Real_IP</span> $<span class="n">remote_addr</span>;
+                <span class="n">proxy_set_header</span> <span class="n">User</span>-<span class="n">Agent</span> $<span class="n">http_user_agent</span>;
+                <span class="n">proxy_set_header</span> <span class="n">Accept</span>-<span class="n">Encoding</span> <span class="s2">""</span>;
+                <span class="n">proxy_set_header</span> <span class="n">referer</span> <span class="s2">"https://en.wikipedia.org$request_uri"</span>;
+                <span class="c">#替换手机版视图为代理
+</span>                <span class="n">subs_filter</span> <span class="n">en</span>.<span class="n">m</span>.<span class="n">wikipedia</span>.<span class="n">org</span> $<span class="n">server_name</span>:<span class="m">5005</span> <span class="n">g</span>;
+                <span class="n">subs_filter</span> <span class="n">en</span>.<span class="n">wikipedia</span>.<span class="n">org</span> $<span class="n">server_name</span>:$<span class="n">server_port</span> <span class="n">g</span>;
+                <span class="n">subs_filter</span> <span class="n">zh</span>.<span class="n">wikipedia</span>.<span class="n">org</span> $<span class="n">server_name</span>:<span class="m">3457</span> <span class="n">g</span>;
+                <span class="n">subs_filter</span> <span class="n">zh</span>.<span class="n">m</span>.<span class="n">wikipedia</span>.<span class="n">org</span> $<span class="n">server_name</span>:<span class="m">3458</span> <span class="n">g</span>;
+        }
+        <span class="n">location</span> <span class="n">https</span>://<span class="n">en</span>.<span class="n">m</span>.<span class="n">wikipedia</span>.<span class="n">org</span>/ {
+                <span class="n">rewrite</span> ^/(.*) <span class="n">https</span>://$<span class="n">server_name</span>:<span class="m">5005</span>/$<span class="m">1</span> <span class="n">permanent</span>;
+        }
+    }
+
+    <span class="c">#移动版英文维基
+</span>    <span class="n">server</span> {
+        <span class="n">listen</span> <span class="m">5005</span> <span class="n">ssl</span>;
+        <span class="n">server_name</span> <span class="m">176</span>.<span class="m">122</span>.<span class="m">157</span>.<span class="m">73</span>;
+        <span class="n">ssl_certificate</span> <span class="n">cert</span>/<span class="m">176</span>.<span class="m">122</span>.<span class="m">157</span>.<span class="m">73</span>.<span class="n">crt</span>;
+        <span class="n">ssl_certificate_key</span> <span class="n">cert</span>/<span class="m">176</span>.<span class="m">122</span>.<span class="m">157</span>.<span class="m">73</span>.<span class="n">key</span>;
+
+        <span class="n">location</span> / {
+            <span class="c">#proxy_cache one;
+</span>            <span class="n">proxy_pass</span> <span class="n">https</span>://<span class="n">en</span>.<span class="n">m</span>.<span class="n">wikipedia</span>.<span class="n">org</span>;
+            <span class="n">proxy_buffering</span> <span class="n">off</span>;
+            <span class="n">proxy_redirect</span> <span class="n">https</span>://<span class="n">en</span>.<span class="n">m</span>.<span class="n">wikipedia</span>.<span class="n">org</span>/ /;
+            <span class="n">proxy_cookie_domain</span> <span class="n">en</span>.<span class="n">m</span>.<span class="n">wikipedia</span>.<span class="n">org</span> $<span class="n">server_name</span>:$<span class="n">server_port</span>;
+            <span class="n">proxy_set_header</span> <span class="n">X</span>-<span class="n">Real_IP</span> $<span class="n">remote_addr</span>;
+            <span class="n">proxy_set_header</span> <span class="n">User</span>-<span class="n">Agent</span> $<span class="n">http_user_agent</span>;
+            <span class="n">proxy_set_header</span> <span class="n">Accept</span>-<span class="n">Encoding</span> <span class="s2">""</span>;
+            <span class="n">proxy_set_header</span> <span class="n">referer</span> <span class="n">https</span>://<span class="n">en</span>.<span class="n">m</span>.<span class="n">wikipedia</span>.<span class="n">org</span>$<span class="n">request_uri</span>;
+            <span class="c">#替换桌面版视图为代理
+</span>            <span class="n">subs_filter</span> <span class="n">en</span>.<span class="n">wikipedia</span>.<span class="n">org</span> $<span class="n">server_name</span>:<span class="m">5004</span> <span class="n">g</span>;
+            <span class="n">subs_filter</span> <span class="n">en</span>.<span class="n">m</span>.<span class="n">wikipedia</span>.<span class="n">org</span> $<span class="n">server_name</span>:$<span class="n">server_port</span> <span class="n">g</span>;
+            <span class="n">subs_filter</span> <span class="n">zh</span>.<span class="n">wikipedia</span>.<span class="n">org</span> $<span class="n">server_name</span>:<span class="m">3457</span> <span class="n">g</span>;
+            <span class="n">subs_filter</span> <span class="n">zh</span>.<span class="n">m</span>.<span class="n">wikipedia</span>.<span class="n">org</span> $<span class="n">server_name</span>:<span class="m">3458</span> <span class="n">g</span>;
+        }
+    }
+
+    <span class="c"># v2ray
+</span>    <span class="n">server</span> {
+        <span class="n">listen</span> <span class="m">53514</span> <span class="n">ssl</span>;
+        <span class="n">server_name</span> <span class="m">176</span>.<span class="m">122</span>.<span class="m">157</span>.<span class="m">73</span>;
+        <span class="n">ssl_ciphers</span> <span class="n">HIGH</span>:!<span class="n">aNULL</span>:!<span class="n">MD5</span>;
+        <span class="n">ssl_certificate</span> <span class="n">cert</span>/<span class="m">176</span>.<span class="m">122</span>.<span class="m">157</span>.<span class="m">73</span>.<span class="n">crt</span>;
+        <span class="n">ssl_certificate_key</span> <span class="n">cert</span>/<span class="m">176</span>.<span class="m">122</span>.<span class="m">157</span>.<span class="m">73</span>.<span class="n">key</span>;
+
+        <span class="n">location</span> /<span class="m">9</span><span class="n">a00db84</span>-<span class="m">636</span><span class="n">e</span>-<span class="m">4653</span>-<span class="n">b763</span>-<span class="n">e0271e167b41</span> {
+            <span class="n">proxy_redirect</span> <span class="n">off</span>;
+            <span class="n">proxy_pass</span> <span class="n">http</span>://<span class="m">127</span>.<span class="m">0</span>.<span class="m">0</span>.<span class="m">1</span>:<span class="m">53513</span>;
+            <span class="n">proxy_http_version</span> <span class="m">1</span>.<span class="m">1</span>;
+            <span class="n">proxy_set_header</span> <span class="n">Upgrade</span> $<span class="n">http_upgrade</span>;
+            <span class="n">proxy_set_header</span> <span class="n">Connection</span> <span class="s2">"upgrade"</span>;
+            <span class="n">proxy_set_header</span> <span class="n">Host</span> $<span class="n">http_host</span>;
+
+            <span class="c"># Show realip in v2ray access.log
+</span>            <span class="n">proxy_set_header</span> <span class="n">X</span>-<span class="n">Real</span>-<span class="n">IP</span> $<span class="n">remote_addr</span>;
+            <span class="n">proxy_set_header</span> <span class="n">Host</span> $<span class="n">host</span>;
+            <span class="n">proxy_set_header</span> <span class="n">X</span>-<span class="n">Forwarded</span>-<span class="n">For</span> $<span class="n">proxy_add_x_forwarded_for</span>;
+        }
+    }
+}
+</code></pre></div></div>
+
+  </div><a class="u-url" href="/2019/06/03/%E5%9F%BA%E4%BA%8ENginx%E7%9A%84%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">/home/zenuo</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">/home/zenuo</li><li><a class="u-email" href="mailto:zenuo@protonmail.com">zenuo@protonmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/zenuo"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">zenuo</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>The quieter you become, the more you are able to hear.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>如何使用gdb调试nginx | /home/zenuo</title>
+<meta name="generator" content="Jekyll v4.2.0" />
+<meta property="og:title" content="如何使用gdb调试nginx" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="本文主要描述在CentOS 7下，使用gdb调试Nginx" />
+<meta property="og:description" content="本文主要描述在CentOS 7下，使用gdb调试Nginx" />
+<link rel="canonical" href="https://zenuo.github.io/2021/02/28/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8GDB%E8%B0%83%E8%AF%95Nginx.html" />
+<meta property="og:url" content="https://zenuo.github.io/2021/02/28/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8GDB%E8%B0%83%E8%AF%95Nginx.html" />
+<meta property="og:site_name" content="/home/zenuo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-02-28T00:00:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="如何使用gdb调试nginx" />
+<script type="application/ld+json">
+{"description":"本文主要描述在CentOS 7下，使用gdb调试Nginx","url":"https://zenuo.github.io/2021/02/28/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8GDB%E8%B0%83%E8%AF%95Nginx.html","@type":"BlogPosting","headline":"如何使用gdb调试nginx","dateModified":"2021-02-28T00:00:00+00:00","datePublished":"2021-02-28T00:00:00+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://zenuo.github.io/2021/02/28/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8GDB%E8%B0%83%E8%AF%95Nginx.html"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://zenuo.github.io/feed.xml" title="/home/zenuo" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">/home/zenuo</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">如何使用gdb调试nginx</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2021-02-28T00:00:00+00:00" itemprop="datePublished">Feb 28, 2021
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>本文主要描述在<code class="language-plaintext highlighter-rouge">CentOS 7</code>下，使用<a href="https://www.gnu.org/s/gdb/">gdb</a>调试Nginx</p>
+
+<h1 id="1-准备">1 准备</h1>
+
+<p>下载nginx及其依赖项目源码，并解压：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-OL</span> https://mirrors.sohu.com/nginx/nginx-1.19.7.tar.gz
+<span class="nb">tar </span>zxf nginx-1.19.7.tar.gz
+curl <span class="nt">-OL</span> https://ftp.pcre.org/pub/pcre/pcre-8.44.tar.gz
+<span class="nb">tar </span>zxf pcre-8.44.tar.gz
+curl <span class="nt">-OL</span> http://zlib.net/zlib-1.2.11.tar.gz
+<span class="nb">tar </span>zxf zlib-1.2.11.tar.gz
+</code></pre></div></div>
+
+<p>安装构建工具：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>yum <span class="nb">install </span>gcc make
+</code></pre></div></div>
+
+<p>构建nginx:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd</span> /opt/app/nginx-1.19.7
+./configure <span class="nt">--with-debug</span> <span class="nt">--with-cc-opt</span><span class="o">=</span><span class="s1">'-O0 -g'</span> <span class="nt">--with-pcre</span><span class="o">=</span>/opt/app/pcre-8.44 <span class="nt">--with-zlib</span><span class="o">=</span>/opt/app/zlib-1.2.11 <span class="nt">--prefix</span><span class="o">=</span>/opt/app/nginx
+make <span class="o">&amp;&amp;</span> make <span class="nb">install</span>
+</code></pre></div></div>
+
+<p>修改nginx配置文件<code class="language-plaintext highlighter-rouge">/opt/app/nginx/conf/nginx.conf</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># 最好是1，便于断点调试
+worker_processes  1;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    sendfile        on;
+    keepalive_timeout  65;
+    server {
+        listen       8000;
+        server_name  localhost;
+
+        location / {
+            root   html;
+            index  index.html index.htm;
+        }
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+    }
+}
+</code></pre></div></div>
+
+<p>启动：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/opt/app/nginx/sbin/nginx
+</code></pre></div></div>
+
+<p>使用curl访问:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-v</span> localhost:8080
+</code></pre></div></div>
+
+<p>若能返回<code class="language-plaintext highlighter-rouge">200 OK</code>，则已准备好调试环境</p>
+
+<h1 id="2-调试">2 调试</h1>
+
+<p>安装调试工具</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>yum <span class="nb">install </span>gdb
+</code></pre></div></div>
+
+<p>找到nginx worker的进程号：</p>
+
+<blockquote>
+  <p>为什么是<code class="language-plaintext highlighter-rouge">worker</code>进程号呢？因为在nginx架构中，进程类型主要是<code class="language-plaintext highlighter-rouge">master</code>和<code class="language-plaintext highlighter-rouge">worker</code>两类，前者主要负责配置解析、重载配置、维护work进程组等职责，而后者才是接收、处理来自客户端的连接。更多<a href="2019/01/31/nginx架构.html">移步</a></p>
+</blockquote>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ps <span class="nt">-ef</span> | <span class="nb">grep</span> <span class="s1">'nginx: worker process'</span> | <span class="nb">grep</span> <span class="nt">-v</span> <span class="nb">grep</span>
+</code></pre></div></div>
+
+<p>例如:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[newad@localhost nginx]$ ps -ef | grep 'nginx: worker process' | grep -v grep
+newad    12362 12361  0 17:55 ?        00:00:00 nginx: worker process
+</code></pre></div></div>
+
+<p>可知进程号是<code class="language-plaintext highlighter-rouge">12362</code></p>
+
+<p>用gdb连接上nginx worker进程：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gdb <span class="nt">-p</span> 12362
+</code></pre></div></div>
+
+<p>若输出的末尾是<code class="language-plaintext highlighter-rouge">(gdb)</code>字样，则连接成功</p>
+
+<p>在文件<code class="language-plaintext highlighter-rouge">ngx_http_core_module.c</code>的<code class="language-plaintext highlighter-rouge">1816</code>行设置断点：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(gdb) break src/http/ngx_http_core_module.c:1816
+Breakpoint 1 at 0x4d4944: file src/http/ngx_http_core_module.c, line 1816.
+</code></pre></div></div>
+
+<p>继续运行进程：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(gdb) continue
+Continuing.
+</code></pre></div></div>
+
+<p>新开一个ssh会话，使用curl发起访问：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-v</span> localhost:8080
+</code></pre></div></div>
+
+<p>回到gdb的会话，可以发现程序在刚刚设置的断点停住了：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Breakpoint 1, ngx_http_send_header (r=0x1f7db20) at src/http/ngx_http_core_module.c:1816
+1816	    if (r-&gt;post_action) {
+</code></pre></div></div>
+
+<p>可以通过组合键<code class="language-plaintext highlighter-rouge">ctrl x</code>和<code class="language-plaintext highlighter-rouge">ctrl a</code>进入<a href="http://www.cs.fsu.edu/~baker/ada/gnat/html/gdb_23.html">TUI模式</a>，实现同时查看源代码和控制台，如图：</p>
+
+<p><img src="/assets/img/a8287077f7adc3f2f39b8f2b.png" alt="a8287077f7adc3f2f39b8f2b.png" /></p>
+
+<p>使用<code class="language-plaintext highlighter-rouge">p</code>命令，求值（打印）表达式：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(gdb) p r-&gt;request_line
+$2 = {len = 14, data = 0x1f844d8 "GET / HTTP/1.1\r\nHost"}
+</code></pre></div></div>
+
+<p>使用<code class="language-plaintext highlighter-rouge">ptype</code>命令，打印struct或者class的定义：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(gdb) ptype ngx_http_request_body_t
+type = struct {
+    ngx_temp_file_t *temp_file;
+    ngx_chain_t *bufs;
+    ngx_buf_t *buf;
+    off_t rest;
+    off_t received;
+    ngx_chain_t *free;
+    ngx_chain_t *busy;
+    ngx_http_chunked_t *chunked;
+    ngx_http_client_body_handler_pt post_handler;
+}
+</code></pre></div></div>
+
+<p>使用<code class="language-plaintext highlighter-rouge">continue</code>命令，继续运行进程。</p>
+
+<h1 id="3-参考">3 参考</h1>
+
+<ul>
+  <li>http://www.cs.fsu.edu/~baker/ada/gnat/html/gdb_23.html</li>
+  <li>https://stackoverflow.com/questions/10115540/gdb-split-view-with-code</li>
+  <li>https://docs.nginx.com/nginx/admin-guide/monitoring/debugging/#nginx-and-debugging-symbols</li>
+  <li>https://stackoverflow.com/questions/1768620/how-do-i-show-what-fields-a-struct-has-in-gdb</li>
+</ul>
+
+  </div><a class="u-url" href="/2021/02/28/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8GDB%E8%B0%83%E8%AF%95Nginx.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">/home/zenuo</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">/home/zenuo</li><li><a class="u-email" href="mailto:zenuo@protonmail.com">zenuo@protonmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/zenuo"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">zenuo</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>The quieter you become, the more you are able to hear.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

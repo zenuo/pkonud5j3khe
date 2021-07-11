@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>基于wine使用qq轻聊版 | /home/zenuo</title>
+<meta name="generator" content="Jekyll v4.2.0" />
+<meta property="og:title" content="基于wine使用qq轻聊版" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="wine是用于在其他操作系统上运行Windows应用程序的开源软件，我们可以用它来在Linux操作系统上使用QQ轻聊版客户端，满足日常的通信需求。当然，你还可以使用微信等客户端，操作流程与本文所述大同小异。" />
+<meta property="og:description" content="wine是用于在其他操作系统上运行Windows应用程序的开源软件，我们可以用它来在Linux操作系统上使用QQ轻聊版客户端，满足日常的通信需求。当然，你还可以使用微信等客户端，操作流程与本文所述大同小异。" />
+<link rel="canonical" href="https://zenuo.github.io/2019/06/15/%E5%9F%BA%E4%BA%8EWine%E4%BD%BF%E7%94%A8QQ%E8%BD%BB%E8%81%8A%E7%89%88.html" />
+<meta property="og:url" content="https://zenuo.github.io/2019/06/15/%E5%9F%BA%E4%BA%8EWine%E4%BD%BF%E7%94%A8QQ%E8%BD%BB%E8%81%8A%E7%89%88.html" />
+<meta property="og:site_name" content="/home/zenuo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-06-15T00:00:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="基于wine使用qq轻聊版" />
+<script type="application/ld+json">
+{"description":"wine是用于在其他操作系统上运行Windows应用程序的开源软件，我们可以用它来在Linux操作系统上使用QQ轻聊版客户端，满足日常的通信需求。当然，你还可以使用微信等客户端，操作流程与本文所述大同小异。","url":"https://zenuo.github.io/2019/06/15/%E5%9F%BA%E4%BA%8EWine%E4%BD%BF%E7%94%A8QQ%E8%BD%BB%E8%81%8A%E7%89%88.html","@type":"BlogPosting","headline":"基于wine使用qq轻聊版","dateModified":"2019-06-15T00:00:00+00:00","datePublished":"2019-06-15T00:00:00+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://zenuo.github.io/2019/06/15/%E5%9F%BA%E4%BA%8EWine%E4%BD%BF%E7%94%A8QQ%E8%BD%BB%E8%81%8A%E7%89%88.html"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://zenuo.github.io/feed.xml" title="/home/zenuo" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">/home/zenuo</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">基于wine使用qq轻聊版</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-06-15T00:00:00+00:00" itemprop="datePublished">Jun 15, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p><a href="https://www.winehq.org/">wine</a>是用于在其他操作系统上运行Windows应用程序的开源软件，我们可以用它来在Linux操作系统上使用QQ轻聊版客户端，满足日常的通信需求。当然，你还可以使用微信等客户端，操作流程与本文所述<strong>大同小异</strong>。</p>
+
+<h2 id="安装wine">安装wine</h2>
+
+<p>执行命令：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 安装wine和winetrick，我们用后者来安装一些依赖库</span>
+<span class="nb">sudo </span>pacman <span class="nt">-S</span> wine winetrick
+<span class="c"># 设置环境变量WINEARCH为win32</span>
+<span class="nb">echo</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">export WINEARCH=win32"</span> <span class="o">&gt;&gt;</span> ~/.profile <span class="o">&amp;&amp;</span> <span class="nb">source</span> ~/.profile
+<span class="c"># 安装依赖库，此步骤需要下载一些文件，您可以设置http_proxy和https_proxy来使用代理，达到加速的目的</span>
+winetricks msxml3 gdiplus riched20 riched30 ie6 vcrun6 vcrun2005sp1 vcrun6sp6
+<span class="c"># 追加配置到~/.wine/drive_c/windows/win.ini</span>
+<span class="nb">echo</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">[Desktop]
+menufontsize=13
+messagefontsize=13
+statusfontsize=13
+IconTitleSize=13"</span> <span class="o">&gt;&gt;</span> ~/.wine/drive_c/windows/win.ini
+</code></pre></div></div>
+
+<p>创建文件<code class="language-plaintext highlighter-rouge">font.reg</code>：</p>
+
+<pre><code class="language-regedit">REGEDIT4
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\FontSubstitutes]
+"Arial"="simsun"
+"Arial CE,238"="simsun"
+"Arial CYR,204"="simsun"
+"Arial Greek,161"="simsun"
+"Arial TUR,162"="simsun"
+"Courier New"="simsun"
+"Courier New CE,238"="simsun"
+"Courier New CYR,204"="simsun"
+"Courier New Greek,161"="simsun"
+"Courier New TUR,162"="simsun"
+"FixedSys"="simsun"
+"Helv"="simsun"
+"Helvetica"="simsun"
+"MS Sans Serif"="simsun"
+"MS Shell Dlg"="simsun"
+"MS Shell Dlg 2"="simsun"
+"System"="simsun"
+"Tahoma"="simsun"
+"Times"="simsun"
+"Times New Roman CE,238"="simsun"
+"Times New Roman CYR,204"="simsun"
+"Times New Roman Greek,161"="simsun"
+"Times New Roman TUR,162"="simsun"
+"Tms Rmn"="simsun"
+</code></pre>
+
+<p>根据该文件修改注册表，执行：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>regedit font.reg
+</code></pre></div></div>
+
+<p>将<code class="language-plaintext highlighter-rouge">Windows</code>操作系统的<strong><code class="language-plaintext highlighter-rouge">C:\Windows\Fonts</code></strong>下的文件复制到<strong><code class="language-plaintext highlighter-rouge">~/.wine/drive_c/windows/Fonts/</code></strong>中，(此步骤无命令提示)。</p>
+
+<p>执行<code class="language-plaintext highlighter-rouge">winecfg</code>；选择<code class="language-plaintext highlighter-rouge">Applications</code>，将wine的Windows版本修改为<code class="language-plaintext highlighter-rouge">Windows 10</code>，如图：</p>
+
+<p><img src="/assets/img/287f7e1138d0bcf7904e0e98.png" alt="287f7e1138d0bcf7904e0e98.png" /></p>
+
+<p>选择<code class="language-plaintext highlighter-rouge">Libraries</code>，在<code class="language-plaintext highlighter-rouge">New override for library</code>中输入<code class="language-plaintext highlighter-rouge">ntoskrnl.exe</code>，点击<code class="language-plaintext highlighter-rouge">Add</code>，在<code class="language-plaintext highlighter-rouge">Existing overrides</code>中选择<code class="language-plaintext highlighter-rouge">ntoskrnl.exe</code>，点击<code class="language-plaintext highlighter-rouge">Edit</code>，选择<code class="language-plaintext highlighter-rouge">Disable</code>，点击小窗口的<code class="language-plaintext highlighter-rouge">OK</code>，如图：</p>
+
+<p><img src="/assets/img/5446e25e6b1de029224bab58.png" alt="5446e25e6b1de029224bab58.png" />
+<img src="/assets/img/23ac73ab1c0e5e9987e71af8.png" alt="23ac73ab1c0e5e9987e71af8.png" /></p>
+
+<p>对<code class="language-plaintext highlighter-rouge">txplatform.exe</code>执行同样的操作后，点击<code class="language-plaintext highlighter-rouge">OK</code>，保存修改，如同：</p>
+
+<p><img src="/assets/img/08d9527e3cd5c9dc079c7788.png" alt="08d9527e3cd5c9dc079c7788.png" /></p>
+
+<h2 id="安装qq轻聊版">安装QQ轻聊版</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 下载QQ轻聊版7.9安装包</span>
+curl <span class="nt">-O</span> <span class="nt">-L</span> http://dldir1.qq.com/qqfile/qq/QQ7.9Light/14308/QQ7.9Light.exe
+<span class="c"># 执行安装包，安装QQ</span>
+wine QQ7.9Light.exe
+</code></pre></div></div>
+
+<p>创建启动器文件<code class="language-plaintext highlighter-rouge">~/.local/share/applications/QQ.desktop</code>，内容为：</p>
+
+<pre><code class="language-desktop">[Desktop Entry]
+Name=QQ轻聊版
+Type=Application
+Exec=env LC_ALL=zh_CN.UTF-8 WINEPREFIX="/home/{您的用户名}/.wine" wine "/home/{您的用户名}/.wine/drive_c/Program Files/Tencent/QQLite/Bin/QQ.exe"
+</code></pre>
+
+<blockquote>
+  <p>请将<code class="language-plaintext highlighter-rouge">{您的用户名}</code>修改为您的用户名，因为启动器中不支持<code class="language-plaintext highlighter-rouge">~</code>表示家目录</p>
+</blockquote>
+
+<p>您现在可以在启动器中启动<code class="language-plaintext highlighter-rouge">QQ轻聊版</code>，如图：</p>
+
+<p><img src="/assets/img/066c1767f22134ce7d1581c8.png" alt="066c1767f22134ce7d1581c8.png" /></p>
+
+<p>也可以执行命令启动：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wine ~/.wine/drive_c/Program<span class="se">\ </span>Files/Tencent/QQLite/Bin/QQ.exe
+</code></pre></div></div>
+
+<h2 id="粘贴板不同步">粘贴板不同步</h2>
+
+<p>若出现wine的粘贴板与操作系统的粘贴板不同步，则编辑如下注册表文件<code class="language-plaintext highlighter-rouge">UsePrimarySelection.reg</code>，内容：</p>
+
+<pre><code class="language-regedit">REGEDIT4
+[HKEY_CURRENT_USER\Software\Wine\X11 Driver]
+"UsePrimarySelection"="Y"
+</code></pre>
+
+<p>根据该文件修改注册表，执行：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>regedit UsePrimarySelection.reg
+</code></pre></div></div>
+
+<p>重启操作系统，即可生效。</p>
+
+<blockquote>
+  <p>注：使注册表在应用程序启动时生效的方法，不必须是重启操作系统，这个先不深究。</p>
+</blockquote>
+
+<h2 id="参考">参考</h2>
+
+<ul>
+  <li><a href="https://wiki.archlinux.org/index.php/Wine_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)#%E5%90%AF%E5%8A%A8%E5%99%A8%E5%92%8C%E8%8F%9C%E5%8D%95">启动器和菜单</a></li>
+  <li><a href="https://blog.51cto.com/binuu/1982241">QQ各版本下载地址</a></li>
+  <li><a href="https://www.xuecaijie.com/linux/141.html">wine中软件中文乱码出现方框问题解决方案</a></li>
+  <li><a href="https://askubuntu.com/questions/433739/clipboard-syncronization-between-wine-and-x11">[Bug 31216] Cut and paste: gnome terminal overrides Wine clipboard?</a></li>
+  <li><a href="https://wiki.archlinux.org/index.php/desktop_entries">Desktop entries</a></li>
+</ul>
+
+  </div><a class="u-url" href="/2019/06/15/%E5%9F%BA%E4%BA%8EWine%E4%BD%BF%E7%94%A8QQ%E8%BD%BB%E8%81%8A%E7%89%88.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">/home/zenuo</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">/home/zenuo</li><li><a class="u-email" href="mailto:zenuo@protonmail.com">zenuo@protonmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/zenuo"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">zenuo</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>The quieter you become, the more you are able to hear.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

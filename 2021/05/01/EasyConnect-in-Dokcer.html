@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Easyconnect in dokcer | /home/zenuo</title>
+<meta name="generator" content="Jekyll v4.2.0" />
+<meta property="og:title" content="Easyconnect in dokcer" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Sangfor EasyConnect是一款专有的VPN解决方案，官方支持多种平台的客户端；但该软件目前存在以下的几种行为：" />
+<meta property="og:description" content="Sangfor EasyConnect是一款专有的VPN解决方案，官方支持多种平台的客户端；但该软件目前存在以下的几种行为：" />
+<link rel="canonical" href="https://zenuo.github.io/2021/05/01/EasyConnect-in-Dokcer.html" />
+<meta property="og:url" content="https://zenuo.github.io/2021/05/01/EasyConnect-in-Dokcer.html" />
+<meta property="og:site_name" content="/home/zenuo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-05-01T00:00:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Easyconnect in dokcer" />
+<script type="application/ld+json">
+{"description":"Sangfor EasyConnect是一款专有的VPN解决方案，官方支持多种平台的客户端；但该软件目前存在以下的几种行为：","url":"https://zenuo.github.io/2021/05/01/EasyConnect-in-Dokcer.html","@type":"BlogPosting","headline":"Easyconnect in dokcer","dateModified":"2021-05-01T00:00:00+00:00","datePublished":"2021-05-01T00:00:00+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://zenuo.github.io/2021/05/01/EasyConnect-in-Dokcer.html"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://zenuo.github.io/feed.xml" title="/home/zenuo" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">/home/zenuo</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Easyconnect in dokcer</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2021-05-01T00:00:00+00:00" itemprop="datePublished">May 1, 2021
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p><a href="https://www.sangfor.com/en/products/infrastructure/easyconnect">Sangfor EasyConnect</a>是一款专有的VPN解决方案，官方支持多种平台的客户端；但该软件目前存在以下的几种行为：</p>
+
+<ol>
+  <li>配置一个开机自动启动的守护进程<code class="language-plaintext highlighter-rouge">EasyMonitor</code></li>
+  <li>安装CA根证书</li>
+</ol>
+
+<p>为了避免上述两种情况对本地系统造成不良影响，尝试寻找方法将EasyConnect运行在受控的容器内。所幸在<a href="https://github.com/Hagb/docker-easyconnect">Hagb/docker-easyconnect</a>找到了，该仓库介绍了一种在Docker内运行EasyConnect的方案。通过该方案，在此记录下我的实践过程。</p>
+
+<h2 id="1-运行容器">1 运行容器</h2>
+
+<blockquote>
+  <p>在<code class="language-plaintext highlighter-rouge">Docker宿主机</code>为<a href="https://alpinelinux.org/">Alpine Linux</a>时，映射到<code class="language-plaintext highlighter-rouge">Docker宿主机</code>的端口，无法在宿主机的外部网络（例如宿主机所在的局域网）访问，但可以在宿主机本地访问；</p>
+</blockquote>
+
+<p>创建文件用于保存登录凭证，以实现auto login：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ touch ~/.easyconn
+</code></pre></div></div>
+
+<p>从Docker镜像<code class="language-plaintext highlighter-rouge">hagb/docker-easyconnect:cli</code>创建一个名称为<code class="language-plaintext highlighter-rouge">easyconnect</code>的容器，并且将<code class="language-plaintext highlighter-rouge">容器的1080端口</code>映射到<code class="language-plaintext highlighter-rouge">Docker宿主机的1080端口</code>（1080只是一个示例值，可以是其他的；敲黑板，后续会用到）：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ docker run --name easyconnect --device /dev/net/tun --cap-add NET_ADMIN -ti -v $HOME/.easyconn:/root/.easyconn -e EC_VER=7.6.8 -e EXIT=1 -p 1080:1080 hagb/docker-easyconnect:cli
+</code></pre></div></div>
+
+<p>根据提示输入<code class="language-plaintext highlighter-rouge">服务器URL</code>、<code class="language-plaintext highlighter-rouge">用户名</code>、<code class="language-plaintext highlighter-rouge">密码</code>。</p>
+
+<p>注意服务器URL末尾不需要反斜线（<code class="language-plaintext highlighter-rouge">/</code>），例如正确的<code class="language-plaintext highlighter-rouge">https://vpn_host</code>。</p>
+
+<p>如果成功登入，则会提示：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>user "xx" login successfully!
+</code></pre></div></div>
+
+<h2 id="2-浏览器over-proxy">2 浏览器over proxy</h2>
+
+<ol>
+  <li>
+    <p>浏览器运行时动态配置代理，可以通过<a href="https://github.com/FelisCatus/SwitchyOmega">SwitchyOmega</a>来实现，须将Proxy设置为<code class="language-plaintext highlighter-rouge">Docker宿主机的1080端口</code></p>
+  </li>
+  <li>
+    <p>浏览器启动时指定代理，若您是使用<code class="language-plaintext highlighter-rouge">Chromium</code>相关（比如Chrome），则可通过命令行启动：</p>
+  </li>
+</ol>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ chromium —proxy-server=socks5://${Docker宿主机IP}:1080
+</code></pre></div></div>
+
+<h2 id="3-ssh-over-proxy">3 ssh over proxy</h2>
+
+<blockquote>
+  <p>若您是使用Arch Linux，需要安装openbsd-netcat，而不是gnu-netcat</p>
+</blockquote>
+
+<p>编辑ssh配置文件<code class="language-plaintext highlighter-rouge">~/.ssh/config</code>，添加内容：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Host 10.1.*
+    ProxyCommand /usr/bin/nc -x ${Docker宿主机IP}:1080 %h %p
+</code></pre></div></div>
+
+<p>使得在通过ssh访问匹配<code class="language-plaintext highlighter-rouge">10.1.*</code>（仅仅是示例，需要根据您的实际使用情况调整）的主机时，通过代理<code class="language-plaintext highlighter-rouge">${Docker宿主机IP}:1080</code></p>
+
+<h2 id="4-git-over-proxy">4 git over proxy</h2>
+
+<p>分为两种情况：</p>
+
+<ol>
+  <li>
+    <p>若git仓库的remote是<code class="language-plaintext highlighter-rouge">ssh</code>协议，编辑ssh配置文件<code class="language-plaintext highlighter-rouge">~/.ssh/config</code>，添加内容：</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> Host ${git仓库域名}
+     ProxyCommand /usr/bin/nc -x ${Docker宿主机IP}:1080 %h %p
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>若git仓库的remote是<code class="language-plaintext highlighter-rouge">http</code>或者<code class="language-plaintext highlighter-rouge">https</code>协议，那么在与remote交互时，为git命令指定变量<code class="language-plaintext highlighter-rouge">http_proxy</code>，例如：</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> $ https_proxy=socks5://localhost:1080 git clone http://${git仓库域名}/x/x.git
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<h2 id="5-mysql-client-over-proxy">5 MySQL client over proxy</h2>
+
+<p>因为<a href="https://dev.mysql.com/doc/refman/8.0/en/mysql.html">原生MySQL client</a>不支持socks5代理，可通过其他客户端来达到目的；例如<a href="https://www.mycli.net/">mycli</a>，但mycli目前没有支持socks5代理，所以也需要采取一些额外的措施。</p>
+
+<p>因为mycli基于Python实现，故可通过<a href="https://pypi.org/project/PySocks/">PySocks</a>来对整个标准库进行猴补丁(Monkey patch)，使所有的socket都通过一个代理建立。</p>
+
+<p>假设您是通过brew安装的mycli，那么需要修改<code class="language-plaintext highlighter-rouge">/usr/local/bin/mycli</code>，添加内容：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">socks</span>
+
+<span class="n">ip</span> <span class="o">=</span> <span class="s">'${Docker宿主机IP}'</span>
+<span class="n">port</span> <span class="o">=</span> <span class="mi">1080</span>
+<span class="n">socks</span><span class="p">.</span><span class="n">setdefaultproxy</span><span class="p">(</span><span class="n">socks</span><span class="p">.</span><span class="n">PROXY_TYPE_SOCKS5</span><span class="p">,</span> <span class="n">ip</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
+<span class="n">socket</span><span class="p">.</span><span class="n">socket</span> <span class="o">=</span> <span class="n">socks</span><span class="p">.</span><span class="n">socksocket</span>
+</code></pre></div></div>
+
+<p>保存即可使用。</p>
+
+<h2 id="6-参考">6 参考</h2>
+
+<ol>
+  <li>https://zhuanlan.zhihu.com/p/259634641</li>
+  <li>https://www.sangfor.com/en/products/infrastructure/easyconnect</li>
+  <li>https://github.com/Hagb/docker-easyconnect</li>
+  <li>https://docs.docker.com/config/containers/container-networking/</li>
+  <li>https://superuser.com/questions/454210/how-can-i-use-ssh-with-a-socks-5-proxy</li>
+  <li>https://pypi.org/project/PySocks/</li>
+  <li>https://www.mycli.net/</li>
+  <li>https://dev.mysql.com/doc/refman/8.0/en/mysql.html</li>
+</ol>
+
+
+  </div><a class="u-url" href="/2021/05/01/EasyConnect-in-Dokcer.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">/home/zenuo</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">/home/zenuo</li><li><a class="u-email" href="mailto:zenuo@protonmail.com">zenuo@protonmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/zenuo"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">zenuo</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>The quieter you become, the more you are able to hear.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
